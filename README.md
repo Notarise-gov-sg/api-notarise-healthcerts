@@ -46,7 +46,6 @@ To run local tests against dynamodb-local, run commands
   - SIGNING_DID_KEY: check wth ops. For ethereum DID, it's equal to `SIGNING_DID` prepended with `#controller`
   - SIGNING_DID_PRIVATE_KEY: check with ops
 - start the local environment: `npm run dev`
-- mock s3 event: `curl http://localhost:3000/sample`
 
 ## Generating a wrapped cert
 - Edit `test/fixtures/example_healthcert_unwrapped.json` to include your particulars
