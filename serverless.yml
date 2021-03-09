@@ -1,0 +1,104 @@
+service: api-notarise-healthcerts
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  timeout: 30 # optional, in seconds, default is 6
+  stage: ${opt:stage, "dev"}
+  region: ${opt:region, "ap-southeast-1"}
+  environment:
+    AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+  tracing:
+    lambda: true
+  permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - kms:Decrypt
+      Resource: ${self:custom.KMS_ARN}
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource: "*"
+    - Effect: Allow
+      Action: ["kms:GenerateDataKey"]
+      Resource: "arn:aws:kms:${self:provider.region}:${self:custom.accountId}:key/${env:SNS_KMS_KEY_ID, 'PLACEHOLDER'}"
+  deploymentBucket:
+    name: notarise-serverless-deployment
+  apiGateway:  
+    apiKeys:
+      - ${opt:stage, "dev"}-notariseHealthcertKey
+
+functions:
+  notariseHealthcert:
+    environment:
+      DEBUG: "*,-follow-redirects"
+      SIGNING_DID_NAME: ${self:custom.${self:custom.envSource}.SIGNING_DID_NAME}
+      SIGNING_DNS_DID_LOCATION: ${self:custom.${self:custom.envSource}.SIGNING_DNS_DID_LOCATION}
+      SIGNING_DID: ${self:custom.${self:custom.envSource}.SIGNING_DID}
+      SIGNING_DID_KEY: ${self:custom.${self:custom.envSource}.SIGNING_DID_KEY}
+      SIGNING_DID_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_DID_PRIVATE_KEY}
+      TRANSIENT_STORAGE_URL: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_URL}
+      TRANSIENT_STORAGE_API_KEY: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_API_KEY}
+      AUTHORIZED_ISSUERS_MAP: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_MAP}
+      ETHEREUM_NETWORK: ${self:custom.ethereumConfig.${self:provider.stage}, self:custom.ethereumConfig.stg}
+    handler: src/functionHandlers/notariseHealthcert/handler.handler
+    events:
+      - http:
+          path: /notarise/healthcert
+          method: post
+          private: true
+
+custom:
+  # Stupid hack to get conditionals on the env
+  # Please duplicate environment variables in the `ssm` and `dotenv` section
+  # default value for ${ssm:xxx, "default"} and ${env:xxx, "default"} does not work
+  # ideally you can just nest one inside. But no!
+  # ssm failure returns "undefined" while env failure returns ""
+  envSourceConfig:
+    stg: "ssm"
+    production: "ssm"
+    other: "dotenv"
+  envSource: ${self:custom.envSourceConfig.${self:provider.stage}, self:custom.envSourceConfig.other}
+  ethereumConfig:
+    stg: "ropsten"
+    production: "homestead"
+  ssm:
+    SIGNING_DID_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_NAME, ""}
+    SIGNING_DNS_DID_LOCATION: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DNS_DID_LOCATION, ""}
+    SIGNING_DID: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID~true, ""}
+    SIGNING_DID_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_KEY~true, ""}
+    SIGNING_DID_PRIVATE_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_PRIVATE_KEY~true, ""}
+    TRANSIENT_STORAGE_URL: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_URL, ""}
+    TRANSIENT_STORAGE_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_API_KEY~true, ""}
+    AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
+  dotenv:
+    SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
+    SIGNING_DNS_DID_LOCATION: ${env:SIGNING_DNS_DID_LOCATION, ""}
+    SIGNING_DID: ${env:SIGNING_DID, ""}
+    SIGNING_DID_KEY: ${env:SIGNING_DID_KEY, ""}
+    SIGNING_DID_PRIVATE_KEY: ${env:SIGNING_DID_PRIVATE_KEY, ""}
+    TRANSIENT_STORAGE_URL: ${env:TRANSIENT_STORAGE_URL, ""}
+    TRANSIENT_STORAGE_API_KEY: ${env:TRANSIENT_STORAGE_API_KEY, ""}
+    AUTHORIZED_ISSUERS_MAP: ${env:TRANSIENT_STORAGE_API_KEY, ""}
+  # End of hack on env
+  accountId: ${opt:account_id, "placeholder"}
+  KMS_ARN: ${env:KMS_ARN, "PLACEHOLDER_ARN"}
+  webpack:
+    includeModules: true
+  subnetEnvName:
+    stg: "stg"
+    production: "prd"
+    other: "placeholder"
+
+plugins:
+  - serverless-webpack
+  - serverless-dotenv-plugin
+  - serverless-s3-local
+  - serverless-offline
+  - serverless-offline-ses
+  - serverless-attach-permission-boundary
+  - "@govtechsg/serverless-selective-functions"
+  - serverless-vpc-discovery
