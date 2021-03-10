@@ -19,6 +19,8 @@ curl -i -X POST \
 
 When running locally, the required API key will be printed to the console on starting the serverless framework.
 
+A response should be returned within 15 seconds.
+
 ---
 
 # Configuration
