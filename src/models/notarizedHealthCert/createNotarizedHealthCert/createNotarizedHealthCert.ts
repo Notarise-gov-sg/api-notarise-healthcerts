@@ -2,7 +2,7 @@ import { wrapDocument, WrappedDocument } from "@govtechsg/open-attestation";
 import { signDocument } from "@govtechsg/oa-did-sign";
 import {
   HealthCertDocument,
-  NotarizedHeathCert,
+  NotarizedHealthCert,
   SignedNotarizedHealthCert
 } from "../../../types";
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
@@ -11,7 +11,7 @@ import { config } from "../../../config";
 const { didSigner } = config;
 
 const signWrappedDocument = (
-  wrappedDocument: WrappedDocument<NotarizedHeathCert>
+  wrappedDocument: WrappedDocument<NotarizedHealthCert>
 ) => {
   return signDocument(
     wrappedDocument,

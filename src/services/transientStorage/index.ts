@@ -1,6 +1,5 @@
 import { Record, String, Number, Runtype } from "runtypes";
 import axios from "axios";
-import QrCode from "qrcode";
 import { SignedNotarizedHealthCert } from "../../types";
 import { config } from "../../config";
 import { getLogger } from "../../common/logger";
@@ -65,8 +64,7 @@ export const getQueueNumber = async () => {
 
 export const uploadDocument = async (
   document: SignedNotarizedHealthCert,
-  id: string,
-  url: string
+  id: string
 ) => {
   trace(`start to upload document to ${id}`);
   const { data } = await axios({
@@ -79,9 +77,7 @@ export const uploadDocument = async (
   });
   trace(`document uploaded at ${id}`);
   const response = SuccessfulResponseDef.check(data);
-  const qrCode = await QrCode.toBuffer(url);
   return {
-    qrCode,
     ...response
   };
 };

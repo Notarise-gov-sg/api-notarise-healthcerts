@@ -1,7 +1,7 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
 import { config } from "../../../config";
-import { HealthCertDocument, NotarizedHeathCert } from "../../../types";
+import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
 import { getParticularsFromHealthCert } from "../../healthCert";
 
 const { didSigner, documentName } = config;
@@ -10,7 +10,7 @@ export const createUnwrappedDocument = (
   certificate: WrappedDocument<HealthCertDocument>,
   reference: string,
   storedUrl: string
-): NotarizedHeathCert => {
+): NotarizedHealthCert => {
   const certificateData = getData<WrappedDocument<HealthCertDocument>>(
     certificate
   );

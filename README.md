@@ -4,9 +4,9 @@ This repository contains the implementation of the healthcert notarisation API.
 
 ## Handlers
 
-### notarizeHealthcerts
+### notarisePdt
 
-This handler implements a REST endpoint to notarise a wrapped healthcert.
+This handler implements a REST endpoint to notarise a wrapped healthcert for a pre-departure test.
 
 ```sh
 npm run dev
@@ -14,7 +14,7 @@ curl -i -X POST \
   -H 'content-type: application/json' \
   -H 'x-api-key: <api key>' \
   -d '@example_notarized_healthcert_wrapped.oa' \
-  http://localhost:3000/notarise/healthcert
+  http://localhost:3000/notarise/pdt
 ```
 
 When running locally, the required API key will be printed to the console on starting the serverless framework.

@@ -66,9 +66,9 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Riverr",
     domain: "tcmc.riverr.ai"
   },
-  "tmctwa.riverr.ai": {
+  "tmctw.riverr.ai": {
     name: "Riverr",
-    domain: "tmctwa.riverr.ai"
+    domain: "tmctw.riverr.ai"
   },
   "tmcplq.riverr.ai": {
     name: "Riverr",
@@ -118,9 +118,9 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Riverr",
     domain: "fema.riverr.ai"
   },
-  "eurofinsSG.river.ai": {
+  "eurofinsSG.riverr.ai": {
     name: "Riverr",
-    domain: "eurofinsSG.river.ai"
+    domain: "eurofinsSG.riverr.ai"
   },
   "dwfc.riverr.ai": {
     name: "Riverr",
@@ -363,6 +363,58 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "healthwerkzcck.riverr.ai": {
     name: "Riverr",
     domain: "healthwerkzcck.riverr.ai"
+  },
+  "urgentcareclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "urgentcareclinic.riverr.ai"
+  },
+  "gardenclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "gardenclinic.riverr.ai"
+  },
+  "minmedjurongeast.riverr.ai": {
+    name: "Riverr",
+    domain: "minmedjurongeast.riverr.ai"
+  },
+  "minmedyishun.riverr.ai": {
+    name: "Riverr",
+    domain: "minmedyishun.riverr.ai"
+  },
+  "minmedjhaigroad.riverr.ai": {
+    name: "Riverr",
+    domain: "minmedjhaigroad.riverr.ai"
+  },
+  "minmedpunggol.riverr.ai": {
+    name: "Riverr",
+    domain: "minmedpunggol.riverr.ai"
+  },
+  "minmedsengkang.riverr.ai": {
+    name: "Riverr",
+    domain: "minmedsengkang.riverr.ai"
+  },
+  "minmedjpasirris.riverr.ai": {
+    name: "Riverr",
+    domain: "minmedjpasirris.riverr.ai"
+  },
+  "minmedscreeners.riverr.ai": {
+    name: "Riverr",
+    domain: "minmedscreeners.riverr.ai"
+  },
+  "dayspring.riverr.ai": {
+    name: "Riverr",
+    domain: "dayspring.riverr.ai"
+  },
+  "THEPINNACLEMEDICAL.3DCERTS.COM": {
+    name: "3DCerts Pte Ltd",
+    domain: "THEPINNACLEMEDICAL.3DCERTS.COM"
+  },
+  "fullertonhealthcaretrythall.riverr.ai": {
+    name: "Riverr",
+    domain: "fullertonhealthcaretrythall.riverr.ai"
+  },
+  "amc.riverr.ai": {
+    name: "Riverr",
+    domain: "amc.riverr.ai"
   }
 };
 
@@ -371,6 +423,14 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "dev-healthcerts.jebhealth.com": {
     name: "Jebhealth",
     domain: "dev-healthcerts.jebhealth.com"
+  },
+  "demo-healthcerts.knowledgecatalyst.io": {
+    name: "Knowledge Catalyst Pte. Ltd.",
+    domain: "demo-healthcerts.knowledgecatalyst.io"
+  },
+  "issuer1.tubalt.com": {
+    name: "1PASS Test Clinic 1",
+    domain: "issuer1.tubalt.com"
   }
 };
 

@@ -22,17 +22,32 @@ provider:
         - xray:PutTraceSegments
         - xray:PutTelemetryRecords
       Resource: "*"
-    - Effect: Allow
-      Action: ["kms:GenerateDataKey"]
-      Resource: "arn:aws:kms:${self:provider.region}:${self:custom.accountId}:key/${env:SNS_KMS_KEY_ID, 'PLACEHOLDER'}"
   deploymentBucket:
     name: notarise-serverless-deployment
   apiGateway:  
     apiKeys:
       - ${opt:stage, "dev"}-notariseHealthcertKey
-
+      # generate API keys for other healthcert providers
+      # https://www.healthcerts.gov.sg/list-of-providers/
+      - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
+      - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
+      - ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
+      - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
+  usagePlan:
+    quota:
+      limit: 3000
+      offset: 0
+      period: DAY
+    throttle:
+      burstLimit: 200
+      rateLimit: 100
 functions:
-  notariseHealthcert:
+  notarisePdt:
     environment:
       DEBUG: "*,-follow-redirects"
       SIGNING_DID_NAME: ${self:custom.${self:custom.envSource}.SIGNING_DID_NAME}
@@ -44,10 +59,10 @@ functions:
       TRANSIENT_STORAGE_API_KEY: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_API_KEY}
       AUTHORIZED_ISSUERS_MAP: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_MAP}
       ETHEREUM_NETWORK: ${self:custom.ethereumConfig.${self:provider.stage}, self:custom.ethereumConfig.stg}
-    handler: src/functionHandlers/notariseHealthcert/handler.handler
+    handler: src/functionHandlers/notarisePdt/handler.handler
     events:
       - http:
-          path: /notarise/healthcert
+          path: /notarise/pdt
           method: post
           private: true
 

@@ -34,7 +34,7 @@ export const notarisePdt = async (
     reference,
     storedUrl
   );
-  const { ttl } = await uploadDocument(notarisedDocument, id, storedUrl);
+  const { ttl } = await uploadDocument(notarisedDocument, id);
   traceWithRef("Document successfully notarised");
   return {
     notarisedDocument,
