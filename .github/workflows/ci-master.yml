@@ -1,0 +1,58 @@
+name: CI - Master
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+
+env:
+  SLS_DEBUG: "*"
+  AWSJS_DEBUG: "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Tests
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - run: npm install
+    - run: npm run lint
+    - run: npm run typecheck
+    - run: npm run test
+      env:
+        AUTHORIZED_ISSUERS_MAP: development
+        SIGNING_DID_NAME: ${{ secrets.SIGNING_DID_NAME }}
+        SIGNING_DNS_DID_LOCATION: ${{ secrets.SIGNING_DNS_DID_LOCATION }}
+        SIGNING_DID: ${{ secrets.SIGNING_DID }}
+        SIGNING_DID_KEY: ${{ secrets.SIGNING_DID_KEY }}
+        SIGNING_DID_PRIVATE_KEY: ${{ secrets.SIGNING_DID_PRIVATE_KEY }}
+    - run: npm run sls-config-check
+  create-new-tag:
+    needs: test
+    name: Create New Git Tag for release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.33.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        WITH_V: true
+        RELEASE_BRANCHES: master
+        DEFAULT_BUMP: patch
+  trigger-deploy:
+    needs: create-new-tag
+    name: trigger deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: ${{ secrets.DEPLOYER_WORKFLOW }}
+        repo: ${{ secrets.DEPLOYER_REPO }}
+        token: ${{ secrets.BOT_GITHUB_TOKEN_PRIVATE }}
