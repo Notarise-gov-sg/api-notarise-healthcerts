@@ -13,10 +13,6 @@ provider:
     lambda: true
   permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
   iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - kms:Decrypt
-      Resource: ${self:custom.KMS_ARN}
     - Effect: Allow
       Action:
         - xray:PutTraceSegments
@@ -100,7 +96,6 @@ custom:
     AUTHORIZED_ISSUERS_MAP: ${env:TRANSIENT_STORAGE_API_KEY, ""}
   # End of hack on env
   accountId: ${opt:account_id, "placeholder"}
-  KMS_ARN: ${env:KMS_ARN, "PLACEHOLDER_ARN"}
   webpack:
     includeModules: true
   subnetEnvName:
