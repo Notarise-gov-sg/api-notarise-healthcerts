@@ -21,7 +21,7 @@ provider:
   deploymentBucket:
     name: notarise-serverless-deployment
   apiKeys:
-    - ${opt:stage, "dev"}-notariseHealthcertKey
+    - ${opt:stage, "dev"}-notariseHealthcertKey-notarise
     # generate API keys for other healthcert providers
     # https://www.healthcerts.gov.sg/list-of-providers/
     - ${opt:stage, "dev"}-notariseHealthcertKey-1Pass
