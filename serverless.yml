@@ -24,6 +24,7 @@ provider:
     - ${opt:stage, "dev"}-notariseHealthcertKey
     # generate API keys for other healthcert providers
     # https://www.healthcerts.gov.sg/list-of-providers/
+    - ${opt:stage, "dev"}-notariseHealthcertKey-1Pass
     - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
     - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
     - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
