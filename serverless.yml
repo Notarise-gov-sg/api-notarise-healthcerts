@@ -20,20 +20,19 @@ provider:
       Resource: "*"
   deploymentBucket:
     name: notarise-serverless-deployment
-  apiGateway:  
-    apiKeys:
-      - ${opt:stage, "dev"}-notariseHealthcertKey
-      # generate API keys for other healthcert providers
-      # https://www.healthcerts.gov.sg/list-of-providers/
-      - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
-      - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
-      - ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
-      - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
+  apiKeys:
+    - ${opt:stage, "dev"}-notariseHealthcertKey
+    # generate API keys for other healthcert providers
+    # https://www.healthcerts.gov.sg/list-of-providers/
+    - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
+    - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
+    - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
+    - ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
+    - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
+    - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
+    - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
+    - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
+    - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
   usagePlan:
     quota:
       limit: 3000
