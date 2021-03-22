@@ -1,14 +1,12 @@
 // @ts-nocheck
 // TODO: remove no check. The code to get test data was copied from health cert renderer which also did not enforce type safety
-import {
-  Coding,
-  Identifier,
-  Patient
-} from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
+import { Patient } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
 import countries from "i18n-iso-countries";
 import englishCountries from "i18n-iso-countries/langs/en.json";
 import { healthcert } from "@govtechsg/oa-schemata";
 import { HealthCertDocument } from "../types";
+import { validateHealthCertData } from "../common/healthCertDataValidation";
+import { DataInvalidError } from "../common/error";
 
 countries.registerLocale(englishCountries);
 const DATE_LOCALE = "en-sg";
@@ -31,27 +29,21 @@ export const getParticularsFromHealthCert = (document: HealthCertDocument) => {
     identifierEntry => identifierEntry.type === "PPN"
   );
 
-  if (ppn === undefined) {
-    throw new Error("Healthcert Malformed");
-  }
-
-  return { nric: nric?.value, passportNumber: ppn.value };
+  return { nric: nric?.value, passportNumber: ppn?.value };
 };
 
 export interface TestData {
-  observation: any;
-  specimen: any;
-  provider: any;
-  lab: any;
-  swabType: Coding;
+  provider: string;
+  lab: string;
+  swabType: string;
   patientName: string;
   swabCollectionDate: string;
   performerName: string;
   performerMcr: string;
   observationDate: string;
-  nric: Identifier;
+  nric: string;
   passportNumber: string;
-  patient: any;
+  birthDate: string;
   testType: string;
   nationality: string;
   gender: string;
@@ -59,10 +51,7 @@ export interface TestData {
 
 export const parseDateTime = (dateString: string | undefined): string => {
   return dateString
-    ? new Date(dateString).toLocaleString(DATE_LOCALE, {
-        timeZone: "UTC",
-        timeZoneName: "short"
-      })
+    ? `${new Date(dateString).toLocaleString(DATE_LOCALE)} GMT+08:00`
     : "";
 };
 
@@ -129,37 +118,14 @@ export const getTestDataFromHealthCert = (
       "en"
     );
     const gender =
-      patient?.gender.toLowerCase() === healthcert.Gender.Female.toLowerCase()
+      patient?.gender?.toLowerCase() === healthcert.Gender.Female.toLowerCase()
         ? "She"
         : "He";
 
-    if (
-      !(
-        observation &&
-        specimen &&
-        provider &&
-        lab &&
-        swabType &&
-        patientName &&
-        swabCollectionDate &&
-        performerName &&
-        performerMcr &&
-        observationDate &&
-        passportNumber &&
-        patient &&
-        testType &&
-        nationality &&
-        gender
-      )
-    ) {
-      throw new Error("Healthcert Malformed");
-    }
     testData.push({
-      observation,
-      specimen,
-      provider,
-      lab,
-      swabType,
+      provider: provider?.name,
+      lab: lab?.name,
+      swabType: swabType?.display,
       patientName,
       swabCollectionDate,
       performerName,
@@ -167,7 +133,10 @@ export const getTestDataFromHealthCert = (
       observationDate,
       nric,
       passportNumber,
-      patient,
+      birthDate: patient?.birthDate
+        ?.split("-")
+        ?.reverse()
+        ?.join("/"),
       testType,
       nationality,
       gender
@@ -181,7 +150,7 @@ export const getTestDataFromHealthCert = (
 
       // certs with multiple observations need to have reference to point the right specimens and organisations to the observation
       if (!specimenReference || !organisationReferences) {
-        throw new Error("Healthcert Malformed");
+        throw new DataInvalidError(["observation references"]);
       }
 
       const specimen = document.fhirBundle.entry.find(
@@ -225,53 +194,15 @@ export const getTestDataFromHealthCert = (
         "en"
       );
       const gender =
-        patient?.gender.toLowerCase() === healthcert.Gender.Female.toLowerCase()
+        patient?.gender?.toLowerCase() ===
+        healthcert.Gender.Female.toLowerCase()
           ? "She"
           : "He";
 
-      /* eslint-disable no-console */
-      console.log("observation", observation);
-      console.log("specimen", specimen);
-      console.log("provider", provider);
-      console.log("lab", lab);
-      console.log("swabType", swabType);
-      console.log("patientName", patientName);
-      console.log("swabCollectionDate", swabCollectionDate);
-      console.log("performerName", performerName);
-      console.log("performerMcr", performerMcr);
-      console.log("observationDate", observationDate);
-      console.log("patient", patient);
-      console.log("testType", testType);
-      console.log("nationality", nationality);
-      console.log("gender", gender);
-
-      if (
-        !(
-          observation &&
-          specimen &&
-          provider &&
-          lab &&
-          swabType &&
-          patientName &&
-          swabCollectionDate &&
-          performerName &&
-          performerMcr &&
-          observationDate &&
-          passportNumber &&
-          patient &&
-          testType &&
-          nationality &&
-          gender
-        )
-      ) {
-        throw new Error("Healthcert Malformed");
-      }
       testData.push({
-        observation,
-        specimen,
-        provider,
-        lab,
-        swabType,
+        provider: provider?.name,
+        lab: lab?.name,
+        swabType: swabType?.display,
         patientName,
         swabCollectionDate,
         performerName,
@@ -279,12 +210,16 @@ export const getTestDataFromHealthCert = (
         observationDate,
         nric,
         passportNumber,
-        patient,
+        birthDate: patient?.birthDate
+          ?.split("-")
+          ?.reverse()
+          ?.join("/"),
         testType,
         nationality,
         gender
       });
     });
   }
+  validateHealthCertData(testData);
   return testData;
 };

@@ -29,7 +29,7 @@ export const createUnwrappedDocument = (
   const notarisationMetadata: NotarisationMetadata = {
     reference,
     notarisedOn: dateString,
-    passportNumber,
+    passportNumber: passportNumber || "",
     url: storedUrl
   };
 

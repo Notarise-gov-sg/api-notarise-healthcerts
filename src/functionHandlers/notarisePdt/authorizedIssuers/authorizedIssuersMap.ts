@@ -279,10 +279,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Riverr",
     domain: "bukittimahclinic.riverr.ai"
   },
-  "newcasteclinic.riverr.ai": {
-    name: "Riverr",
-    domain: "newcasteclinic.riverr.ai"
-  },
   "thedublinclinic.riverr.ai": {
     name: "Riverr",
     domain: "thedublinclinic.riverr.ai"
@@ -415,6 +411,14 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "amc.riverr.ai": {
     name: "Riverr",
     domain: "amc.riverr.ai"
+  },
+  "alexandrafamilyclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "alexandrafamilyclinic.riverr.ai"
+  },
+  "alifeclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "alifeclinic.riverr.ai"
   }
 };
 

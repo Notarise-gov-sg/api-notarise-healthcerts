@@ -68,7 +68,8 @@ export type WorkflowReferenceData = Static<typeof WorkflowReferenceData>;
 export const WorkflowContextData = WorkflowReferenceData.And(
   Record({
     receivedTimestamp: String,
-    user: UserDetailsT
+    user: UserDetailsT,
+    s3ObjKey: String
   })
 );
 export type WorkflowContextData = Static<typeof WorkflowContextData>;

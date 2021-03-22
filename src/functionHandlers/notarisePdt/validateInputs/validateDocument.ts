@@ -13,10 +13,11 @@ export const validateDocument = async (
 ) => {
   const results = await verify(attachment, { network: config.network });
   const documentIsValid = isValid(results);
-  if (!documentIsValid)
+  if (!documentIsValid) {
     throw new DocumentInvalidError(
       `validation error: ${JSON.stringify(results)}`
     );
+  }
   const identityFragment = results.filter(
     fragment =>
       fragment.status === "VALID" && fragment.type === "ISSUER_IDENTITY"
@@ -31,5 +32,6 @@ export const validateDocument = async (
   const issuerDomain: string | undefined = issuer.data[0]?.location;
   if (!issuerDomain)
     throw new DocumentInvalidError("Issuer's domain is not found");
-  if (!isAuthorizedIssuer(issuerDomain)) throw new UnrecognisedClinicError();
+  if (!isAuthorizedIssuer(issuerDomain))
+    throw new UnrecognisedClinicError(issuerDomain);
 };
