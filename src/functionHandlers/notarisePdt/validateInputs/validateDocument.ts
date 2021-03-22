@@ -13,7 +13,10 @@ export const validateDocument = async (
 ) => {
   const results = await verify(attachment, { network: config.network });
   const documentIsValid = isValid(results);
-  if (!documentIsValid) throw new DocumentInvalidError("Invalid document");
+  if (!documentIsValid)
+    throw new DocumentInvalidError(
+      `validation error: ${JSON.stringify(results)}`
+    );
   const identityFragment = results.filter(
     fragment =>
       fragment.status === "VALID" && fragment.type === "ISSUER_IDENTITY"

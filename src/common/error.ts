@@ -99,7 +99,7 @@ export class DocumentInvalidError extends DetailedCodedError {
       ErrorCodes.DOCUMENT_INVALID,
       ErrorCodes[ErrorCodes.DOCUMENT_INVALID],
       "Submitted HealthCert is invalid",
-      "The submitted HealthCert has discrepancies in it, \n please contact the HealthCert issuer for clarification."
+      errorMessage
     );
   }
 }

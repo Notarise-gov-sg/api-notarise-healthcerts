@@ -53,13 +53,15 @@ export const main: Handler = async (
     await validateInputs(certificate);
   } catch (e) {
     const errorWithRef = error.extend(`reference:${reference}`);
-    errorWithRef(`Error while validating certificate: ${e.message}`);
+    errorWithRef(
+      `Error while validating certificate: ${e.title}, ${e.messageBody}`
+    );
     return {
       statusCode: 400,
       headers: {
         "x-trace-id": reference
       },
-      body: e.message
+      body: `${e.title}, ${e.messageBody}`
     };
   }
 
