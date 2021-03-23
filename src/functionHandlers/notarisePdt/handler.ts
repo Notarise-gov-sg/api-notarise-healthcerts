@@ -67,9 +67,14 @@ export const main: Handler = async (
     return {
       statusCode: 400,
       headers: {
+        "content-type": "application/problem+json",
         "x-trace-id": reference
       },
-      body: `${e.title}, ${e.messageBody}`
+      body: JSON.stringify({
+        code: e.code,
+        title: e.title,
+        detail: e.messageBody
+      })
     };
   }
 
