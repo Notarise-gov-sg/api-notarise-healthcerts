@@ -6,9 +6,13 @@ import {
   validateSchema,
   WrappedDocument
 } from "@govtechsg/open-attestation";
-import { getTestDataFromHealthCert } from "../../models/healthCert";
+import {
+  getTestDataFromHealthCert,
+  getParticularsFromHealthCert
+} from "../../models/healthCert";
 import { getLogger } from "../../common/logger";
 import { createNotarizedHealthCert } from "../../models/notarizedHealthCert";
+import { notifyRecipient } from "../../models/notifyRecipient";
 import {
   buildStoredUrl,
   getQueueNumber,
@@ -24,6 +28,7 @@ export interface NotarisationResult {
   notarisedDocument: WrappedDocument<HealthCertDocument>;
   ttl: number;
   url: string;
+  qrCode: Buffer;
 }
 
 export const notarisePdt = async (
@@ -39,12 +44,17 @@ export const notarisePdt = async (
     reference,
     storedUrl
   );
-  const { ttl } = await uploadDocument(notarisedDocument, id);
+  const { qrCode, ttl } = await uploadDocument(
+    notarisedDocument,
+    id,
+    storedUrl
+  );
   traceWithRef("Document successfully notarised");
   return {
     notarisedDocument,
     ttl,
-    url: storedUrl
+    url: storedUrl,
+    qrCode
   };
 };
 
@@ -75,6 +85,19 @@ export const main: Handler = async (
 
   try {
     const result = await notarisePdt(reference, certificate);
+
+    /* Notify recipient via SPM */
+    const data = getData(certificate);
+    const { nric } = getParticularsFromHealthCert(data);
+    const testData = getTestDataFromHealthCert(data);
+    await notifyRecipient({
+      url: result.url,
+      qrCode: `data:image/png;base64, ${result.qrCode.toString("base64")}`,
+      nric,
+      passportNumber: testData[0].passportNumber,
+      testData,
+      validFrom: data.validFrom
+    });
     return {
       statusCode: 200,
       headers: {
