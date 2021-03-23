@@ -15,7 +15,7 @@ export const validateDocument = async (
   const documentIsValid = isValid(results);
   if (!documentIsValid) {
     throw new DocumentInvalidError(
-      `validation error: ${JSON.stringify(results)}`
+      `There was an error verifying the document: ${JSON.stringify(results)}`
     );
   }
   const identityFragment = results.filter(
@@ -24,7 +24,7 @@ export const validateDocument = async (
   );
   if (identityFragment.length !== 1)
     throw new DocumentInvalidError(
-      "Document may only have one issuer identity test"
+      "Document may only have one issuer identity"
     );
   const [issuer] = identityFragment;
   if (!issuer.data || !Array.isArray(issuer.data) || issuer.data.length !== 1)
