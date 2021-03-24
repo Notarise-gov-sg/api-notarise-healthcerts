@@ -47,6 +47,7 @@ export interface TestData {
   testType: string;
   nationality: string;
   gender: string;
+  testResult: string;
 }
 
 export const parseDateTime = (dateString: string | undefined): string => {
@@ -102,6 +103,16 @@ export const getTestDataFromHealthCert = (
         ? "SEROLOGY"
         : observation?.code?.coding?.[0]?.display;
 
+    let testResult = observation?.valueCodeableConcept?.coding[0]?.display;
+    const testResultCode = observation?.valueCodeableConcept?.coding?.[0]?.code;
+    const codesDict: Record<string, string> = {
+      "260385009": "Negative",
+      "10828004": "Positive"
+    };
+    if (testResultCode && testResultCode in codesDict) {
+      testResult = codesDict[testResultCode];
+    }
+
     const swabType =
       typeof specimen?.type === "object"
         ? specimen?.type.coding?.[0]
@@ -139,7 +150,8 @@ export const getTestDataFromHealthCert = (
         ?.join("/"),
       testType,
       nationality,
-      gender
+      gender,
+      testResult
     });
   } else {
     observations.forEach(observation => {
@@ -177,6 +189,16 @@ export const getTestDataFromHealthCert = (
           : testCode === "94661-6"
           ? "SEROLOGY"
           : observation?.code?.coding?.[0]?.display;
+      let testResult = observation?.valueCodeableConcept?.coding[0]?.display;
+      const testResultCode =
+        observation?.valueCodeableConcept?.coding?.[0]?.code;
+      const codesDict: Record<string, string> = {
+        "260385009": "Negative",
+        "10828004": "Positive"
+      };
+      if (testResultCode && testResultCode in codesDict) {
+        testResult = codesDict[testResultCode];
+      }
       const swabType =
         typeof specimen?.type === "object"
           ? specimen?.type.coding?.[0]
@@ -216,7 +238,8 @@ export const getTestDataFromHealthCert = (
           ?.join("/"),
         testType,
         nationality,
-        gender
+        gender,
+        testResult
       });
     });
   }
