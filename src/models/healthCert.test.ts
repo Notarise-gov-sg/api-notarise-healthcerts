@@ -75,6 +75,7 @@ describe("src/models/healthCert", () => {
             provider: "MacRitchie Medical Clinic",
             swabCollectionDate,
             swabType: "Nasopharyngeal swab",
+            testResult: "Negative",
             testType: "REAL TIME RT-PCR SWAB"
           }
         ]);
@@ -276,6 +277,7 @@ describe("src/models/healthCert", () => {
             provider: "MacRitchie Medical Clinic",
             swabCollectionDate: swabCollectionDate1,
             swabType: "Nasopharyngeal swab",
+            testResult: "Negative",
             testType: "REAL TIME RT-PCR SWAB"
           },
           {
@@ -292,6 +294,7 @@ describe("src/models/healthCert", () => {
             provider: "MacRitchie Medical Clinic2",
             swabCollectionDate: swabCollectionDate2,
             swabType: "Nasopharyngeal swab",
+            testResult: "Negative",
             testType: "REAL TIME RT-PCR SWAB"
           }
         ]);
