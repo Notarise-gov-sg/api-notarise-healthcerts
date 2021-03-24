@@ -78,9 +78,23 @@ export const main: Handler = async (
     };
   }
 
-  try {
-    const result = await notarisePdt(reference, certificate);
+  let result;
 
+  try {
+    result = await notarisePdt(reference, certificate);
+  } catch (e) {
+    const errorWithRef = error.extend(`reference:${reference}`);
+    errorWithRef(`Unhandled error: ${e.message}`);
+    return {
+      statusCode: 500,
+      headers: {
+        "x-trace-id": reference
+      },
+      body: ""
+    };
+  }
+
+  try {
     /* Notify recipient via SPM */
     const data = getData(certificate);
     const { nric } = getParticularsFromHealthCert(data);
@@ -94,24 +108,18 @@ export const main: Handler = async (
       testData,
       validFrom: data.validFrom
     });
-    return {
-      statusCode: 200,
-      headers: {
-        "x-trace-id": reference
-      },
-      body: JSON.stringify(result)
-    };
   } catch (e) {
     const errorWithRef = error.extend(`reference:${reference}`);
-    errorWithRef(`Unhandled error: ${e.message}`);
-    return {
-      statusCode: 500,
-      headers: {
-        "x-trace-id": reference
-      },
-      body: ""
-    };
+    errorWithRef(`Notification error: ${e.message}`);
   }
+
+  return {
+    statusCode: 200,
+    headers: {
+      "x-trace-id": reference
+    },
+    body: JSON.stringify(result)
+  };
 };
 
 export const handler = middyfy(main).before(({ event: { body } }, next) => {
