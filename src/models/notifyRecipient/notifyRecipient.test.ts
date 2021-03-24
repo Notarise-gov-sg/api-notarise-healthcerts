@@ -44,7 +44,8 @@ const mockTestData: TestData = {
   gender: "",
   passportNumber: "",
   birthDate: "{}",
-  testType: "test1"
+  testType: "test1",
+  testResult: "Negative"
 };
 
 describe("notifyRecipient", () => {

@@ -16,7 +16,8 @@ const mockTestData: TestData = {
   gender: "",
   passportNumber: "",
   birthDate: "{}",
-  testType: "test1"
+  testType: "test1",
+  testResult: "Negative"
 };
 
 describe("notifyRecipient", () => {
@@ -49,11 +50,16 @@ describe("notifyRecipient", () => {
         "somestring",
         "E7831177G",
         [
-          { ...mockTestData, testType: "REAL TIME RT-PCR SWAB" },
+          {
+            ...mockTestData,
+            testType: "REAL TIME RT-PCR SWAB",
+            testResult: "Negative"
+          },
           {
             ...mockTestData,
             swabCollectionDate: "testdatetime2",
-            testType: "SEROLOGY"
+            testType: "SEROLOGY",
+            testResult: "Negative"
           }
         ],
         "2020-11-16T06:26:19.160Z"
