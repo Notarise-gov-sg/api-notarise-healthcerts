@@ -58,6 +58,7 @@ export const main: Handler = async (
 ): Promise<APIGatewayProxyResult> => {
   const reference = uuid();
   const certificate = event.body;
+  const errorWithRef = error.extend(`reference:${reference}`);
 
   try {
     await validateInputs(certificate);
@@ -65,7 +66,6 @@ export const main: Handler = async (
     // ensure that all the required parameters can be read
     getTestDataFromHealthCert(data);
   } catch (e) {
-    const errorWithRef = error.extend(`reference:${reference}`);
     errorWithRef(
       `Error while validating certificate: ${e.title}, ${e.messageBody}`
     );
@@ -83,7 +83,6 @@ export const main: Handler = async (
   try {
     result = await notarisePdt(reference, certificate);
   } catch (e) {
-    const errorWithRef = error.extend(`reference:${reference}`);
     errorWithRef(`Unhandled error: ${e.message}`);
     return {
       statusCode: 500,
@@ -109,7 +108,6 @@ export const main: Handler = async (
       validFrom: data.validFrom
     });
   } catch (e) {
-    const errorWithRef = error.extend(`reference:${reference}`);
     errorWithRef(`Notification error: ${e.message}`);
   }
 
