@@ -1,6 +1,7 @@
 import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import createError from "http-errors";
 import uuid from "uuid/v4";
+import QrCode from "qrcode";
 import {
   getData,
   validateSchema,
@@ -28,7 +29,6 @@ export interface NotarisationResult {
   notarisedDocument: WrappedDocument<HealthCertDocument>;
   ttl: number;
   url: string;
-  qrCode: Buffer;
 }
 
 export const notarisePdt = async (
@@ -44,17 +44,12 @@ export const notarisePdt = async (
     reference,
     storedUrl
   );
-  const { qrCode, ttl } = await uploadDocument(
-    notarisedDocument,
-    id,
-    storedUrl
-  );
+  const { ttl } = await uploadDocument(notarisedDocument, id);
   traceWithRef("Document successfully notarised");
   return {
     notarisedDocument,
     ttl,
-    url: storedUrl,
-    qrCode
+    url: storedUrl
   };
 };
 
@@ -90,9 +85,10 @@ export const main: Handler = async (
     const data = getData(certificate);
     const { nric } = getParticularsFromHealthCert(data);
     const testData = getTestDataFromHealthCert(data);
+    const qrCode = await QrCode.toBuffer(result.url);
     await notifyRecipient({
       url: result.url,
-      qrCode: `data:image/png;base64, ${result.qrCode.toString("base64")}`,
+      qrCode: `data:image/png;base64, ${qrCode.toString("base64")}`,
       nric,
       passportNumber: testData[0].passportNumber,
       testData,
