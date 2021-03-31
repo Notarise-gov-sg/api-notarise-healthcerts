@@ -42,18 +42,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "3DCerts Staging Test",
     domain: "3dcerts.com"
   },
-  "demo-healthcerts.knowledgecatalyst.io": {
-    name: "Demo HealthCerts KC",
-    domain: "demo-healthcerts.knowledgecatalyst.io"
-  },
-  "convergence.tech": {
-    name: "Convergence Tech Inc",
-    domain: "convergence.tech"
-  },
-  "trybe.id": {
-    name: "Trybe ID Inc",
-    domain: "trybe.id"
-  },
   "acmsmedical.com.sg": {
     name: "ACMS Medical Clinic",
     domain: "acmsmedical.com.sg"
@@ -137,14 +125,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "smc.riverr.ai": {
     name: "Riverr",
     domain: "smc.riverr.ai"
-  },
-  "oa.keys.convergence.tech": {
-    name: "Convergence.tech Inc.",
-    domain: "oa.keys.convergence.tech"
-  },
-  "demo2-healthcerts.knowledgecatalyst.io": {
-    name: "Demo 2 HealthCerts KC",
-    domain: "demo2-healthcerts.knowledgecatalyst.io"
   },
   "pmc.riverr.ai": {
     name: "Riverr",
@@ -419,6 +399,22 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "alifeclinic.riverr.ai": {
     name: "Riverr",
     domain: "alifeclinic.riverr.ai"
+  },
+  "affinitymedical.riverr.ai": {
+    name: "Riverr",
+    domain: "affinitymedical.riverr.ai"
+  },
+  "pacificfamilyclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "pacificfamilyclinic.riverr.ai"
+  },
+  "medlifeclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "medlifeclinic.riverr.ai"
+  },
+  "healthcaremedicalrailmall.riverr.ai": {
+    name: "Riverr",
+    domain: "healthcaremedicalrailmall.riverr.ai"
   }
 };
 
@@ -431,6 +427,10 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "demo-healthcerts.knowledgecatalyst.io": {
     name: "Knowledge Catalyst Pte. Ltd.",
     domain: "demo-healthcerts.knowledgecatalyst.io"
+  },
+  "demo2-healthcerts.knowledgecatalyst.io": {
+    name: "Demo 2 HealthCerts KC",
+    domain: "demo2-healthcerts.knowledgecatalyst.io"
   },
   "issuer1.tubalt.com": {
     name: "1PASS Test Clinic 1",

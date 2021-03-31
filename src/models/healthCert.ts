@@ -1,15 +1,15 @@
 // @ts-nocheck
 // TODO: remove no check. The code to get test data was copied from health cert renderer which also did not enforce type safety
 import { Patient } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
-import countries from "i18n-iso-countries";
-import englishCountries from "i18n-iso-countries/langs/en.json";
+import nationalities from "i18n-nationality";
+import englishNationalities from "i18n-nationality/langs/en.json";
 import { healthcert } from "@govtechsg/oa-schemata";
 import { HealthCertDocument } from "../types";
 import { validateHealthCertData } from "../common/healthCertDataValidation";
 import { DataInvalidError } from "../common/error";
 
-countries.registerLocale(englishCountries);
-const DATE_LOCALE = "en-sg";
+nationalities.registerLocale(englishNationalities);
+const DATE_LOCALE = "en-SG";
 
 const getPatientFromHealthCert = (document: HealthCertDocument) => {
   return document.fhirBundle.entry.find(
@@ -52,7 +52,13 @@ export interface TestData {
 
 export const parseDateTime = (dateString: string | undefined): string => {
   return dateString
-    ? `${new Date(dateString).toLocaleString(DATE_LOCALE)} GMT+08:00`
+    ? `${Intl.DateTimeFormat(DATE_LOCALE, {
+        timeStyle: "medium",
+        dateStyle: "short",
+        timeZone: "Asia/Singapore"
+      })
+        .format(new Date(dateString))
+        .replace(",", "")} GMT+08:00`
     : "";
 };
 
@@ -124,7 +130,7 @@ export const getTestDataFromHealthCert = (
     const performerName = observation?.performer?.name?.[0]?.text;
     const performerMcr = observation?.qualification?.[0]?.identifier;
     const observationDate = parseDateTime(observation?.effectiveDateTime);
-    const nationality = countries.getName(
+    const nationality = nationalities.getName(
       patientNationality?.code?.text ?? "",
       "en"
     );
@@ -211,7 +217,7 @@ export const getTestDataFromHealthCert = (
       const performerMcr = observation?.qualification?.[0]?.identifier;
       const observationDate = parseDateTime(observation?.effectiveDateTime);
 
-      const nationality = countries.getName(
+      const nationality = nationalities.getName(
         patientNationality?.code?.text ?? "",
         "en"
       );
