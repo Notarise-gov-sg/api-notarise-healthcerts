@@ -7,13 +7,13 @@ import {
   validateSchema,
   WrappedDocument
 } from "@govtechsg/open-attestation";
+import { notifyRecipient } from "@notarise-gov-sg/sns-notify-recipients";
 import {
   getTestDataFromHealthCert,
   getParticularsFromHealthCert
 } from "../../models/healthCert";
 import { getLogger } from "../../common/logger";
 import { createNotarizedHealthCert } from "../../models/notarizedHealthCert";
-import { notifyRecipient } from "../../models/notifyRecipient";
 import {
   buildStoredUrl,
   getQueueNumber,
