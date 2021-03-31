@@ -29,6 +29,7 @@
     "@middy/core": "^1.5.2",
     "@middy/http-error-handler": "^1.5.2",
     "@middy/http-json-body-parser": "^1.5.2",
+    "@notarise-gov-sg/sns-notify-recipients": "https://github.com/Notarise-gov-sg/sns-notify-recipients/tarball/release/v1.0.0",
     "aws-sdk": "^2.655.0",
     "aws-xray-sdk-core": "^2.5.0",
     "axios": "^0.19.2",
