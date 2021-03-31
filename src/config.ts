@@ -1,5 +1,3 @@
-import AWS from "aws-sdk";
-
 const isTruthy = (val?: string) => {
   return val === "true" || val === "True";
 };
@@ -26,18 +24,6 @@ const getDidSigner = () => ({
   privateKey: getDefaultIfUndefined(process.env.SIGNING_DID_PRIVATE_KEY, "")
 });
 
-const getSnsConfig = () =>
-  process.env.IS_OFFLINE
-    ? {
-        region: getDefaultIfUndefined(process.env.SNS_REGION, "ap-southeast-1"),
-        endpoint: new AWS.Endpoint("http://localhost:4566"),
-        accessKeyId: "S3RVER",
-        secretAccessKey: "S3RVER"
-      }
-    : {
-        region: getDefaultIfUndefined(process.env.SNS_REGION, "ap-southeast-1")
-      };
-
 const generateConfig = () => ({
   documentName: "HealthCert",
   isOffline: isTruthy(process.env.IS_OFFLINE),
@@ -48,24 +34,6 @@ const generateConfig = () => ({
   isValidationEnabled: !(
     process.env.IS_OFFLINE || process.env.IDENTIFIER_VALIDATION === "false"
   ),
-  notification: {
-    // Allow dev to test locally without setting up SNS
-    enabled: isTruthy(process.env.NOTIFICATION_ENABLED),
-    senderName: getDefaultIfUndefined(
-      process.env.NOTIFICATION_SENDER_NAME,
-      "NOTARISE"
-    ),
-    senderLogo: getDefaultIfUndefined(process.env.NOTIFICATION_SENDER_LOGO, ""),
-    templateID: getDefaultIfUndefined(
-      process.env.NOTIFICATION_TEMPLATE_ID,
-      "000"
-    ),
-    sns: getSnsConfig(),
-    topicArn: getDefaultIfUndefined(
-      process.env.NOTIFICATION_TOPIC_ARN,
-      "arn:aws:sns:ap-southeast-1:000000000000:PLACEHOLDER_SNS_TOPIC"
-    )
-  },
   authorizedIssuerMap: getDefaultIfUndefined(
     process.env.AUTHORIZED_ISSUERS_MAP,
     "development"
