@@ -37,10 +37,7 @@ const generateConfig = () => ({
   authorizedIssuerMap: getDefaultIfUndefined(
     process.env.AUTHORIZED_ISSUERS_MAP,
     "development"
-  ),
-  notification: {
-    enabled: isTruthy(process.env.NOTIFICATION_ENABLED)
-  }
+  )
 });
 
 export const config = generateConfig();
