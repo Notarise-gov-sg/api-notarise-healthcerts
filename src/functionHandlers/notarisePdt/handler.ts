@@ -1,7 +1,6 @@
 import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import createError from "http-errors";
 import uuid from "uuid/v4";
-import QrCode from "qrcode";
 import {
   getData,
   validateSchema,
@@ -22,6 +21,7 @@ import {
 import { HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
+import { config } from "../../config";
 
 const { trace, error } = getLogger("src/functionHandlers/notarisePdt/handler");
 
@@ -93,22 +93,22 @@ export const main: Handler = async (
     };
   }
 
-  try {
-    /* Notify recipient via SPM */
-    const data = getData(certificate);
-    const { nric } = getParticularsFromHealthCert(data);
-    const testData = getTestDataFromHealthCert(data);
-    const qrCode = await QrCode.toBuffer(result.url);
-    await notifyRecipient({
-      url: result.url,
-      qrCode: `data:image/png;base64, ${qrCode.toString("base64")}`,
-      nric,
-      passportNumber: testData[0].passportNumber,
-      testData,
-      validFrom: data.validFrom
-    });
-  } catch (e) {
-    errorWithRef(`Notification error: ${e.message}`);
+  /* Notify recipient via SPM (only if enabled) */
+  if (config.notification.enabled) {
+    try {
+      const data = getData(certificate);
+      const { nric } = getParticularsFromHealthCert(data);
+      const testData = getTestDataFromHealthCert(data);
+      await notifyRecipient({
+        url: result.url,
+        nric,
+        passportNumber: testData[0].passportNumber,
+        testData,
+        validFrom: data.validFrom
+      });
+    } catch (e) {
+      errorWithRef(`Notification error: ${e.message}`);
+    }
   }
 
   return {
