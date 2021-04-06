@@ -415,6 +415,14 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "healthcaremedicalrailmall.riverr.ai": {
     name: "Riverr",
     domain: "healthcaremedicalrailmall.riverr.ai"
+  },
+  "faithfamilyclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "faithfamilyclinic.riverr.ai"
+  },
+  "verify.aok.me": {
+    name: "AOKpass",
+    domain: "verify.aok.me"
   }
 };
 
