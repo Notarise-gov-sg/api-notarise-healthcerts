@@ -107,4 +107,5 @@ dist
 .webpack
 
 # idea
-.idea
+.idea/
+.scripts/idea
