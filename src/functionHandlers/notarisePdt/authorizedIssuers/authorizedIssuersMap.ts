@@ -423,7 +423,7 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "verify.aok.me": {
     name: "AOKpass",
     domain: "verify.aok.me"
-  },  
+  },
   "fmgfcy.riverr.ai": {
     name: "Riverr",
     domain: "fmgfcy.riverr.ai"
