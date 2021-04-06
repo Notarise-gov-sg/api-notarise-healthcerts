@@ -423,27 +423,7 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "verify.aok.me": {
     name: "AOKpass",
     domain: "verify.aok.me"
-  }
-};
-
-const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
-  ...authorizedIssuersBothEnv,
-  "dev-healthcerts.jebhealth.com": {
-    name: "Jebhealth",
-    domain: "dev-healthcerts.jebhealth.com"
-  },
-  "demo-healthcerts.knowledgecatalyst.io": {
-    name: "Knowledge Catalyst Pte. Ltd.",
-    domain: "demo-healthcerts.knowledgecatalyst.io"
-  },
-  "demo2-healthcerts.knowledgecatalyst.io": {
-    name: "Demo 2 HealthCerts KC",
-    domain: "demo2-healthcerts.knowledgecatalyst.io"
-  },
-  "issuer1.tubalt.com": {
-    name: "1PASS Test Clinic 1",
-    domain: "issuer1.tubalt.com"
-  },
+  },  
   "fmgfcy.riverr.ai": {
     name: "Riverr",
     domain: "fmgfcy.riverr.ai"
@@ -471,6 +451,26 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "fmgfcr.riverr.ai": {
     name: "Riverr",
     domain: "fmgfcr.riverr.ai"
+  }
+};
+
+const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
+  ...authorizedIssuersBothEnv,
+  "dev-healthcerts.jebhealth.com": {
+    name: "Jebhealth",
+    domain: "dev-healthcerts.jebhealth.com"
+  },
+  "demo-healthcerts.knowledgecatalyst.io": {
+    name: "Knowledge Catalyst Pte. Ltd.",
+    domain: "demo-healthcerts.knowledgecatalyst.io"
+  },
+  "demo2-healthcerts.knowledgecatalyst.io": {
+    name: "Demo 2 HealthCerts KC",
+    domain: "demo2-healthcerts.knowledgecatalyst.io"
+  },
+  "issuer1.tubalt.com": {
+    name: "1PASS Test Clinic 1",
+    domain: "issuer1.tubalt.com"
   }
 };
 
