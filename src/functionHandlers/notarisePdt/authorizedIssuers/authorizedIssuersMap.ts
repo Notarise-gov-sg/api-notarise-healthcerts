@@ -423,6 +423,34 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "verify.aok.me": {
     name: "AOKpass",
     domain: "verify.aok.me"
+  },
+  "fmgfcy.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfcy.riverr.ai"
+  },
+  "fmgfcb.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfcb.riverr.ai"
+  },
+  "fmgffcj.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgffcj.riverr.ai"
+  },
+  "fmgfht.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfht.riverr.ai"
+  },
+  "fmgfctp.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfctp.riverr.ai"
+  },
+  "fmgfcs.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfcs.riverr.ai"
+  },
+  "fmgfcr.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfcr.riverr.ai"
   }
 };
 
