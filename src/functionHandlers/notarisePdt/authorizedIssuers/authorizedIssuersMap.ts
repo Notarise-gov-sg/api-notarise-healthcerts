@@ -443,6 +443,34 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "issuer1.tubalt.com": {
     name: "1PASS Test Clinic 1",
     domain: "issuer1.tubalt.com"
+  },
+  "fmgfcy.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfcy.riverr.ai"
+  },
+  "fmgfcb.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfcb.riverr.ai"
+  },
+  "fmgffcj.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgffcj.riverr.ai"
+  },
+  "fmgfht.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfht.riverr.ai"
+  },
+  "fmgfctp.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfctp.riverr.ai"
+  },
+  "fmgfcs.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfcs.riverr.ai"
+  },
+  "fmgfcr.riverr.ai": {
+    name: "Riverr",
+    domain: "fmgfcr.riverr.ai"
   }
 };
 
