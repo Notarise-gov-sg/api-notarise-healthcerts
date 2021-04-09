@@ -6,7 +6,11 @@ import {
   validateSchema,
   WrappedDocument
 } from "@govtechsg/open-attestation";
-import { getTestDataFromHealthCert } from "../../models/healthCert";
+import { notifyRecipient } from "@notarise-gov-sg/sns-notify-recipients";
+import {
+  getTestDataFromHealthCert,
+  getParticularsFromHealthCert
+} from "../../models/healthCert";
 import { getLogger } from "../../common/logger";
 import { createNotarizedHealthCert } from "../../models/notarizedHealthCert";
 import {
@@ -17,6 +21,7 @@ import {
 import { HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
+import { config } from "../../config";
 
 const { trace, error } = getLogger("src/functionHandlers/notarisePdt/handler");
 
@@ -53,6 +58,7 @@ export const main: Handler = async (
 ): Promise<APIGatewayProxyResult> => {
   const reference = uuid();
   const certificate = event.body;
+  const errorWithRef = error.extend(`reference:${reference}`);
 
   try {
     await validateInputs(certificate);
@@ -60,7 +66,6 @@ export const main: Handler = async (
     // ensure that all the required parameters can be read
     getTestDataFromHealthCert(data);
   } catch (e) {
-    const errorWithRef = error.extend(`reference:${reference}`);
     errorWithRef(
       `Error while validating certificate: ${e.title}, ${e.messageBody}`
     );
@@ -73,17 +78,11 @@ export const main: Handler = async (
     };
   }
 
+  let result;
+
   try {
-    const result = await notarisePdt(reference, certificate);
-    return {
-      statusCode: 200,
-      headers: {
-        "x-trace-id": reference
-      },
-      body: JSON.stringify(result)
-    };
+    result = await notarisePdt(reference, certificate);
   } catch (e) {
-    const errorWithRef = error.extend(`reference:${reference}`);
     errorWithRef(`Unhandled error: ${e.message}`);
     return {
       statusCode: 500,
@@ -93,6 +92,32 @@ export const main: Handler = async (
       body: ""
     };
   }
+
+  /* Notify recipient via SPM (only if enabled) */
+  if (config.notification.enabled) {
+    try {
+      const data = getData(certificate);
+      const { nric } = getParticularsFromHealthCert(data);
+      const testData = getTestDataFromHealthCert(data);
+      await notifyRecipient({
+        url: result.url,
+        nric,
+        passportNumber: testData[0].passportNumber,
+        testData,
+        validFrom: data.validFrom
+      });
+    } catch (e) {
+      errorWithRef(`Notification error: ${e.message}`);
+    }
+  }
+
+  return {
+    statusCode: 200,
+    headers: {
+      "x-trace-id": reference
+    },
+    body: JSON.stringify(result)
+  };
 };
 
 export const handler = middyfy(main).before(({ event: { body } }, next) => {
