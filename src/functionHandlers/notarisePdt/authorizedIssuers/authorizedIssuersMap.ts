@@ -455,6 +455,10 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "rafrop.accredify.io": {
     name: "Raffles Medical",
     domain: "rafrop.accredify.io"
+  },
+  "suncare.riverr.ai": {
+    name: "Riverr",
+    domain: "suncare.riverr.ai"
   }
 };
 
@@ -475,7 +479,12 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "issuer1.tubalt.com": {
     name: "1PASS Test Clinic 1",
     domain: "issuer1.tubalt.com"
+  },
+  "https://demo-healthcerts.knowledgecatalyst.io": {
+    name: "Demo DID HealthCerts",
+    domain: "https://demo-healthcerts.knowledgecatalyst.io"
   }
+
 };
 
 const authorizedIssuersProduction: { [domain: string]: Issuer } = {
