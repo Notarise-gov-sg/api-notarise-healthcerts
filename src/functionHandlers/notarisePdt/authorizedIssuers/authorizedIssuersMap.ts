@@ -455,6 +455,10 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "rafrop.accredify.io": {
     name: "Raffles Medical",
     domain: "rafrop.accredify.io"
+  },
+  "suncare.riverr.ai": {
+    name: "Riverr",
+    domain: "suncare.riverr.ai"
   }
 };
 
