@@ -479,10 +479,6 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "issuer1.tubalt.com": {
     name: "1PASS Test Clinic 1",
     domain: "issuer1.tubalt.com"
-  },
-  "https://demo-healthcerts.knowledgecatalyst.io": {
-    name: "Demo DID HealthCerts",
-    domain: "https://demo-healthcerts.knowledgecatalyst.io"
   }
 };
 
