@@ -484,7 +484,6 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
     name: "Demo DID HealthCerts",
     domain: "https://demo-healthcerts.knowledgecatalyst.io"
   }
-
 };
 
 const authorizedIssuersProduction: { [domain: string]: Issuer } = {
