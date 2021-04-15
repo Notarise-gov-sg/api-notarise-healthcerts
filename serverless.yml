@@ -123,10 +123,6 @@ custom:
   accountId: ${opt:account_id, "placeholder"}
   webpack:
     includeModules: true
-  subnetEnvName:
-    stg: "stg"
-    production: "prd"
-    other: "placeholder"
 
 plugins:
   - serverless-webpack
