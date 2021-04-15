@@ -97,11 +97,11 @@ export const main: Handler = async (
   if (config.notification.enabled) {
     try {
       const data = getData(certificate);
-      const { nric } = getParticularsFromHealthCert(data);
+      const { nricOrFin } = getParticularsFromHealthCert(data);
       const testData = getTestDataFromHealthCert(data);
       await notifyRecipient({
         url: result.url,
-        nric,
+        nric: nricOrFin,
         passportNumber: testData[0].passportNumber,
         testData,
         validFrom: data.validFrom
