@@ -32,7 +32,7 @@ describe("src/models/healthCert", () => {
       expect(
         getParticularsFromHealthCert(exampleHealthCertWithNric as any)
       ).toStrictEqual({
-        nric: "S9098989Z",
+        nricOrFin: "S9098989Z",
         passportNumber: "E7831177G"
       });
     });
@@ -40,7 +40,7 @@ describe("src/models/healthCert", () => {
       expect(
         getParticularsFromHealthCert(exampleHealthCertWithoutNric as any)
       ).toStrictEqual({
-        nric: undefined,
+        nricOrFin: undefined,
         passportNumber: "E7831177G"
       });
     });
