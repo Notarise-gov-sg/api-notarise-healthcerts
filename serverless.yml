@@ -73,6 +73,16 @@ custom:
   # default value for ${ssm:xxx, "default"} and ${env:xxx, "default"} does not work
   # ideally you can just nest one inside. But no!
   # ssm failure returns "undefined" while env failure returns ""
+  vpcDiscovery:
+    vpcName: '${env:VPC_NAME}'
+    subnetNames: # optional if securityGroupNames are specified
+        - 'notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*'
+    securityGroupNames:
+        - 'default'
+  subnetEnvName:
+    stg: "stg"
+    production: "prd"
+    other: "placeholder"
   envSourceConfig:
     stg: "ssm"
     production: "ssm"
@@ -113,10 +123,6 @@ custom:
   accountId: ${opt:account_id, "placeholder"}
   webpack:
     includeModules: true
-  subnetEnvName:
-    stg: "stg"
-    production: "prd"
-    other: "placeholder"
 
 plugins:
   - serverless-webpack
