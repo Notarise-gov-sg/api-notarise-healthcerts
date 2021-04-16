@@ -25,11 +25,18 @@ export const getParticularsFromHealthCert = (document: HealthCertDocument) => {
       identifierEntry.type instanceof Object &&
       identifierEntry.type.text === "NRIC"
   );
+
+  const fin = patient?.identifier?.find(
+    identifierEntry =>
+      identifierEntry.type instanceof Object &&
+      identifierEntry.type.text === "FIN"
+  );
+
   const ppn = patient?.identifier?.find(
     identifierEntry => identifierEntry.type === "PPN"
   );
 
-  return { nric: nric?.value, passportNumber: ppn?.value };
+  return { nric: nric?.value, fin: fin?.value, passportNumber: ppn?.value };
 };
 
 export interface TestData {
