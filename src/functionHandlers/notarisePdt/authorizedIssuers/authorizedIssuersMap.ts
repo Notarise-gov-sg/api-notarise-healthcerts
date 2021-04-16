@@ -459,6 +459,42 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "suncare.riverr.ai": {
     name: "Riverr",
     domain: "suncare.riverr.ai"
+  },
+  "daclinicanson.riverr.ai": {
+    name: "Riverr",
+    domain: "daclinicanson.riverr.ai"
+  },
+  "daclinicbukitbatok.riverr.ai": {
+    name: "Riverr",
+    domain: "daclinicbukitbatok.riverr.ai"
+  },
+  "daclinicanchorvale.riverr.ai": {
+    name: "Riverr",
+    domain: "daclinicanchorvale.riverr.ai"
+  },
+  "daclinicbishan.riverr.ai": {
+    name: "Riverr",
+    domain: "daclinicbishan.riverr.ai"
+  },
+  "daclinicpotongpasir.riverr.ai": {
+    name: "Riverr",
+    domain: "daclinicpotongpasir.riverr.ai"
+  },
+  "daclinictamanjurong.riverr.ai": {
+    name: "Riverr",
+    domain: "daclinictamanjurong.riverr.ai"
+  },
+  "dasimei.riverr.ai": {
+    name: "Riverr",
+    domain: "dasimei.riverr.ai"
+  },
+  "amk.riverr.ai": {
+    name: "Riverr",
+    domain: "amk.riverr.ai"
+  },
+  "chinchoo.riverr.ai": {
+    name: "Riverr",
+    domain: "chinchoo.riverr.ai"
   }
 };
 
