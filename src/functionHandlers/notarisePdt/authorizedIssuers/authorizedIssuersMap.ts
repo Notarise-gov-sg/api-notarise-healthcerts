@@ -507,7 +507,16 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "sengkangfamily.riverr.ai": {
     name: "Riverr",
     domain: "sengkangfamily.riverr.ai"
+  },
+  "iconmedical.riverr.ai": {
+    name: "Riverr",
+    domain: "iconmedical.riverr.ai"
+  },
+  "https://urgentcareclinic.sg": {
+    name: "3DCerts Pte Ltd",
+    domain: "https://urgentcareclinic.sg"
   }
+
 };
 
 const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
