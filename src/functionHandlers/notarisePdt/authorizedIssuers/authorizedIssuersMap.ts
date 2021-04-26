@@ -516,7 +516,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "3DCerts Pte Ltd",
     domain: "https://urgentcareclinic.sg"
   }
-
 };
 
 const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
