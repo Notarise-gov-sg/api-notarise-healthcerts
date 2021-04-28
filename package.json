@@ -46,7 +46,7 @@
     "serverless-dotenv-plugin": "^1.2.0",
     "serverless-http": "^1.10.1",
     "serverless-offline-ses": "https://github.com/rjchow/serverless-offline-ses/tarball/release/1",
-    "serverless-vpc-discovery": "^2.3.0",
+    "serverless-vpc-discovery": "^3.0.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
