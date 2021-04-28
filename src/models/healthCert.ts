@@ -1,14 +1,12 @@
 // @ts-nocheck
 // TODO: remove no check. The code to get test data was copied from health cert renderer which also did not enforce type safety
 import { Patient } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
-import nationalities from "i18n-nationality";
-import englishNationalities from "i18n-nationality/langs/en.json";
 import { healthcert } from "@govtechsg/oa-schemata";
 import { HealthCertDocument } from "../types";
 import { validateHealthCertData } from "../common/healthCertDataValidation";
 import { DataInvalidError } from "../common/error";
+import { getNationality } from "../common/nationality";
 
-nationalities.registerLocale(englishNationalities);
 const DATE_LOCALE = "en-SG";
 
 const getPatientFromHealthCert = (document: HealthCertDocument) => {
@@ -137,10 +135,7 @@ export const getTestDataFromHealthCert = (
     const performerName = observation?.performer?.name?.[0]?.text;
     const performerMcr = observation?.qualification?.[0]?.identifier;
     const observationDate = parseDateTime(observation?.effectiveDateTime);
-    const nationality = nationalities.getName(
-      patientNationality?.code?.text ?? "",
-      "en"
-    );
+    const nationality = getNationality(patientNationality?.code?.text ?? "");
     const gender =
       patient?.gender?.toLowerCase() === healthcert.Gender.Female.toLowerCase()
         ? "She"
@@ -224,10 +219,7 @@ export const getTestDataFromHealthCert = (
       const performerMcr = observation?.qualification?.[0]?.identifier;
       const observationDate = parseDateTime(observation?.effectiveDateTime);
 
-      const nationality = nationalities.getName(
-        patientNationality?.code?.text ?? "",
-        "en"
-      );
+      const nationality = getNationality(patientNationality?.code?.text ?? "");
       const gender =
         patient?.gender?.toLowerCase() ===
         healthcert.Gender.Female.toLowerCase()
