@@ -515,7 +515,11 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "urgentcareclinic.sg": {
     name: "3DCerts Pte Ltd",
     domain: "urgentcareclinic.sg"
-  }
+  },
+  "ptanfmc.riverr.ai": {
+    name: "P Tan Family Medicine Clinic",
+    domain: "ptanfmc.riverr.ai"
+  },
 };
 
 const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
