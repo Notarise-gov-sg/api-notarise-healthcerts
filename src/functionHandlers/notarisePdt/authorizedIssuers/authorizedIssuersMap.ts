@@ -519,6 +519,10 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "ptanfmc.riverr.ai": {
     name: "P Tan Family Medicine Clinic",
     domain: "ptanfmc.riverr.ai"
+  },
+  "familycareclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "familycareclinic.riverr.ai"
   }
 };
 
