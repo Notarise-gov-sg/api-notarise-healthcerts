@@ -515,6 +515,10 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "urgentcareclinic.sg": {
     name: "3DCerts Pte Ltd",
     domain: "urgentcareclinic.sg"
+  },
+  "ptanfmc.riverr.ai": {
+    name: "P Tan Family Medicine Clinic",
+    domain: "ptanfmc.riverr.ai"
   }
 };
 
@@ -535,6 +539,10 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "issuer1.tubalt.com": {
     name: "1PASS Test Clinic 1",
     domain: "issuer1.tubalt.com"
+  },
+  "staging.qrlab.my": {
+    name: "QRlab",
+    domain: "staging.qrlab.my"
   }
 };
 
