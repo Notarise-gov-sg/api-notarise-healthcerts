@@ -13,11 +13,21 @@ provider:
     lambda: true
   permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
   iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - kms:Decrypt
+      Resource: ${self:custom.KMS_ARN}
     - Effect: Allow
       Action:
         - xray:PutTraceSegments
         - xray:PutTelemetryRecords
       Resource: "*"
+    - Effect: Allow
+      Action: ["kms:GenerateDataKey"]
+      Resource: "arn:aws:kms:${self:provider.region}:${self:custom.accountId}:key/${env:SNS_KMS_KEY_ID, 'PLACEHOLDER'}"
+    - Effect: Allow
+      Action: ["sns:Publish"]
+      Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:healthcert"
   deploymentBucket:
     name: notarise-serverless-deployment
   apiKeys:
@@ -53,6 +63,11 @@ functions:
       SIGNING_DID_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_DID_PRIVATE_KEY}
       TRANSIENT_STORAGE_URL: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_URL}
       TRANSIENT_STORAGE_API_KEY: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_API_KEY}
+      NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.NOTIFICATION_ENABLED}
+      NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.NOTIFICATION_TOPIC_ARN}
+      NOTIFICATION_SENDER_NAME: ${self:custom.${self:custom.envSource}.NOTIFICATION_SENDER_NAME}
+      NOTIFICATION_SENDER_LOGO: ${self:custom.${self:custom.envSource}.NOTIFICATION_SENDER_LOGO}
+      NOTIFICATION_TEMPLATE_ID: ${self:custom.${self:custom.envSource}.NOTIFICATION_TEMPLATE_ID}
       AUTHORIZED_ISSUERS_MAP: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_MAP}
       ETHEREUM_NETWORK: ${self:custom.ethereumConfig.${self:provider.stage}, self:custom.ethereumConfig.stg}
     handler: src/functionHandlers/notarisePdt/handler.handler
@@ -68,11 +83,22 @@ custom:
   # default value for ${ssm:xxx, "default"} and ${env:xxx, "default"} does not work
   # ideally you can just nest one inside. But no!
   # ssm failure returns "undefined" while env failure returns ""
+  vpcDiscovery:
+    vpcName: '${env:VPC_NAME}'
+    subnetNames: # optional if securityGroupNames are specified
+        - 'notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*'
+    securityGroupNames:
+        - 'default'
+  subnetEnvName:
+    stg: "stg"
+    production: "prd"
+    other: "placeholder"
   envSourceConfig:
     stg: "ssm"
     production: "ssm"
     other: "dotenv"
   envSource: ${self:custom.envSourceConfig.${self:provider.stage}, self:custom.envSourceConfig.other}
+  KMS_ARN: ${env:KMS_ARN, "PLACEHOLDER_ARN"}
   ethereumConfig:
     stg: "ropsten"
     production: "homestead"
@@ -84,6 +110,11 @@ custom:
     SIGNING_DID_PRIVATE_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_PRIVATE_KEY~true, ""}
     TRANSIENT_STORAGE_URL: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_URL, ""}
     TRANSIENT_STORAGE_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_API_KEY~true, ""}
+    NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_ENABLED, ""}
+    NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TOPIC_ARN, ""}
+    NOTIFICATION_SENDER_NAME: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_SENDER_NAME, ""}
+    NOTIFICATION_SENDER_LOGO: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_SENDER_LOGO, ""}
+    NOTIFICATION_TEMPLATE_ID: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TEMPLATE_ID, ""}
     AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
   dotenv:
     SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
@@ -93,15 +124,16 @@ custom:
     SIGNING_DID_PRIVATE_KEY: ${env:SIGNING_DID_PRIVATE_KEY, ""}
     TRANSIENT_STORAGE_URL: ${env:TRANSIENT_STORAGE_URL, ""}
     TRANSIENT_STORAGE_API_KEY: ${env:TRANSIENT_STORAGE_API_KEY, ""}
+    NOTIFICATION_ENABLED: ${env:NOTIFICATION_ENABLED, ""}
+    NOTIFICATION_TOPIC_ARN: ${env:NOTIFICATION_TOPIC_ARN, ""}
+    NOTIFICATION_SENDER_NAME: ${env:NOTIFICATION_SENDER_NAME, ""}
+    NOTIFICATION_SENDER_LOGO: ${env:NOTIFICATION_SENDER_LOGO, ""}
+    NOTIFICATION_TEMPLATE_ID: ${env:NOTIFICATION_TEMPLATE_ID, ""}
     AUTHORIZED_ISSUERS_MAP: ${env:TRANSIENT_STORAGE_API_KEY, ""}
   # End of hack on env
   accountId: ${opt:account_id, "placeholder"}
   webpack:
     includeModules: true
-  subnetEnvName:
-    stg: "stg"
-    production: "prd"
-    other: "placeholder"
 
 plugins:
   - serverless-webpack
