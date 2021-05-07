@@ -22,10 +22,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Raffles Medical Group",
     domain: "carehealth.io"
   },
-  "gleneagles.hk": {
-    name: "Gleneales Hospital Hong Kong",
-    domain: "gleneagles.hk"
-  },
   "riverr.ai": {
     name: "Riverr",
     domain: "riverr.ai"
@@ -547,6 +543,10 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "staging.qrlab.my": {
     name: "QRlab",
     domain: "staging.qrlab.my"
+  },
+  "http://yabis.demo.id": {
+    name: "Yabis",
+    domain: "http://yabis.demo.id"
   }
 };
 
