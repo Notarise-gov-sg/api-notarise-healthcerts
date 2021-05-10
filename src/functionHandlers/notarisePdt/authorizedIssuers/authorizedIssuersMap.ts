@@ -30,10 +30,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Collinson Assistance Service Ltd",
     domain: "healthcert-issuer.collinsonassistance.com"
   },
-  "siloamhospitals.com": {
-    name: "SILOAM HOSPITALS ASRI",
-    domain: "siloamhospitals.com"
-  },
   "3dcerts.com": {
     name: "3DCerts Staging Test",
     domain: "3dcerts.com"
