@@ -22,10 +22,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Raffles Medical Group",
     domain: "carehealth.io"
   },
-  "gleneagles.hk": {
-    name: "Gleneales Hospital Hong Kong",
-    domain: "gleneagles.hk"
-  },
   "riverr.ai": {
     name: "Riverr",
     domain: "riverr.ai"
@@ -33,10 +29,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "healthcert-issuer.collinsonassistance.com": {
     name: "Collinson Assistance Service Ltd",
     domain: "healthcert-issuer.collinsonassistance.com"
-  },
-  "siloamhospitals.com": {
-    name: "SILOAM HOSPITALS ASRI",
-    domain: "siloamhospitals.com"
   },
   "3dcerts.com": {
     name: "3DCerts Staging Test",
