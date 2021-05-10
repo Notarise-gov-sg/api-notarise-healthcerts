@@ -539,10 +539,6 @@ const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
   "staging.qrlab.my": {
     name: "QRlab",
     domain: "staging.qrlab.my"
-  },
-  "http://yabis.demo.id": {
-    name: "Yabis",
-    domain: "http://yabis.demo.id"
   }
 };
 
