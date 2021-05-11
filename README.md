@@ -21,6 +21,16 @@ When running locally, the required API key will be printed to the console on sta
 
 A response should be returned within 15 seconds.
 
+Possible responses:
+
+* On success, a JSON payload is returned with 3 keys:
+  * `notarisedDocument`: the notarised certificate
+  * `url`: the url where the notarised certificate can be viewed
+  * `ttl`: time to live for the certificate
+* Status code `422` is returned if the JSON is invalid
+* Status code `400` is returned if the payload does not conform to the expected format for a notarised PDT healthcert. If there is additional information available, this is exposed as a JSON object with 3 properties: `title`, `detail` and `code`
+* Status code `500` is returned if the certificate being notarised is valid but there was a problem encountered during the notarisation process.
+
 ---
 
 # Configuration
