@@ -6,7 +6,7 @@ import {
   validateSchema,
   WrappedDocument
 } from "@govtechsg/open-attestation";
-import { notifyRecipient } from "@notarise-gov-sg/sns-notify-recipients";
+import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
 import {
   getTestDataFromHealthCert,
   getParticularsFromHealthCert
@@ -99,7 +99,7 @@ export const main: Handler = async (
       const data = getData(certificate);
       const { nric, fin } = getParticularsFromHealthCert(data);
       const testData = getTestDataFromHealthCert(data);
-      await notifyRecipient({
+      await notifyPdt({
         url: result.url,
         nric: nric || fin,
         passportNumber: testData[0].passportNumber,
