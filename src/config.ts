@@ -16,12 +16,29 @@ const getTransientStorageConfig = () => ({
   apiKey: getDefaultIfUndefined(process.env.TRANSIENT_STORAGE_API_KEY, "")
 });
 
+// Sample keys below are not used in any environments other than tests
+const sampleSigningDidName = "Ministry of Health (Singapore)";
+const sampleSigningDnsDidLocation = "moh.gov.sg";
+const sampleSigningDid = "did:ethr:0x174D34BA87e88f58902b8fec59120AcC0B94743E";
+const sampleSigningDidKey =
+  "did:ethr:0x174D34BA87e88f58902b8fec59120AcC0B94743E#controller";
+const sampleSigningDidPrivateKey =
+  "0x14ef2cd2eb2b363434ec202850946ddcf479458a6b54937f8cf4d0eecb0443fb";
 const getDidSigner = () => ({
-  name: getDefaultIfUndefined(process.env.SIGNING_DID_NAME, ""),
-  dns: getDefaultIfUndefined(process.env.SIGNING_DNS_DID_LOCATION, ""),
-  id: getDefaultIfUndefined(process.env.SIGNING_DID, ""),
-  key: getDefaultIfUndefined(process.env.SIGNING_DID_KEY, ""),
-  privateKey: getDefaultIfUndefined(process.env.SIGNING_DID_PRIVATE_KEY, "")
+  name: getDefaultIfUndefined(
+    process.env.SIGNING_DID_NAME,
+    sampleSigningDidName
+  ),
+  dns: getDefaultIfUndefined(
+    process.env.SIGNING_DNS_DID_LOCATION,
+    sampleSigningDnsDidLocation
+  ),
+  id: getDefaultIfUndefined(process.env.SIGNING_DID, sampleSigningDid),
+  key: getDefaultIfUndefined(process.env.SIGNING_DID_KEY, sampleSigningDidKey),
+  privateKey: getDefaultIfUndefined(
+    process.env.SIGNING_DID_PRIVATE_KEY,
+    sampleSigningDidPrivateKey
+  )
 });
 
 const generateConfig = () => ({
