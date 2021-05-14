@@ -6,28 +6,28 @@ describe("calculateChecksumLetter", () => {
     const S = [
       { nricFirstChar: "S", nricDigits: "0000001" },
       { nricFirstChar: "S", nricDigits: "0000005" },
-      { nricFirstChar: "S", nricDigits: "8000006" }
+      { nricFirstChar: "S", nricDigits: "8000006" },
     ].map(calculateChecksumLetter);
     expect(S).toStrictEqual(["I", "A", "E"]);
 
     const T = [
       { nricFirstChar: "T", nricDigits: "0000001" },
       { nricFirstChar: "T", nricDigits: "0000005" },
-      { nricFirstChar: "T", nricDigits: "8000006" }
+      { nricFirstChar: "T", nricDigits: "8000006" },
     ].map(calculateChecksumLetter);
     expect(T).toStrictEqual(["E", "H", "A"]);
 
     const F = [
       { nricFirstChar: "F", nricDigits: "0000001" },
       { nricFirstChar: "F", nricDigits: "0000005" },
-      { nricFirstChar: "F", nricDigits: "8000006" }
+      { nricFirstChar: "F", nricDigits: "8000006" },
     ].map(calculateChecksumLetter);
     expect(F).toStrictEqual(["U", "K", "P"]);
 
     const G = [
       { nricFirstChar: "G", nricDigits: "0000001" },
       { nricFirstChar: "G", nricDigits: "0000005" },
-      { nricFirstChar: "G", nricDigits: "8000006" }
+      { nricFirstChar: "G", nricDigits: "8000006" },
     ].map(calculateChecksumLetter);
     expect(G).toStrictEqual(["P", "T", "K"]);
   });

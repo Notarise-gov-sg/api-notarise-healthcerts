@@ -4,19 +4,19 @@ import { v4 as uuid } from "uuid";
 import {
   getData,
   validateSchema,
-  WrappedDocument
+  WrappedDocument,
 } from "@govtechsg/open-attestation";
 import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
 import {
   getTestDataFromHealthCert,
-  getParticularsFromHealthCert
+  getParticularsFromHealthCert,
 } from "../../models/healthCert";
 import { getLogger } from "../../common/logger";
 import { createNotarizedHealthCert } from "../../models/notarizedHealthCert";
 import {
   buildStoredUrl,
   getQueueNumber,
-  uploadDocument
+  uploadDocument,
 } from "../../services/transientStorage";
 import { HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
@@ -49,7 +49,7 @@ export const notarisePdt = async (
   return {
     notarisedDocument,
     ttl,
-    url: storedUrl
+    url: storedUrl,
   };
 };
 
@@ -72,9 +72,9 @@ export const main: Handler = async (
     return {
       statusCode: 400,
       headers: {
-        "x-trace-id": reference
+        "x-trace-id": reference,
       },
-      body: `${e.title}, ${e.messageBody}`
+      body: `${e.title}, ${e.messageBody}`,
     };
   }
 
@@ -87,9 +87,9 @@ export const main: Handler = async (
     return {
       statusCode: 500,
       headers: {
-        "x-trace-id": reference
+        "x-trace-id": reference,
       },
-      body: ""
+      body: "",
     };
   }
 
@@ -104,7 +104,7 @@ export const main: Handler = async (
         nric: nric || fin,
         passportNumber: testData[0].passportNumber,
         testData,
-        validFrom: data.validFrom
+        validFrom: data.validFrom,
       });
     } catch (e) {
       errorWithRef(`Notification error: ${e.message}`);
@@ -114,13 +114,13 @@ export const main: Handler = async (
   return {
     statusCode: 200,
     headers: {
-      "x-trace-id": reference
+      "x-trace-id": reference,
     },
-    body: JSON.stringify(result)
+    body: JSON.stringify(result),
   };
 };
 
-export const handler = middyfy(main).before(async req => {
+export const handler = middyfy(main).before(async (req) => {
   const { body } = req.event;
   if (!body || !validateSchema(body)) {
     throw new createError.BadRequest("Body must be a wrapped health cert");

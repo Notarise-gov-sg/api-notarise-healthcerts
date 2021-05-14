@@ -5,7 +5,7 @@ nationalities.registerLocale(englishNationalities);
 
 const customNationality: { [key: string]: string } = {
   XXA: "Stateless Person",
-  XXB: "Refugee"
+  XXB: "Refugee",
 };
 
 const getNationality = (alpha2orAlpha3orNumeric = ""): string => {

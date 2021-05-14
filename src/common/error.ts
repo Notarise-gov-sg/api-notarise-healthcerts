@@ -34,7 +34,7 @@ export abstract class AbstractError extends Error {
     Object.defineProperty(this, "code", {
       value: this[codedErrorSymbol],
       enumerable: true, // this must be here
-      writable: false
+      writable: false,
     });
   }
 }
@@ -65,7 +65,7 @@ export enum ErrorCodes {
   DOCUMENT_INVALID = 4004,
   DATA_INVALID = 4005,
   FILE_TYPE_INVALID = 4006,
-  FILE_INVALID = 4007
+  FILE_INVALID = 4007,
 
   // 5xxx internal server error
 }

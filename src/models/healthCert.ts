@@ -9,29 +9,28 @@ import { getNationality } from "../common/nationality";
 
 const DATE_LOCALE = "en-SG";
 
-const getPatientFromHealthCert = (document: HealthCertDocument) => {
-  return document.fhirBundle.entry.find(
-    entry => entry?.resourceType === "Patient"
+const getPatientFromHealthCert = (document: HealthCertDocument) =>
+  document.fhirBundle.entry.find(
+    (entry) => entry?.resourceType === "Patient"
   ) as Patient | undefined;
-};
 
 export const getParticularsFromHealthCert = (document: HealthCertDocument) => {
   const patient = getPatientFromHealthCert(document);
 
   const nric = patient?.identifier?.find(
-    identifierEntry =>
+    (identifierEntry) =>
       identifierEntry.type instanceof Object &&
       identifierEntry.type.text === "NRIC"
   );
 
   const fin = patient?.identifier?.find(
-    identifierEntry =>
+    (identifierEntry) =>
       identifierEntry.type instanceof Object &&
       identifierEntry.type.text === "FIN"
   );
 
   const ppn = patient?.identifier?.find(
-    identifierEntry => identifierEntry.type === "PPN"
+    (identifierEntry) => identifierEntry.type === "PPN"
   );
 
   return { nric: nric?.value, fin: fin?.value, passportNumber: ppn?.value };
@@ -55,26 +54,25 @@ export interface TestData {
   testResult: string;
 }
 
-export const parseDateTime = (dateString: string | undefined): string => {
-  return dateString
+export const parseDateTime = (dateString: string | undefined): string =>
+  dateString
     ? `${Intl.DateTimeFormat(DATE_LOCALE, {
         timeStyle: "medium",
         dateStyle: "short",
-        timeZone: "Asia/Singapore"
+        timeZone: "Asia/Singapore",
       })
         .format(new Date(dateString))
         .replace(",", "")} GMT+08:00`
     : "";
-};
 
 export const getTestDataFromHealthCert = (
   document: HealthCertDocument
 ): TestData[] => {
   const patient = document.fhirBundle.entry.find(
-    entry => entry.resourceType === "Patient"
+    (entry) => entry.resourceType === "Patient"
   );
   const observations = document.fhirBundle.entry.filter(
-    entry => entry.resourceType === "Observation"
+    (entry) => entry.resourceType === "Observation"
   );
 
   const { passportNumber, nric } = getParticularsFromHealthCert(document);
@@ -82,7 +80,7 @@ export const getTestDataFromHealthCert = (
   const patientName =
     typeof patient?.name?.[0] === "object" ? patient?.name?.[0].text : "";
   const patientNationality = patient?.extension?.find(
-    extension =>
+    (extension) =>
       extension.url ===
       "http://hl7.org/fhir/StructureDefinition/patient-nationality"
   );
@@ -93,15 +91,15 @@ export const getTestDataFromHealthCert = (
   if (observations.length === 1) {
     const observation = observations[0];
     const specimen = document.fhirBundle.entry.find(
-      entry => entry.resourceType === "Specimen"
+      (entry) => entry.resourceType === "Specimen"
     );
     const provider = document.fhirBundle.entry.find(
-      entry =>
+      (entry) =>
         entry.resourceType === "Organization" &&
         entry.type === "Licensed Healthcare Provider"
     );
     const lab = document.fhirBundle.entry.find(
-      entry =>
+      (entry) =>
         entry.resourceType === "Organization" &&
         entry.type === "Accredited Laboratory"
     );
@@ -118,7 +116,7 @@ export const getTestDataFromHealthCert = (
     const testResultCode = observation?.valueCodeableConcept?.coding?.[0]?.code;
     const codesDict: Record<string, string> = {
       "260385009": "Negative",
-      "10828004": "Positive"
+      "10828004": "Positive",
     };
     if (testResultCode && testResultCode in codesDict) {
       testResult = codesDict[testResultCode];
@@ -152,20 +150,17 @@ export const getTestDataFromHealthCert = (
       observationDate,
       nric,
       passportNumber,
-      birthDate: patient?.birthDate
-        ?.split("-")
-        ?.reverse()
-        ?.join("/"),
+      birthDate: patient?.birthDate?.split("-")?.reverse()?.join("/"),
       testType,
       nationality,
       gender,
-      testResult
+      testResult,
     });
   } else {
-    observations.forEach(observation => {
+    observations.forEach((observation) => {
       const specimenReference = observation?.specimen?.reference;
       const organisationReferences = observation?.performerReference?.map(
-        organisation => organisation?.reference
+        (organisation) => organisation?.reference
       );
 
       // certs with multiple observations need to have reference to point the right specimens and organisations to the observation
@@ -174,18 +169,18 @@ export const getTestDataFromHealthCert = (
       }
 
       const specimen = document.fhirBundle.entry.find(
-        entry =>
+        (entry) =>
           entry.resourceType === "Specimen" &&
           entry?.fullUrl === specimenReference
       );
       const provider = document.fhirBundle.entry.find(
-        entry =>
+        (entry) =>
           entry.resourceType === "Organization" &&
           entry.type === "Licensed Healthcare Provider" &&
           organisationReferences.includes(entry?.fullUrl)
       );
       const lab = document.fhirBundle.entry.find(
-        entry =>
+        (entry) =>
           entry.resourceType === "Organization" &&
           entry.type === "Accredited Laboratory" &&
           organisationReferences.includes(entry?.fullUrl)
@@ -202,7 +197,7 @@ export const getTestDataFromHealthCert = (
         observation?.valueCodeableConcept?.coding?.[0]?.code;
       const codesDict: Record<string, string> = {
         "260385009": "Negative",
-        "10828004": "Positive"
+        "10828004": "Positive",
       };
       if (testResultCode && testResultCode in codesDict) {
         testResult = codesDict[testResultCode];
@@ -237,14 +232,11 @@ export const getTestDataFromHealthCert = (
         observationDate,
         nric,
         passportNumber,
-        birthDate: patient?.birthDate
-          ?.split("-")
-          ?.reverse()
-          ?.join("/"),
+        birthDate: patient?.birthDate?.split("-")?.reverse()?.join("/"),
         testType,
         nationality,
         gender,
-        testResult
+        testResult,
       });
     });
   }

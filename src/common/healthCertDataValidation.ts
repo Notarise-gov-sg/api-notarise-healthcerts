@@ -21,8 +21,8 @@ const toEnglishWords = (variableName: string): string => {
 export const validateHealthCertData = (testDataList: TestData[]) => {
   const optionalData = ["nric"];
   const invalidParams: string[] = [];
-  testDataList.forEach(testData => {
-    Object.entries(testData).forEach(entry => {
+  testDataList.forEach((testData) => {
+    Object.entries(testData).forEach((entry) => {
       const [key, value] = entry;
       if (!value && !optionalData.includes(key)) {
         invalidParams.push(toEnglishWords(key));
@@ -41,7 +41,7 @@ export const validateHealthCertData = (testDataList: TestData[]) => {
       "observation",
       "specimen",
       "patient",
-      "organisation"
+      "organisation",
     ]);
   }
 

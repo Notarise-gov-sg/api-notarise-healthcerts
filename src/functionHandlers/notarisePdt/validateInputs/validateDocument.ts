@@ -5,7 +5,7 @@ import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { HealthCertDocument } from "../../../types";
 import {
   UnrecognisedClinicError,
-  DocumentInvalidError
+  DocumentInvalidError,
 } from "../../../common/error";
 
 export const validateDocument = async (
@@ -19,7 +19,7 @@ export const validateDocument = async (
     );
   }
   const identityFragment = results.filter(
-    fragment =>
+    (fragment) =>
       fragment.status === "VALID" && fragment.type === "ISSUER_IDENTITY"
   );
   if (identityFragment.length !== 1)
