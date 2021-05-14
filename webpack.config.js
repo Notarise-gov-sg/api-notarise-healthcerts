@@ -60,9 +60,9 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      eslint: true,
-      eslintOptions: {
-        cache: true,
+      eslint: {
+        files: "./src/**/*.{ts,tsx,js,jsx}",
+        options: { cache: true },
       },
     }),
   ],
