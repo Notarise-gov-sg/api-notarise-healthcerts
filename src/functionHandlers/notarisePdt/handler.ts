@@ -120,9 +120,9 @@ export const main: Handler = async (
   };
 };
 
-export const handler = middyfy(main).before(({ event: { body } }, next) => {
+export const handler = middyfy(main).before(async req => {
+  const { body } = req.event;
   if (!body || !validateSchema(body)) {
     throw new createError.BadRequest("Body must be a wrapped health cert");
   }
-  next();
 });
