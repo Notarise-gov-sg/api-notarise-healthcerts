@@ -1,6 +1,6 @@
 import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import createError from "http-errors";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 import {
   getData,
   validateSchema,
