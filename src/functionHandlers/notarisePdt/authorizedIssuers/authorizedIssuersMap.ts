@@ -515,6 +515,10 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "familycareclinic.riverr.ai": {
     name: "Riverr",
     domain: "familycareclinic.riverr.ai"
+  },
+  "neesoonclinic.riverr.ai": {
+    name: "Riverr",
+    domain: "neesoonclinic.riverr.ai"
   }
 };
 
