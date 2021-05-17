@@ -11,8 +11,9 @@ export const createUnwrappedDocument = (
   reference: string,
   storedUrl: string
 ): NotarizedHealthCert => {
-  const certificateData =
-    getData<WrappedDocument<HealthCertDocument>>(certificate);
+  const certificateData = getData<WrappedDocument<HealthCertDocument>>(
+    certificate
+  );
   const { passportNumber } = getParticularsFromHealthCert(certificateData);
   const b64Certificate = Buffer.from(JSON.stringify(certificate)).toString(
     "base64"

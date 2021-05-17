@@ -74,5 +74,6 @@ export const WorkflowContextData = WorkflowReferenceData.And(
 );
 export type WorkflowContextData = Static<typeof WorkflowContextData>;
 
-export type SignedNotarizedHealthCert =
-  SignedWrappedDocument<NotarizedHealthCert>;
+export type SignedNotarizedHealthCert = SignedWrappedDocument<
+  NotarizedHealthCert
+>;

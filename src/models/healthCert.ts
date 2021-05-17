@@ -150,7 +150,10 @@ export const getTestDataFromHealthCert = (
       observationDate,
       nric,
       passportNumber,
-      birthDate: patient?.birthDate?.split("-")?.reverse()?.join("/"),
+      birthDate: patient?.birthDate
+        ?.split("-")
+        ?.reverse()
+        ?.join("/"),
       testType,
       nationality,
       gender,
@@ -232,7 +235,10 @@ export const getTestDataFromHealthCert = (
         observationDate,
         nric,
         passportNumber,
-        birthDate: patient?.birthDate?.split("-")?.reverse()?.join("/"),
+        birthDate: patient?.birthDate
+          ?.split("-")
+          ?.reverse()
+          ?.join("/"),
         testType,
         nationality,
         gender,
