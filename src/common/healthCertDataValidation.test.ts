@@ -18,8 +18,8 @@ describe("validateHealthCertData", () => {
         birthDate: "123",
         swabCollectionDate: "123",
         swabType: "123",
-        testType: "123"
-      }
+        testType: "123",
+      },
     ];
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
@@ -44,8 +44,8 @@ describe("validateHealthCertData", () => {
         birthDate: "",
         swabCollectionDate: "",
         swabType: "",
-        testType: ""
-      }
+        testType: "",
+      },
     ];
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore

@@ -11,9 +11,8 @@ export const createUnwrappedDocument = (
   reference: string,
   storedUrl: string
 ): NotarizedHealthCert => {
-  const certificateData = getData<WrappedDocument<HealthCertDocument>>(
-    certificate
-  );
+  const certificateData =
+    getData<WrappedDocument<HealthCertDocument>>(certificate);
   const { passportNumber } = getParticularsFromHealthCert(certificateData);
   const b64Certificate = Buffer.from(JSON.stringify(certificate)).toString(
     "base64"
@@ -23,22 +22,22 @@ export const createUnwrappedDocument = (
   const $template = {
     name: "HEALTH_CERT",
     type: v2.TemplateType.EmbeddedRenderer,
-    url: "https://healthcert.renderer.moh.gov.sg/"
+    url: "https://healthcert.renderer.moh.gov.sg/",
   };
 
   const notarisationMetadata: NotarisationMetadata = {
     reference,
     notarisedOn: dateString,
     passportNumber: passportNumber || "",
-    url: storedUrl
+    url: storedUrl,
   };
 
   const attachments = [
     {
       filename: "healthcert.txt",
       type: "text/open-attestation",
-      data: b64Certificate
-    }
+      data: b64Certificate,
+    },
   ];
 
   const issuers = [
@@ -46,14 +45,14 @@ export const createUnwrappedDocument = (
       name: didSigner.name,
       id: didSigner.id,
       revocation: {
-        type: v2.RevocationType.None
+        type: v2.RevocationType.None,
       },
       identityProof: {
         type: v2.IdentityProofType.DNSDid,
         location: didSigner.dns,
-        key: didSigner.key
-      }
-    }
+        key: didSigner.key,
+      },
+    },
   ];
 
   const { fhirVersion, fhirBundle, logo } = certificateData;
@@ -68,6 +67,6 @@ export const createUnwrappedDocument = (
     $template,
     notarisationMetadata,
     logo,
-    attachments
+    attachments,
   };
 };

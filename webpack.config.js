@@ -6,7 +6,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 module.exports = {
   node: {
-    __filename: true
+    __filename: true,
   },
   context: __dirname,
   mode: slsw.lib.webpack.isLocal ? "development" : "production",
@@ -17,12 +17,12 @@ module.exports = {
   resolve: {
     extensions: [".mjs", ".json", ".ts"],
     symlinks: false,
-    cacheWithContext: false
+    cacheWithContext: false,
   },
   output: {
     libraryTarget: "commonjs",
     path: path.join(__dirname, ".webpack"),
-    filename: "[name].js"
+    filename: "[name].js",
   },
   target: "node",
   externals: [nodeExternals()],
@@ -36,34 +36,34 @@ module.exports = {
           [
             path.resolve(__dirname, "node_modules"),
             path.resolve(__dirname, ".serverless"),
-            path.resolve(__dirname, ".webpack")
-          ]
+            path.resolve(__dirname, ".webpack"),
+          ],
         ],
         options: {
           transpileOnly: true,
-          experimentalWatchApi: true
-        }
+          experimentalWatchApi: true,
+        },
       },
       {
         test: /\.txt$/i,
-        use: "raw-loader"
+        use: "raw-loader",
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
         use: [
           {
-            loader: "file-loader"
-          }
-        ]
-      }
-    ]
+            loader: "file-loader",
+          },
+        ],
+      },
+    ],
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      eslint: true,
-      eslintOptions: {
-        cache: true
-      }
-    })
-  ]
+      eslint: {
+        files: "./src/**/*.{ts,tsx,js,jsx}",
+        options: { cache: true },
+      },
+    }),
+  ],
 };

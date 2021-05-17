@@ -8,13 +8,13 @@ const { trace, info } = getLogger("transientStorage");
 
 export const SuccessfulGetQueueNumberResponseDef = Record({
   id: String,
-  key: String
+  key: String,
 });
 export const SuccessfulResponseDef = Record({
   id: String,
   key: String,
   type: String,
-  ttl: Number
+  ttl: Number,
 });
 export type SuccessfulResponse = Runtype<typeof SuccessfulResponseDef>;
 
@@ -36,8 +36,8 @@ const universalUrl = (url: string, key: string) => {
         uri: url,
         key,
         permittedActions: ["VIEW", "STORE"],
-        redirect: "https://www.verify.gov.sg/verify"
-      }
+        redirect: "https://www.verify.gov.sg/verify",
+      },
     })
   );
   return `https://action.openattestation.com/?q=${query}`;
@@ -54,8 +54,8 @@ export const getQueueNumber = async () => {
     method: "POST",
     url: `${endpoint}/queue-number`,
     headers: {
-      "x-api-key": apiKey
-    }
+      "x-api-key": apiKey,
+    },
   });
   const queueNumber = SuccessfulGetQueueNumberResponseDef.check(data);
   info(`queueNumber=${queueNumber.id}`);
@@ -72,12 +72,12 @@ export const uploadDocument = async (
     url: `${endpoint}/${id}`,
     data: { document },
     headers: {
-      "x-api-key": apiKey
-    }
+      "x-api-key": apiKey,
+    },
   });
   trace(`document uploaded at ${id}`);
   const response = SuccessfulResponseDef.check(data);
   return {
-    ...response
+    ...response,
   };
 };

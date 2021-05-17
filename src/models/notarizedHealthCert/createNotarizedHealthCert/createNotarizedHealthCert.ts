@@ -3,7 +3,7 @@ import { signDocument } from "@govtechsg/oa-did-sign";
 import {
   HealthCertDocument,
   NotarizedHealthCert,
-  SignedNotarizedHealthCert
+  SignedNotarizedHealthCert,
 } from "../../../types";
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
 import { config } from "../../../config";
@@ -12,14 +12,13 @@ const { didSigner } = config;
 
 const signWrappedDocument = (
   wrappedDocument: WrappedDocument<NotarizedHealthCert>
-) => {
-  return signDocument(
+) =>
+  signDocument(
     wrappedDocument,
     "Secp256k1VerificationKey2018",
     didSigner.key,
     didSigner.privateKey
   ) as Promise<SignedNotarizedHealthCert>;
-};
 
 export const createNotarizedHealthCert = async (
   certificate: WrappedDocument<HealthCertDocument>,
