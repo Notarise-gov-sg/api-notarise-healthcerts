@@ -56,11 +56,11 @@ export interface NotarizedHealthCert extends HealthCertDocument {
 
 const UserDetailsT = Record({
   name: String,
-  emailAddress: String
+  emailAddress: String,
 });
 
 export const WorkflowReferenceData = Record({
-  reference: String
+  reference: String,
 });
 
 export type WorkflowReferenceData = Static<typeof WorkflowReferenceData>;
@@ -69,11 +69,10 @@ export const WorkflowContextData = WorkflowReferenceData.And(
   Record({
     receivedTimestamp: String,
     user: UserDetailsT,
-    s3ObjKey: String
+    s3ObjKey: String,
   })
 );
 export type WorkflowContextData = Static<typeof WorkflowContextData>;
 
-export type SignedNotarizedHealthCert = SignedWrappedDocument<
-  NotarizedHealthCert
->;
+export type SignedNotarizedHealthCert =
+  SignedWrappedDocument<NotarizedHealthCert>;

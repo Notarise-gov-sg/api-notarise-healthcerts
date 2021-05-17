@@ -6,7 +6,7 @@ export const nricRegex = /([SsTtFfGg])(\d{7})(\D)/;
 
 export function calculateChecksumLetter({
   nricFirstChar,
-  nricDigits
+  nricDigits,
 }: {
   nricFirstChar: string;
   nricDigits: string;
@@ -45,7 +45,7 @@ export const validate = (nricInput: string): boolean => {
 
   const checksumCharacter = calculateChecksumLetter({
     nricFirstChar,
-    nricDigits
+    nricDigits,
   });
   return checksumCharacter === nricLastChar;
 };
@@ -62,7 +62,7 @@ export function generateRandomNric() {
   const digits = padStart(String(random(0, 9999999)));
   const checksumLetter = calculateChecksumLetter({
     nricFirstChar: "S",
-    nricDigits: digits
+    nricDigits: digits,
   });
   return `S${digits}${checksumLetter}`;
 }

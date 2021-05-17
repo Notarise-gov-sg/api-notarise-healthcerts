@@ -4,7 +4,7 @@ import exampleMultiResultHealthCert from "../../test/fixtures/example_healthcert
 import {
   getParticularsFromHealthCert,
   getTestDataFromHealthCert,
-  parseDateTime
+  parseDateTime,
 } from "./healthCert";
 import { DataInvalidError } from "../common/error";
 
@@ -15,15 +15,15 @@ type testCert =
 const getSwabCollectionDates = (document: testCert): string[] => {
   const entries: any[] = document.fhirBundle.entry;
   return entries
-    .filter(entry => entry?.collection?.collectedDateTime != null)
-    .map(entry => entry.collection.collectedDateTime);
+    .filter((entry) => entry?.collection?.collectedDateTime != null)
+    .map((entry) => entry.collection.collectedDateTime);
 };
 
 const getObservationDates = (document: testCert): (string | undefined)[] => {
   const entries = document.fhirBundle.entry;
   return entries
-    .filter(entry => entry?.effectiveDateTime != null)
-    .map(entry => entry.effectiveDateTime);
+    .filter((entry) => entry?.effectiveDateTime != null)
+    .map((entry) => entry.effectiveDateTime);
 };
 
 describe("src/models/healthCert", () => {
@@ -34,7 +34,7 @@ describe("src/models/healthCert", () => {
       ).toStrictEqual({
         nric: "S9098989Z",
         fin: undefined,
-        passportNumber: "E7831177G"
+        passportNumber: "E7831177G",
       });
     });
     test("should correctly extract patient particulars from a well formed healthcert without nric", () => {
@@ -43,12 +43,12 @@ describe("src/models/healthCert", () => {
       ).toStrictEqual({
         nric: undefined,
         fin: undefined,
-        passportNumber: "E7831177G"
+        passportNumber: "E7831177G",
       });
     });
   });
   describe("getTestDataFromHealthCert", () => {
-    describe("single observation flow ", () => {
+    describe("single observation flow", () => {
       test("should correctly extract test data from a well formed healthcert", () => {
         const swabCollectionDates: string[] = getSwabCollectionDates(
           exampleHealthCertWithNric
@@ -78,8 +78,8 @@ describe("src/models/healthCert", () => {
             swabCollectionDate,
             swabType: "Nasopharyngeal swab",
             testResult: "Negative",
-            testType: "REAL TIME RT-PCR SWAB"
-          }
+            testType: "REAL TIME RT-PCR SWAB",
+          },
         ]);
       });
 
@@ -89,10 +89,10 @@ describe("src/models/healthCert", () => {
             entry: [
               {
                 resourceType: "Teletubby",
-                identifier: [{ type: "NAME", value: "Lala" }]
-              }
-            ]
-          }
+                identifier: [{ type: "NAME", value: "Lala" }],
+              },
+            ],
+          },
         };
 
         expect(() =>
@@ -107,7 +107,7 @@ describe("src/models/healthCert", () => {
               {
                 resourceType: "Observation",
                 specimen: {
-                  reference: "urn:uuid:bbbb1321-4af5-424c-a0e1-ed3aab1c349d"
+                  reference: "urn:uuid:bbbb1321-4af5-424c-a0e1-ed3aab1c349d",
                 },
                 code: {
                   coding: [
@@ -115,19 +115,19 @@ describe("src/models/healthCert", () => {
                       system: "http://loinc.org",
                       code: "94531-1",
                       display:
-                        "Reverse transcription polymerase chain reaction (rRT-PCR) test"
-                    }
-                  ]
-                }
+                        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+                    },
+                  ],
+                },
               },
               {
                 resourceType: "Specimen",
                 collection: {
-                  collectedDateTime: "2020-09-27T06:15:00Z"
-                }
-              }
-            ]
-          }
+                  collectedDateTime: "2020-09-27T06:15:00Z",
+                },
+              },
+            ],
+          },
         };
         expect(() =>
           getTestDataFromHealthCert(
@@ -143,33 +143,33 @@ describe("src/models/healthCert", () => {
               {
                 resourceType: "Observation",
                 specimen: {
-                  reference: "urn:uuid:bbbb1321-4af5-424c-a0e1-ed3aab1c349d"
+                  reference: "urn:uuid:bbbb1321-4af5-424c-a0e1-ed3aab1c349d",
                 },
                 valueCodeableConcept: {
                   coding: [
                     {
                       system: "http://snomed.info/sct",
                       code: "260385009",
-                      display: "Negative"
-                    }
-                  ]
-                }
+                      display: "Negative",
+                    },
+                  ],
+                },
               },
               {
                 resourceType: "Specimen",
                 collection: {
-                  collectedDateTime: "2020-09-27T06:15:00Z"
-                }
-              }
-            ]
-          }
+                  collectedDateTime: "2020-09-27T06:15:00Z",
+                },
+              },
+            ],
+          },
         };
         expect(() =>
           getTestDataFromHealthCert(malformedHealthCertWithoutCode as any)
         ).toThrowError(DataInvalidError);
       });
 
-      test("should throw error if specimen reference is missing ", () => {
+      test("should throw error if specimen reference is missing", () => {
         const malformedHealthCertWithoutSpecimenReference = {
           fhirBundle: {
             entry: [
@@ -180,9 +180,9 @@ describe("src/models/healthCert", () => {
                     {
                       system: "http://snomed.info/sct",
                       code: "260385009",
-                      display: "Negative"
-                    }
-                  ]
+                      display: "Negative",
+                    },
+                  ],
                 },
                 code: {
                   coding: [
@@ -190,19 +190,19 @@ describe("src/models/healthCert", () => {
                       system: "http://loinc.org",
                       code: "94531-1",
                       display:
-                        "Reverse transcription polymerase chain reaction (rRT-PCR) test"
-                    }
-                  ]
-                }
+                        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+                    },
+                  ],
+                },
               },
               {
                 resourceType: "Specimen",
                 collection: {
-                  collectedDateTime: "2020-09-27T06:15:00Z"
-                }
-              }
-            ]
-          }
+                  collectedDateTime: "2020-09-27T06:15:00Z",
+                },
+              },
+            ],
+          },
         };
         expect(() =>
           getTestDataFromHealthCert(
@@ -218,16 +218,16 @@ describe("src/models/healthCert", () => {
               {
                 resourceType: "Observation",
                 specimen: {
-                  reference: "urn:uuid:bbbb1321-4af5-424c-a0e1-ed3aab1c349d"
+                  reference: "urn:uuid:bbbb1321-4af5-424c-a0e1-ed3aab1c349d",
                 },
                 valueCodeableConcept: {
                   coding: [
                     {
                       system: "http://snomed.info/sct",
                       code: "260385009",
-                      display: "Negative"
-                    }
-                  ]
+                      display: "Negative",
+                    },
+                  ],
                 },
                 code: {
                   coding: [
@@ -235,13 +235,13 @@ describe("src/models/healthCert", () => {
                       system: "http://loinc.org",
                       code: "94531-1",
                       display:
-                        "Reverse transcription polymerase chain reaction (rRT-PCR) test"
-                    }
-                  ]
-                }
-              }
-            ]
-          }
+                        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         };
         expect(() =>
           getTestDataFromHealthCert(malformedHealthCertWithoutSpecimen as any)
@@ -280,7 +280,7 @@ describe("src/models/healthCert", () => {
             swabCollectionDate: swabCollectionDate1,
             swabType: "Nasopharyngeal swab",
             testResult: "Negative",
-            testType: "REAL TIME RT-PCR SWAB"
+            testType: "REAL TIME RT-PCR SWAB",
           },
           {
             lab: "MacRitchie Laboratory2",
@@ -297,8 +297,8 @@ describe("src/models/healthCert", () => {
             swabCollectionDate: swabCollectionDate2,
             swabType: "Nasopharyngeal swab",
             testResult: "Negative",
-            testType: "REAL TIME RT-PCR SWAB"
-          }
+            testType: "REAL TIME RT-PCR SWAB",
+          },
         ]);
       });
     });

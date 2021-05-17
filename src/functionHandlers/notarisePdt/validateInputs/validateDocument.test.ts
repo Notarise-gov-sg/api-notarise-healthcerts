@@ -14,7 +14,7 @@ const validFragments = [
     type: "DOCUMENT_INTEGRITY",
     name: "OpenAttestationHash",
     data: true,
-    status: "VALID"
+    status: "VALID",
   },
   {
     status: "SKIPPED",
@@ -24,8 +24,8 @@ const validFragments = [
       code: 4,
       codeString: "SKIPPED",
       message:
-        'Document issuers doesn\'t have "tokenRegistry" property or TOKEN_REGISTRY method'
-    }
+        'Document issuers doesn\'t have "tokenRegistry" property or TOKEN_REGISTRY method',
+    },
   },
   {
     status: "SKIPPED",
@@ -35,8 +35,8 @@ const validFragments = [
       code: 4,
       codeString: "SKIPPED",
       message:
-        'Document issuers doesn\'t have "documentStore" or "certificateStore" property or DOCUMENT_STORE method'
-    }
+        'Document issuers doesn\'t have "documentStore" or "certificateStore" property or DOCUMENT_STORE method',
+    },
   },
   {
     status: "SKIPPED",
@@ -46,8 +46,8 @@ const validFragments = [
       code: 2,
       codeString: "SKIPPED",
       message:
-        'Document issuers doesn\'t have "documentStore" / "tokenRegistry" property or doesn\'t use DNS-TXT type'
-    }
+        'Document issuers doesn\'t have "documentStore" / "tokenRegistry" property or doesn\'t use DNS-TXT type',
+    },
   },
   {
     name: "OpenAttestationDnsDid",
@@ -56,10 +56,10 @@ const validFragments = [
       {
         location: "donotverify.testing.verify.gov.sg",
         key: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830#controller",
-        status: "VALID"
-      }
+        status: "VALID",
+      },
     ],
-    status: "VALID"
+    status: "VALID",
   },
   {
     name: "OpenAttestationDidSignedDocumentStatus",
@@ -71,13 +71,13 @@ const validFragments = [
         issuance: [
           {
             issued: true,
-            did: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830"
-          }
-        ]
-      }
+            did: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830",
+          },
+        ],
+      },
     },
-    status: "VALID"
-  }
+    status: "VALID",
+  },
 ];
 
 const whenFragmentsAreValid = () => {
@@ -110,8 +110,8 @@ it("should throw on document with multiple issuer identity passing (should not h
       name: "ADDITIONAL",
       type: "ISSUER_IDENTITY",
       data: {},
-      status: "VALID"
-    }
+      status: "VALID",
+    },
   ]);
   await expect(validateDocument(sampleDocument)).rejects.toThrow(
     /Invalid document error/
@@ -127,16 +127,16 @@ it("should throw on document with multiple issuers", async () => {
         {
           location: "donotverify.testing.verify.gov.sg",
           key: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830#controller",
-          status: "VALID"
+          status: "VALID",
         },
         {
           location: "donotverify2.testing.verify.gov.sg",
           key: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B831#controller",
-          status: "VALID"
-        }
+          status: "VALID",
+        },
       ],
-      status: "VALID"
-    }
+      status: "VALID",
+    },
   ]);
   await expect(validateDocument(sampleDocument)).rejects.toThrow(
     /Invalid document error/
@@ -151,11 +151,11 @@ it("should throw on document without issuer domain name (should not happen)", as
       data: [
         {
           key: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830#controller",
-          status: "VALID"
-        }
+          status: "VALID",
+        },
       ],
-      status: "VALID"
-    }
+      status: "VALID",
+    },
   ]);
   await expect(validateDocument(sampleDocument)).rejects.toThrow(
     /Invalid document error/
@@ -172,11 +172,11 @@ it("should throw on document with unauthorized issuer domain", async () => {
         {
           location: unauthorizedIssuerDomain,
           key: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830#controller",
-          status: "VALID"
-        }
+          status: "VALID",
+        },
       ],
-      status: "VALID"
-    }
+      status: "VALID",
+    },
   ]);
   await expect(validateDocument(sampleDocument)).rejects.toThrow(
     /Unrecognised clinic error/
