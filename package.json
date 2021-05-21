@@ -30,7 +30,7 @@
     "@middy/http-error-handler": "^2.2.0",
     "@middy/http-json-body-parser": "^2.2.0",
     "@notarise-gov-sg/sns-notify-recipients": "^1.0.5",
-    "aws-sdk": "^2.655.0",
+    "aws-sdk": "^2.911.0",
     "aws-xray-sdk-core": "^2.5.0",
     "axios": "^0.21.1",
     "debug": "^4.3.1",
