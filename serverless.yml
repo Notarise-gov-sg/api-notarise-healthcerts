@@ -46,7 +46,7 @@ provider:
     - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
   usagePlan:
     quota:
-      limit: 3000
+      limit: 10000
       offset: 0
       period: DAY
     throttle:
