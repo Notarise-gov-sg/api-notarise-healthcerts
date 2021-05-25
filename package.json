@@ -25,7 +25,7 @@
     "@govtechsg/oa-did-sign": "^2.0.0",
     "@govtechsg/oa-schemata": "^1.6.0",
     "@govtechsg/oa-verify": "^5.1.0",
-    "@govtechsg/open-attestation": "^4.1.1",
+    "@govtechsg/open-attestation": "^5.3.0",
     "@middy/core": "^2.2.0",
     "@middy/http-error-handler": "^2.2.0",
     "@middy/http-json-body-parser": "^2.2.0",
