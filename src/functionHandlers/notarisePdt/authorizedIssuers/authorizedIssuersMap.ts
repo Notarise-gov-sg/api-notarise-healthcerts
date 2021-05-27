@@ -308,7 +308,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     domain: "www.acumen-diagnostics.com",
   },
 
-
   "inex.sg": {
     name: "3DCerts Pte Ltd",
     domain: "inex.sg",
@@ -523,9 +522,8 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   },
   "pulseclinic.riverr.ai": {
     name: "Pulse Clinic pte. ltd.",
-    domain: "pulseclinic.riverr.ai"
-  }
-
+    domain: "pulseclinic.riverr.ai",
+  },
 };
 
 const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
