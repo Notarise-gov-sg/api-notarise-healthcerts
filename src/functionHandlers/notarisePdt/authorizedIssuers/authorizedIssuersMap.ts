@@ -520,6 +520,10 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Riverr",
     domain: "neesoonclinic.riverr.ai",
   },
+  "pulseclinic.riverr.ai": {
+    name: "Pulse Clinic pte. ltd.",
+    domain: "pulseclinic.riverr.ai",
+  },
 };
 
 const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
