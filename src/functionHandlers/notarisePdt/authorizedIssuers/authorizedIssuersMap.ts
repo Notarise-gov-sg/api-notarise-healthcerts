@@ -528,6 +528,10 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "MINT MEDICAL CENTRE",
     domain: "mintmedicalharbourfront.riverr.ai",
   },
+  "mintmedicalfunan.riverr.ai": {
+    name: "MINT MEDICAL CENTRE (FUNAN)",
+    domain: "mintmedicalfunan.riverr.ai",
+  },
 };
 
 const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
