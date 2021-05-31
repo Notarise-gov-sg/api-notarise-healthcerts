@@ -524,6 +524,10 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Pulse Clinic pte. ltd.",
     domain: "pulseclinic.riverr.ai",
   },
+  "mintmedicalharbourfront.riverr.ai": {
+    name: "MINT MEDICAL CENTRE",
+    domain: "mintmedicalharbourfront.riverr.ai",
+  },
 };
 
 const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
