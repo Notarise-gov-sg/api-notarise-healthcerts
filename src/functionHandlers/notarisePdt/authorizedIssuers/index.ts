@@ -13,7 +13,7 @@ export const isAuthorizedIssuer = async (domain: string): Promise<boolean> => {
     };
     const getAuthorizedIssuerUrl = urljoin(
       `${config.authorizedIssuers.endpoint}`,
-      "api/v1/vaccinations",
+      "authorized-issuer",
       domain.toLowerCase(),
       "pcr"
     );
