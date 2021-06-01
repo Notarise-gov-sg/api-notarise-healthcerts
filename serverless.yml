@@ -131,7 +131,7 @@ custom:
     NOTIFICATION_TEMPLATE_ID: ${env:NOTIFICATION_TEMPLATE_ID, ""}
     AUTHORIZED_ISSUERS_MAP: ${env:TRANSIENT_STORAGE_API_KEY, ""}
   # End of hack on env
-  accountId: ${opt:account_id, "placeholder"}
+  accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:
     includeModules: true
 
