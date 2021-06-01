@@ -3,7 +3,9 @@ import urljoin from "url-join";
 import { getLogger } from "../../../common/logger";
 import { config } from "../../../config";
 
-const { trace, error } = getLogger("src/functionHandlers/notarisePdt/authorizedIssuers/index");
+const { trace, error } = getLogger(
+  "src/functionHandlers/notarisePdt/authorizedIssuers/index"
+);
 
 export const isAuthorizedIssuer = async (domain: string): Promise<boolean> => {
   try {
