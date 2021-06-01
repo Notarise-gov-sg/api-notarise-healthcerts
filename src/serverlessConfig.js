@@ -3,8 +3,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { STS } = require("aws-sdk");
 
-module.exports.checkIfProd = serverless => {
-  if (serverless && serverless.cliInputArgv && serverless.cliInputArgv instanceof Array) {
+module.exports.checkIfProd = (serverless) => {
+  if (
+    serverless &&
+    serverless.cliInputArgv &&
+    serverless.cliInputArgv instanceof Array
+  ) {
     const args = serverless.cliInputArgv;
     const stgIndex = args.indexOf("--stage");
     const stage = stgIndex !== -1 ? args[stgIndex + 1] : "";
