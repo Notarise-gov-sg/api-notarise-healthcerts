@@ -48,13 +48,14 @@ export const buildStoredUrl = (id: string, key: string) => {
   return universalUrl(url, key);
 };
 
-export const getQueueNumber = async () => {
+export const getQueueNumber = async (reference: string) => {
   trace("get queue number");
   const { data } = await axios({
     method: "POST",
     url: `${endpoint}/queue-number`,
     headers: {
       "x-api-key": apiKey,
+      "x-trace-key": reference,
     },
   });
   const queueNumber = SuccessfulGetQueueNumberResponseDef.check(data);
@@ -64,7 +65,8 @@ export const getQueueNumber = async () => {
 
 export const uploadDocument = async (
   document: SignedNotarizedHealthCert,
-  id: string
+  id: string,
+  reference: string
 ) => {
   trace(`start to upload document to ${id}`);
   const { data } = await axios({
@@ -73,6 +75,7 @@ export const uploadDocument = async (
     data: { document },
     headers: {
       "x-api-key": apiKey,
+      "x-trace-key": reference,
     },
   });
   trace(`document uploaded at ${id}`);
