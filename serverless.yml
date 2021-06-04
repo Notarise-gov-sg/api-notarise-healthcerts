@@ -104,7 +104,7 @@ custom:
     stg: "ropsten"
     production: "homestead"
   ssm:
-    INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY, ""}
+    INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY~true, ""}
     SIGNING_DID_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_NAME, ""}
     SIGNING_DNS_DID_LOCATION: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DNS_DID_LOCATION, ""}
     SIGNING_DID: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID~true, ""}
