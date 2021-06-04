@@ -56,6 +56,7 @@ functions:
   notarisePdt:
     environment:
       DEBUG: "*,-follow-redirects"
+      INFURA_API_KEY: ${self:custom.${self:custom.envSource}.INFURA_API_KEY}
       SIGNING_DID_NAME: ${self:custom.${self:custom.envSource}.SIGNING_DID_NAME}
       SIGNING_DNS_DID_LOCATION: ${self:custom.${self:custom.envSource}.SIGNING_DNS_DID_LOCATION}
       SIGNING_DID: ${self:custom.${self:custom.envSource}.SIGNING_DID}
@@ -103,6 +104,7 @@ custom:
     stg: "ropsten"
     production: "homestead"
   ssm:
+    INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY, ""}
     SIGNING_DID_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_NAME, ""}
     SIGNING_DNS_DID_LOCATION: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DNS_DID_LOCATION, ""}
     SIGNING_DID: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID~true, ""}
@@ -117,6 +119,7 @@ custom:
     NOTIFICATION_TEMPLATE_ID: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TEMPLATE_ID, ""}
     AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
   dotenv:
+    INFURA_API_KEY: ${env:INFURA_API_KEY, ""}
     SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
     SIGNING_DNS_DID_LOCATION: ${env:SIGNING_DNS_DID_LOCATION, ""}
     SIGNING_DID: ${env:SIGNING_DID, ""}
