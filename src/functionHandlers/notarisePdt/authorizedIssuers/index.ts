@@ -25,10 +25,10 @@ export const isAuthorizedIssuerAPI = async (
     const response = await axios.get(getAuthorizedIssuerUrl, {
       headers,
     });
-    trace(`Retrieve ${domain} whitelist : ${JSON.stringify(response.data)}`);
+    trace(`Retrieved ${domain} from whitelist : ${JSON.stringify(response.data)}`);
     return Promise.resolve(response.status === 200);
   } catch (e) {
-    error(`Unable to find ${domain} whitelist : ${JSON.stringify(e)}`);
+    error(`Unable to find ${domain} from whitelist : ${JSON.stringify(e)}`);
     return false;
   }
 };
