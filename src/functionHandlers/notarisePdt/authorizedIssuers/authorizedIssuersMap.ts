@@ -532,6 +532,34 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "MINT MEDICAL CENTRE (FUNAN)",
     domain: "mintmedicalfunan.riverr.ai",
   },
+  "fusionwheelock.riverr.ai": {
+    name: "Fusion Medical @ Wheelock",
+    domain: "fusionwheelock.riverr.ai",
+  },
+  "fusionnexus.riverr.ai": {
+    name: "Fusion Medical @ Fusionopolis",
+    domain: "fusionnexus.riverr.ai",
+  },
+  "yarramedicalclinic.riverr.ai": {
+    name: "Yarra Medical Clinic",
+    domain: "yarramedicalclinic.riverr.ai",
+  },
+  "pierxray.riverr.ai": {
+    name: "Pier Medical Centre Pte Ltd",
+    domain: "pierxray.riverr.ai",
+  },
+  "greenx.riverr.ai ": {
+    name: "Green Cross Medical Centre",
+    domain: "greenx.riverr.ai ",
+  },
+  "providencenovena.riverr.ai": {
+    name: "PROVIDENCE CLINIC @ NOVENA",
+    domain: "providencenovena.riverr.ai",
+  },
+  "pmcyishun.riverr.ai": {
+    name: "PLATINUM MEDICAL CENTRE PTE. LTD.",
+    domain: "pmcyishun.riverr.ai",
+  },
 };
 
 const authorizedIssuersDevelopment: { [domain: string]: Issuer } = {
