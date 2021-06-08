@@ -121,7 +121,7 @@ custom:
     AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
     USE_API_AUTHORISED_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/USE_API_AUTHORISED_ISSUER, ""}
     AUTHORIZED_ISSUERS_API_URL: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_URL, ""}
-    AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY, ""}
+    AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY~true, ""}
   dotenv:
     SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
     SIGNING_DNS_DID_LOCATION: ${env:SIGNING_DNS_DID_LOCATION, ""}
