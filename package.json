@@ -41,7 +41,7 @@
     "i18n-nationality": "1.1.1",
     "lodash": "^4.17.21",
     "middy-middleware-json-error-handler": "^2.0.6",
-    "runtypes": "5.0.1",
+    "runtypes": "6.3.0",
     "serverless": "^1.62.0",
     "serverless-dotenv-plugin": "^1.2.0",
     "serverless-http": "^2.7.0",
