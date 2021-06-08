@@ -1,11 +1,15 @@
 import { verify, isValid } from "@govtechsg/oa-verify";
 import exampleHealthcertWrapped from "../../../../test/fixtures/example_healthcert_with_nric_wrapped.json";
 import { validateDocument } from "./validateDocument";
+import { isAuthorizedIssuer } from "../authorizedIssuers";
 
 jest.mock("@govtechsg/oa-verify");
 
 const mockVerify = verify as jest.Mock;
 const mockIsValid = isValid as jest.Mock;
+
+jest.mock("./../authorizedIssuers");
+const mockIsAuthorizedIssuer = isAuthorizedIssuer as jest.Mock;
 
 const sampleDocument = exampleHealthcertWrapped as any;
 
@@ -83,11 +87,13 @@ const validFragments = [
 const whenFragmentsAreValid = () => {
   mockVerify.mockResolvedValue(validFragments);
   mockIsValid.mockReturnValue(true);
+  mockIsAuthorizedIssuer.mockResolvedValue(true);
 };
 
 beforeEach(() => {
   mockVerify.mockReset();
   mockIsValid.mockReset();
+  mockIsAuthorizedIssuer.mockReset();
   whenFragmentsAreValid();
 });
 
@@ -178,6 +184,7 @@ it("should throw on document with unauthorized issuer domain", async () => {
       status: "VALID",
     },
   ]);
+  mockIsAuthorizedIssuer.mockResolvedValue(false);
   await expect(validateDocument(sampleDocument)).rejects.toThrow(
     /Unrecognised clinic error/
   );

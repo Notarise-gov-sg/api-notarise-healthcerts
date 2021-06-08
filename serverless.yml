@@ -71,6 +71,9 @@ functions:
       NOTIFICATION_TEMPLATE_ID: ${self:custom.${self:custom.envSource}.NOTIFICATION_TEMPLATE_ID}
       AUTHORIZED_ISSUERS_MAP: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_MAP}
       ETHEREUM_NETWORK: ${self:custom.ethereumConfig.${self:provider.stage}, self:custom.ethereumConfig.stg}
+      USE_API_AUTHORISED_ISSUER: ${self:custom.${self:custom.envSource}.USE_API_AUTHORISED_ISSUER}
+      AUTHORIZED_ISSUERS_API_URL: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_URL}
+      AUTHORIZED_ISSUERS_API_KEY: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_KEY}
     handler: src/functionHandlers/notarisePdt/handler.handler
     events:
       - http:
@@ -118,6 +121,9 @@ custom:
     NOTIFICATION_SENDER_LOGO: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_SENDER_LOGO, ""}
     NOTIFICATION_TEMPLATE_ID: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TEMPLATE_ID, ""}
     AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
+    USE_API_AUTHORISED_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/USE_API_AUTHORISED_ISSUER, ""}
+    AUTHORIZED_ISSUERS_API_URL: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_URL, ""}
+    AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY~true, ""}
   dotenv:
     INFURA_API_KEY: ${env:INFURA_API_KEY, ""}
     SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
@@ -133,6 +139,9 @@ custom:
     NOTIFICATION_SENDER_LOGO: ${env:NOTIFICATION_SENDER_LOGO, ""}
     NOTIFICATION_TEMPLATE_ID: ${env:NOTIFICATION_TEMPLATE_ID, ""}
     AUTHORIZED_ISSUERS_MAP: ${env:TRANSIENT_STORAGE_API_KEY, ""}
+    USE_API_AUTHORISED_ISSUER: ${env:USE_API_AUTHORISED_ISSUER, ""}
+    AUTHORIZED_ISSUERS_API_URL: ${env:AUTHORIZED_ISSUERS_API_URL, ""}
+    AUTHORIZED_ISSUERS_API_KEY: ${env:AUTHORIZED_ISSUERS_API_KEY, ""}
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:

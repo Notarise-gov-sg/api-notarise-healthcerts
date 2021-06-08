@@ -32,6 +32,6 @@ export const validateDocument = async (
   const issuerDomain: string | undefined = issuer.data[0]?.location;
   if (!issuerDomain)
     throw new DocumentInvalidError("Issuer's domain is not found");
-  if (!isAuthorizedIssuer(issuerDomain))
-    throw new UnrecognisedClinicError(issuerDomain);
+  const validDomain = await isAuthorizedIssuer(issuerDomain);
+  if (!validDomain) throw new UnrecognisedClinicError(issuerDomain);
 };

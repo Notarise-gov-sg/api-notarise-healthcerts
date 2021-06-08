@@ -12,6 +12,11 @@ const getTransientStorageConfig = () => ({
   apiKey: getDefaultIfUndefined(process.env.TRANSIENT_STORAGE_API_KEY, ""),
 });
 
+const getAuthorizedIssuersApiConfig = () => ({
+  endpoint: getDefaultIfUndefined(process.env.AUTHORIZED_ISSUERS_API_URL, ""),
+  apiKey: getDefaultIfUndefined(process.env.AUTHORIZED_ISSUERS_API_KEY, ""),
+});
+
 // Sample keys below are not used in any environments other than tests
 const sampleSigningDidName = "Ministry of Health (Singapore)";
 const sampleSigningDnsDidLocation = "moh.gov.sg";
@@ -41,6 +46,7 @@ const generateConfig = () => ({
   documentName: "HealthCert",
   isOffline: isTruthy(process.env.IS_OFFLINE),
   transientStorage: getTransientStorageConfig(),
+  authorizedIssuers: getAuthorizedIssuersApiConfig(),
   didSigner: getDidSigner(),
   env: process.env.NODE_ENV,
   network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "ropsten"),
