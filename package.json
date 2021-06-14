@@ -42,7 +42,7 @@
     "lodash": "^4.17.21",
     "middy-middleware-json-error-handler": "^2.0.6",
     "runtypes": "5.0.1",
-    "serverless": "^1.62.0",
+    "serverless": "^2.46.0",
     "serverless-dotenv-plugin": "^1.2.0",
     "serverless-http": "^2.7.0",
     "serverless-offline-ses": "https://github.com/rjchow/serverless-offline-ses/tarball/release/1",
