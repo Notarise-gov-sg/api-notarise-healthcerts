@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env IS_OFFLINE=true sls offline --httpPort 4000",
-    "invoke-local:notarisePdt": "cross-env SLS_DEBUG='*' sls invoke local  --function notarisePdt --path test/fixtures/staging/sample_request.json",
+    "dev": "cross-env IS_OFFLINE=true SLS_DEBUG=* sls offline --httpPort 4000",
+    "invoke-local:notarisePdt": "cross-env SLS_DEBUG=* sls invoke local  --function notarisePdt --path test/fixtures/staging/sample_request.json",
     "deploy": "sls deploy",
     "depcheck": "depcheck . --ignores=\"serverless-*\"",
     "sls-config-check": "sls print --account_id PLACEHOLDER",

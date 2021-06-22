@@ -58,6 +58,7 @@ export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<HealthCertDocument>>
 ): Promise<APIGatewayProxyResult> => {
   const reference = uuid();
+  trace("in main...");
   trace(event);
   const certificate = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
