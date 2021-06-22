@@ -82,6 +82,10 @@ functions:
           private: true
 
 custom:
+  # right now, when developing with api-transient-storage, there is a clash as both repos use serverless-s3-local, defaulting to port 4569
+  s3:
+    port: 4700
+
   # Stupid hack to get conditionals on the env
   # Please duplicate environment variables in the `ssm` and `dotenv` section
   # default value for ${ssm:xxx, "default"} and ${env:xxx, "default"} does not work
