@@ -35,10 +35,9 @@ export const notarisePdt = async (
   reference: string,
   certificate: WrappedDocument<HealthCertDocument>
 ): Promise<NotarisationResult> => {
-  trace(certificate);
   const traceWithRef = trace.extend(`reference:${reference}`);
   const { id, key } = await getQueueNumber(reference);
-  const storedUrl = await buildStoredUrl(id, key);
+  const storedUrl = buildStoredUrl(id, key);
   traceWithRef(`URL for certificate: ${storedUrl}`);
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
@@ -59,7 +58,6 @@ export const main: Handler = async (
 ): Promise<APIGatewayProxyResult> => {
   const reference = uuid();
   trace("in main...");
-  trace(event);
   const certificate = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
 
@@ -82,6 +80,7 @@ export const main: Handler = async (
   }
 
   let result;
+  trace("validatation passed");
 
   try {
     result = await notarisePdt(reference, certificate);
@@ -124,7 +123,7 @@ export const main: Handler = async (
 };
 
 export const handler = middyfy(main).before(async (req) => {
-  // throw new Error(JSON.stringify(req, null, 2));
+  trace("in handler...");
   const { body } = req.event;
   if (!body || !validateSchema(body)) {
     throw new createError.BadRequest("Body must be a wrapped health cert");
