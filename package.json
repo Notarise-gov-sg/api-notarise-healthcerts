@@ -33,7 +33,7 @@
     "@notarise-gov-sg/sns-notify-recipients": "^1.0.5",
     "@types/url-join": "^4.0.0",
     "aws-sdk": "^2.655.0",
-    "aws-xray-sdk-core": "^2.5.0",
+    "aws-xray-sdk-core": "^3.3.3",
     "axios": "^0.21.1",
     "debug": "^4.3.1",
     "file-loader": "^6.2.0",
