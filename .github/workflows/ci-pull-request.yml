@@ -3,7 +3,7 @@ name: CI - Pull Request
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  pull_request:
+  [push, pull_request]:
     branches: [ master ]
     types:
       - labeled
@@ -18,9 +18,16 @@ on:
 env:
   SLS_DEBUG: "*"
   AWSJS_DEBUG: "*"
+  AUTHORIZED_ISSUERS_MAP: development
+  SIGNING_DID_NAME: ${{ secrets.SIGNING_DID_NAME }}
+  SIGNING_DNS_DID_LOCATION: ${{ secrets.SIGNING_DNS_DID_LOCATION }}
+  SIGNING_DID: ${{ secrets.SIGNING_DID }}
+  SIGNING_DID_KEY: ${{ secrets.SIGNING_DID_KEY }}
+  SIGNING_DID_PRIVATE_KEY: ${{ secrets.SIGNING_DID_PRIVATE_KEY }}
 
 jobs:
   test:
+    -name: local unit tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -30,12 +37,31 @@ jobs:
     - run: npm install
     - run: npm run lint
     - run: npm run typecheck
-    - run: npm run test
-      env:
-        AUTHORIZED_ISSUERS_MAP: development
-        SIGNING_DID_NAME: ${{ secrets.SIGNING_DID_NAME }}
-        SIGNING_DNS_DID_LOCATION: ${{ secrets.SIGNING_DNS_DID_LOCATION }}
-        SIGNING_DID: ${{ secrets.SIGNING_DID }}
-        SIGNING_DID_KEY: ${{ secrets.SIGNING_DID_KEY }}
-        SIGNING_DID_PRIVATE_KEY: ${{ secrets.SIGNING_DID_PRIVATE_KEY }}
+    - run: npm run test        
     - run: npm run sls-config-check
+  
+  e2e-test:
+    - name: Start E2E test by posting data to stg api gateway
+    needs: [test]
+    runs-on: self-hosted
+    container:
+      image: ubuntu:latest
+      options: --user 1000
+    env:
+      # notarise heatlhcert stg api
+      STAGING_BASE_URL: https://7xq2mf0b9f.execute-api.ap-southeast-1.amazonaws.com/stg
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - run: npm ci
+    # --fail returns an exit code > 0 when the request fails. -- fail sets output to silent, --show-error undoes it.
+    - run: |
+      curl -vX POST "${{ env.STAGING_BASE_URL }}/notarise/pdt" \
+      --fail --show-error \
+      -d @../../test/fixtures/example_healthcert_with_nric_wrapped.json \
+      --header "Content-Type: application/json" \
+      --header "x-api-key: ${{ env.x-api-key }}" \
+      
+
