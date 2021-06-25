@@ -27,7 +27,7 @@ env:
 
 jobs:
   test:
-    -name: local unit tests
+    name: local unit tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -41,7 +41,7 @@ jobs:
     - run: npm run sls-config-check
   
   e2e-test:
-    - name: Start E2E test by posting data to stg api gateway
+    name: Start E2E test by posting data to stg api gateway
     needs: [test]
     runs-on: self-hosted
     container:
