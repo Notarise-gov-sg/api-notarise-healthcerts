@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env SLS_DEBUG=* IS_OFFLINE=true sls offline",
-    "mock:e2e": "cross-env ./scripts/mock-e2e.sh",
     "deploy": "sls deploy",
     "depcheck": "depcheck . --ignores=\"serverless-*\"",
     "sls-config-check": "sls print --account_id PLACEHOLDER",
