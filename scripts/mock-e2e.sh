@@ -17,4 +17,4 @@ curl -vX POST $STAGING_BASE_URL/notarise/pdt \
 -d @test/fixtures/example_healthcert_with_nric_wrapped.json \
 --fail --show-error \
 --header "Content-Type: application/json" \
---header 'x-api-key: d41d8cd98f00b204e9800998ecf8427e' 
+--header 'x-api-key: xxxx' 
