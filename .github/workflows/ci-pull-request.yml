@@ -3,7 +3,7 @@ name: CI - Pull Request
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  [ push, pull_request ]:
+  pull_request:
     branches: [ master ]
     types:
       - labeled
@@ -14,6 +14,8 @@ on:
       - ready_for_review
       - reopened
       - unlocked
+  push:
+    branches: '**'
 
 env:
   SLS_DEBUG: "*"
