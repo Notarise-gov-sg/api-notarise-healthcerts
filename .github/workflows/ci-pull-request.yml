@@ -45,10 +45,7 @@ jobs:
   e2e-test:
     name: Start E2E test by posting data to stg api gateway
     needs: [test]
-    runs-on: self-hosted
-    container:
-      image: ubuntu:latest
-      options: --user 1000
+    runs-on: ubuntu-latest
     env:
       # notarise heatlhcert stg api
       STAGING_BASE_URL: https://7xq2mf0b9f.execute-api.ap-southeast-1.amazonaws.com/stg
