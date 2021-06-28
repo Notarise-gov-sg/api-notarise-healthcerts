@@ -44,6 +44,7 @@ provider:
     - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
     - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
     - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
+    - ${opt:stage, "dev"}-notariseHealthcertKey-GovTech
   usagePlan:
     quota:
       limit: 10000
