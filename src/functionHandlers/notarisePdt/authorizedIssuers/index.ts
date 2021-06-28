@@ -44,6 +44,9 @@ export const isAuthorizedIssuerLocal = async (
 
 export const getIssuer = authorizedIssuers.get;
 
-export const isAuthorizedIssuer = process.env.USE_API_AUTHORISED_ISSUER
+// Note that environment variables are parsed as strings by default
+const { useApiAuthorisedIssuer } = config;
+
+export const isAuthorizedIssuer = useApiAuthorisedIssuer
   ? isAuthorizedIssuerAPI
   : isAuthorizedIssuerLocal;

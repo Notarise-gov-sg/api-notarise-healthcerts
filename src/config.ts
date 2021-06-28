@@ -60,6 +60,7 @@ const generateConfig = () => ({
   notification: {
     enabled: isTruthy(process.env.NOTIFICATION_ENABLED),
   },
+  useApiAuthorisedIssuer: process.env.USE_API_AUTHORISED_ISSUER === "true",
 });
 
 export const config = generateConfig();
