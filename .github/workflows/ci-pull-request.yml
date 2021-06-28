@@ -52,6 +52,7 @@ jobs:
     env:
       # notarise heatlhcert stg api
       STAGING_BASE_URL: https://7xq2mf0b9f.execute-api.ap-southeast-1.amazonaws.com/stg
+      x-api-key: d41d8cd98f00b204e9800998ecf8427e
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
