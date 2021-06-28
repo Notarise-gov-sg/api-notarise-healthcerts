@@ -14,12 +14,13 @@ on:
       - ready_for_review
       - reopened
       - unlocked
-  push:
-    branches: '**'
+
+env:
+  SLS_DEBUG: "*"
+  AWSJS_DEBUG: "*"
 
 jobs:
   test:
-    name: local unit tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -29,18 +30,12 @@ jobs:
     - run: npm install
     - run: npm run lint
     - run: npm run typecheck
-    - run: npm run test        
+    - run: npm run test
+      env:
+        AUTHORIZED_ISSUERS_MAP: development
+        SIGNING_DID_NAME: ${{ secrets.SIGNING_DID_NAME }}
+        SIGNING_DNS_DID_LOCATION: ${{ secrets.SIGNING_DNS_DID_LOCATION }}
+        SIGNING_DID: ${{ secrets.SIGNING_DID }}
+        SIGNING_DID_KEY: ${{ secrets.SIGNING_DID_KEY }}
+        SIGNING_DID_PRIVATE_KEY: ${{ secrets.SIGNING_DID_PRIVATE_KEY }}
     - run: npm run sls-config-check
-    env:
-      SLS_DEBUG: "*"
-      AWSJS_DEBUG: "*"
-      AUTHORIZED_ISSUERS_MAP: development
-      SIGNING_DID_NAME: ${{ secrets.SIGNING_DID_NAME }}
-      SIGNING_DNS_DID_LOCATION: ${{ secrets.SIGNING_DNS_DID_LOCATION }}
-      SIGNING_DID: ${{ secrets.SIGNING_DID }}
-      SIGNING_DID_KEY: ${{ secrets.SIGNING_DID_KEY }}
-      SIGNING_DID_PRIVATE_KEY: ${{ secrets.SIGNING_DID_PRIVATE_KEY }}
-  
-
-      
-
