@@ -29,10 +29,13 @@
     "import/prefer-default-export": "off",
     "import/extensions": "off",
     "max-classes-per-file": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "no-unused-expressions": "off",
     "no-else-return": "off",
-    "no-nested-ternary": "off"
+    "no-nested-ternary": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
   }
 }

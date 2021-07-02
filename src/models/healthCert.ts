@@ -17,8 +17,6 @@ const getPatientFromHealthCert = (document: HealthCertDocument) =>
 export const getParticularsFromHealthCert = (document: HealthCertDocument) => {
   const patient = getPatientFromHealthCert(document);
 
-  
-
   const nric = patient?.identifier?.find(
     (identifierEntry) =>
       identifierEntry.type instanceof Object &&

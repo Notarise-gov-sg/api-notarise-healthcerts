@@ -21,7 +21,6 @@ describe("validateHealthCertData", () => {
         testType: "123",
       },
     ];
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     expect(() => validateHealthCertData(testData)).not.toThrow(
       DataInvalidError
@@ -47,7 +46,6 @@ describe("validateHealthCertData", () => {
         testType: "",
       },
     ];
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     expect(() => validateHealthCertData(testData)).toThrow(DataInvalidError);
   });

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { calculateChecksumLetter, validate } from "./nricValidation";
 
 describe("calculateChecksumLetter", () => {

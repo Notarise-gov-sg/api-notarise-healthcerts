@@ -4,6 +4,21 @@ const codedErrorSymbol = Symbol("Error code property");
 
 const { error: errorLogger } = getLogger("src/common/error");
 
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-shadow */
+export enum ErrorCodes {
+  // 4xxx invalid requests error
+  MISMATCHING_PARTICULARS = 4001,
+  UNRECOGNISED_CLINIC = 4002,
+  TEST_RESULTS_EXPIRED = 4003,
+  DOCUMENT_INVALID = 4004,
+  DATA_INVALID = 4005,
+  FILE_TYPE_INVALID = 4006,
+  FILE_INVALID = 4007,
+
+  // 5xxx internal server error
+}
+
 export abstract class AbstractError extends Error {
   // we use a Symbol() here to make sure this object key will never
   // be collided with - since error codes aren't all that uncommon
@@ -55,19 +70,6 @@ export class DetailedCodedError extends AbstractError {
     this.messageBody = messageBody;
     this.title = title;
   }
-}
-
-export enum ErrorCodes {
-  // 4xxx invalid requests error
-  MISMATCHING_PARTICULARS = 4001,
-  UNRECOGNISED_CLINIC = 4002,
-  TEST_RESULTS_EXPIRED = 4003,
-  DOCUMENT_INVALID = 4004,
-  DATA_INVALID = 4005,
-  FILE_TYPE_INVALID = 4006,
-  FILE_INVALID = 4007,
-
-  // 5xxx internal server error
 }
 
 export class UnrecognisedClinicError extends DetailedCodedError {
