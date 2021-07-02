@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env SLS_DEBUG=* IS_OFFLINE=true sls offline",
-    "invoke-local:notarisePdt": "cross-env SLS_DEBUG=* sls invoke local  --function notarisePdt --path test/fixtures/staging/sample_request.json",
+    "invoke:notarisePdt": "cross-env test/invoke-notarisePdt.sh",
     "deploy": "sls deploy",
     "depcheck": "depcheck . --ignores=\"serverless-*\"",
     "sls-config-check": "sls print --account_id PLACEHOLDER",
