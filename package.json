@@ -23,7 +23,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@govtechsg/oa-did-sign": "^2.0.0",
+    "@govtechsg/oa-did-sign": "^2.2.0",
     "@govtechsg/oa-schemata": "^1.6.0",
     "@govtechsg/oa-verify": "^5.1.0",
     "@govtechsg/open-attestation": "^4.1.1",
