@@ -19,7 +19,7 @@ const toEnglishWords = (variableName: string): string => {
 // concats all required missing fields of test data to an a string array to be used
 // in the error message
 export const validateHealthCertData = (testDataList: TestData[]) => {
-  const optionalData = ["nric"];
+  const optionalData = ["nric", "lab"];
   const invalidParams: string[] = [];
   testDataList.forEach((testData) => {
     Object.entries(testData).forEach((entry) => {
