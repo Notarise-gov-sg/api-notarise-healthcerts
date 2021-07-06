@@ -1,5 +1,8 @@
 import { wrapDocument, WrappedDocument } from "@govtechsg/open-attestation";
-import { signDocument, SUPPORTED_SIGNING_ALGORITHM } from "@govtechsg/oa-did-sign";
+import {
+  signDocument,
+  SUPPORTED_SIGNING_ALGORITHM,
+} from "@govtechsg/oa-did-sign";
 import {
   HealthCertDocument,
   NotarizedHealthCert,
