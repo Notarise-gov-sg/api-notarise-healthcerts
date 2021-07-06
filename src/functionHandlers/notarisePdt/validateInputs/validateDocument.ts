@@ -23,7 +23,7 @@ export const validateDocument = async (
   const verify =
     verificationBuilder(openAttestationVerifiers, {
       network: config.network,
-    }) ?? defaultVerify;
+    }) || defaultVerify;
   const results = await verify(attachment);
   const documentIsValid = isValid(results);
   if (!documentIsValid) {
