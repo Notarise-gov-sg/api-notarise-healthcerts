@@ -1,7 +1,14 @@
 import { v2, SignedWrappedDocument } from "@govtechsg/open-attestation";
 import { Record, String, Static } from "runtypes";
 import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
-import { EntryResourceType } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
+// import { EntryResourceType } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
+
+enum EntryResourceType {
+  Patient = "Patient",
+  Observation = "Observation",
+  Specimen = "Specimen",
+  Organization = "Organization"
+}
 
 export interface Patient {
   resourceType: EntryResourceType.Patient;
@@ -13,6 +20,8 @@ export interface Patient {
   ];
   name: string;
 }
+
+
 
 export interface Observation {
   resourceType: EntryResourceType.Observation;

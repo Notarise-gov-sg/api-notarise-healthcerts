@@ -1,5 +1,5 @@
 import { wrapDocument, WrappedDocument } from "@govtechsg/open-attestation";
-import { signDocument } from "@govtechsg/oa-did-sign";
+import { signDocument, SUPPORTED_SIGNING_ALGORITHM } from "@govtechsg/oa-did-sign";
 import {
   HealthCertDocument,
   NotarizedHealthCert,
@@ -15,7 +15,7 @@ const signWrappedDocument = (
 ) =>
   signDocument(
     wrappedDocument,
-    "Secp256k1VerificationKey2018",
+    SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
     didSigner.key,
     didSigner.privateKey
   ) as Promise<SignedNotarizedHealthCert>;
