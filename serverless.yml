@@ -154,7 +154,7 @@ custom:
   webpack:
     includeModules: true
 
-# breaking update to serverless>=2.26.0
+# breaking update to serverless>=2.26.0 to use .env files
 # https://www.serverless.com/framework/docs/environment-variables/
 useDotenv: true
 

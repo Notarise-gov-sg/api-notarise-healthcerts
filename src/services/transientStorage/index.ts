@@ -49,18 +49,14 @@ export const buildStoredUrl = (id: string, key: string) => {
 };
 
 export const getQueueNumber = async (reference: string) => {
-  trace("get queue number");
-  const url = `${endpoint}/queue-number`;
-  trace(`url: ${url}`);
   const { data } = await axios({
     method: "POST",
-    url,
+    url: `${endpoint}/queue-number`,
     headers: {
       "x-api-key": apiKey,
       "x-trace-key": reference,
     },
   });
-  trace("after");
   const queueNumber = SuccessfulGetQueueNumberResponseDef.check(data);
   info(`queueNumber=${queueNumber.id}`);
   return queueNumber;
