@@ -49,6 +49,7 @@ export const buildStoredUrl = (id: string, key: string) => {
 };
 
 export const getQueueNumber = async (reference: string) => {
+  trace("get queue number");
   const { data } = await axios({
     method: "POST",
     url: `${endpoint}/queue-number`,
