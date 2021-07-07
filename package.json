@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env SLS_DEBUG=* IS_OFFLINE=true sls offline",
+    "invoke:notarisePdt": "cross-env ./scripts/invoke-notarisePdt.sh",
     "deploy": "sls deploy",
     "depcheck": "depcheck . --ignores=\"serverless-*\"",
     "sls-config-check": "sls print --account_id PLACEHOLDER",
@@ -80,7 +81,6 @@
     "prettier": "^2.3.2",
     "raw-loader": "^4.0.2",
     "serverless-attach-permission-boundary": "^0.1.0",
-    "serverless-dotenv-plugin": "^3.9.0",
     "serverless-offline": "^7.0.0",
     "serverless-s3-local": "^0.6.18",
     "serverless-webpack": "^5.5.1",

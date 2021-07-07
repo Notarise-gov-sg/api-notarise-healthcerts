@@ -154,9 +154,13 @@ custom:
   webpack:
     includeModules: true
 
+# breaking update to serverless>=2.26.0
+# https://www.serverless.com/framework/docs/environment-variables/
+useDotenv: true
+
 plugins:
   - serverless-webpack
-  - serverless-dotenv-plugin
+  # - serverless-dotenv-plugin
   - serverless-s3-local
   - serverless-offline
   - serverless-offline-ses
