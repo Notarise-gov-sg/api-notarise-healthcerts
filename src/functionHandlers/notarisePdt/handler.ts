@@ -56,6 +56,7 @@ export const notarisePdt = async (
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<HealthCertDocument>>
 ): Promise<APIGatewayProxyResult> => {
+  trace("config", config);
   const reference = uuid();
   const certificate = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);

@@ -160,7 +160,6 @@ useDotenv: true
 
 plugins:
   - serverless-webpack
-  # - serverless-dotenv-plugin
   - serverless-s3-local
   - serverless-offline
   - serverless-offline-ses
