@@ -6,7 +6,6 @@ import {
   verify as defaultVerify,
 } from "@govtechsg/oa-verify";
 import { WrappedDocument } from "@govtechsg/open-attestation";
-import { getLogger } from "../../../common/logger";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { HealthCertDocument } from "../../../types";
 import {
@@ -15,18 +14,14 @@ import {
 } from "../../../common/error";
 import { config } from "../../../config";
 
-const { trace } = getLogger("validateDocument");
-
 export const validateDocument = async (
   attachment: WrappedDocument<HealthCertDocument>
 ) => {
-  trace("network", config.network);
   const verify =
     verificationBuilder(openAttestationVerifiers, {
       network: config.network,
     }) ?? defaultVerify;
 
-  trace("verify fn", verify);
   const results = await verify(attachment);
   const documentIsValid = isValid(results);
   if (!documentIsValid) {
@@ -50,7 +45,6 @@ export const validateDocument = async (
   const issuer = identityFragments[0] as IdentityFragment;
 
   if (!issuer || issuer.data.length !== 1) {
-    trace("issuer", issuer);
     throw new DocumentInvalidError("Document may only have one issuer");
   }
   const issuerDomain: string | undefined = issuer.data[0]?.location;
