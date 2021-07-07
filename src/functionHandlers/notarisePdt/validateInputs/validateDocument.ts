@@ -7,23 +7,26 @@ import {
 } from "@govtechsg/oa-verify";
 import { WrappedDocument } from "@govtechsg/open-attestation";
 import { getLogger } from "../../../common/logger";
-import { config } from "../../../config";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { HealthCertDocument } from "../../../types";
 import {
   UnrecognisedClinicError,
   DocumentInvalidError,
 } from "../../../common/error";
+import { config } from "../../../config";
 
 const { trace } = getLogger("validateDocument");
 
 export const validateDocument = async (
   attachment: WrappedDocument<HealthCertDocument>
 ) => {
+  trace("network", config.network);
   const verify =
     verificationBuilder(openAttestationVerifiers, {
       network: config.network,
-    }) || defaultVerify;
+    }) ?? defaultVerify;
+
+  trace("verify fn", verify);
   const results = await verify(attachment);
   const documentIsValid = isValid(results);
   if (!documentIsValid) {
