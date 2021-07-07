@@ -1,7 +1,7 @@
 // @ts-nocheck
 // TODO: remove no check. The code to get test data was copied from health cert renderer which also did not enforce type safety
 import { Patient } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
-import { healthcert } from "@govtechsg/oa-schemata";
+import { pdtHealthcert as healthcert } from "@govtechsg/oa-schemata";
 import { HealthCertDocument } from "../types";
 import { validateHealthCertData } from "../common/healthCertDataValidation";
 import { DataInvalidError } from "../common/error";

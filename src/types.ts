@@ -1,17 +1,16 @@
 import { v2, SignedWrappedDocument } from "@govtechsg/open-attestation";
 import { Record, String, Static } from "runtypes";
 import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
-import { EntryResourceType } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
 
-export interface HealthCertDocument extends v2.OpenAttestationDocument {
-  name: string;
-  validFrom: string;
-  fhirVersion: string;
-  logo: string;
-  fhirBundle: {
-    entry: [Patient | Observation | Specimen | Organisation];
-  };
+/* eslint-disable */
+enum EntryResourceType {
+  Patient = "Patient",
+  Observation = "Observation",
+  Specimen = "Specimen",
+  Organization = "Organization",
 }
+/* eslint-disable */
+
 export interface Patient {
   resourceType: EntryResourceType.Patient;
   identifier: [
@@ -48,6 +47,16 @@ export interface Organisation {
   fullUrl?: string;
   type: string;
   resourceType: EntryResourceType.Organization;
+}
+
+export interface HealthCertDocument extends v2.OpenAttestationDocument {
+  name: string;
+  validFrom: string;
+  fhirVersion: string;
+  logo: string;
+  fhirBundle: {
+    entry: [Patient | Observation | Specimen | Organisation];
+  };
 }
 
 export interface NotarizedHealthCert extends HealthCertDocument {
