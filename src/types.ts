@@ -1,18 +1,10 @@
 import { v2, SignedWrappedDocument } from "@govtechsg/open-attestation";
 import { Record, String, Static } from "runtypes";
 import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
-
-/* eslint-disable */
-enum EntryResourceType {
-  Patient = "Patient",
-  Observation = "Observation",
-  Specimen = "Specimen",
-  Organization = "Organization",
-}
-/* eslint-disable */
+import { pdtHealthcert as healthcert } from "@govtechsg/oa-schemata";
 
 export interface Patient {
-  resourceType: EntryResourceType.Patient;
+  resourceType: healthcert.EntryResourceType.Patient;
   identifier: [
     {
       type: "PPN" | { text: "NRIC" };
@@ -23,7 +15,7 @@ export interface Patient {
 }
 
 export interface Observation {
-  resourceType: EntryResourceType.Observation;
+  resourceType: healthcert.EntryResourceType.Observation;
   valueCodeableConcept: {
     coding: [{ system: string; code: string; display: string }];
   };
@@ -37,7 +29,7 @@ export interface Observation {
 
 export interface Specimen {
   fullUrl?: string;
-  resourceType: EntryResourceType.Specimen;
+  resourceType: healthcert.EntryResourceType.Specimen;
   collection: {
     collectedDateTime: string;
   };
@@ -46,7 +38,7 @@ export interface Specimen {
 export interface Organisation {
   fullUrl?: string;
   type: string;
-  resourceType: EntryResourceType.Organization;
+  resourceType: healthcert.EntryResourceType.Organization;
 }
 
 export interface HealthCertDocument extends v2.OpenAttestationDocument {
