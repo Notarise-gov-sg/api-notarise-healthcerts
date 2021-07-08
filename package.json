@@ -43,7 +43,7 @@
     "lodash": "^4.17.21",
     "middy-middleware-json-error-handler": "^2.0.6",
     "runtypes": "^6.3.1",
-    "serverless": "^2.51.0",
+    "serverless": "^2.51.1",
     "serverless-http": "^2.7.0",
     "serverless-offline-ses": "https://github.com/rjchow/serverless-offline-ses/tarball/release/1",
     "serverless-vpc-discovery": "^3.0.0",
