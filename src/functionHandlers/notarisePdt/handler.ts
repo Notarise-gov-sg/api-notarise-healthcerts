@@ -1,14 +1,7 @@
 import { APIGatewayProxyResult, Handler } from "aws-lambda";
-import createError from "http-errors";
 import { v4 as uuid } from "uuid";
-import {
-  getData,
-  validateSchema,
-  WrappedDocument,
-} from "@govtechsg/open-attestation";
+import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
-import APIGateway from "aws-sdk/clients/apigateway";
-import { apig } from "src/services/apiGateway";
 import {
   getTestDataFromHealthCert,
   getParticularsFromHealthCert,
@@ -20,7 +13,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../services/transientStorage";
-import { HealthCertDocument, Observation } from "../../types";
+import { HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
 import { config } from "../../config";
@@ -125,40 +118,4 @@ export const main: Handler = async (
   };
 };
 
-let provider: string;
-
-export const handler = middyfy(main)
-  .before(async (req) => {
-    const { body } = req.event;
-    if (!body || !validateSchema(body)) {
-      throw new createError.BadRequest("Body must be a wrapped health cert");
-    }
-
-    // Log the aws gateway api key for the purpose of cloudwatch log
-    // to record breakdown per Provider per Month
-    const header = req.event.headers;
-    const X_API_KEY = header["x-api-key"] as string;
-
-    const promiseResult = await apig.getApiKeys().promise();
-    const apiKeyObjs = promiseResult.$response.data
-      ?.items as APIGateway.ListOfApiKey;
-    const apiKeyObj = apiKeyObjs.find((key) => key.value === X_API_KEY);
-    if (apiKeyObj != null) {
-      provider = apiKeyObj.name as string;
-      trace(`provider ${provider} attempting to notarise pdt...`);
-    }
-  })
-  .after(async (req) => {
-    const { body } = req.event;
-    const notarisationResult: NotarisationResult = JSON.parse(body);
-    const observation =
-      notarisationResult.notarisedDocument.data.fhirBundle.entry.find(
-        (ent) => ent.resourceType === "Observation"
-      ) as Observation;
-    const testName = observation.code.coding[0].display;
-    if (/art/i.test(testName)) {
-      trace(`${provider} successfully notarised pdt of type art`);
-    } else if (/pcr/i.test(testName)) {
-      trace(`${provider} successfully notarised pdt of type pcr`);
-    }
-  });
+export const handler = middyfy(main);
