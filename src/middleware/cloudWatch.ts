@@ -24,7 +24,7 @@ export class CloudWatchMiddleware
     const wrappedDocument = req.event
       .body as WrappedDocument<HealthCertDocument>;
     const data = getData(wrappedDocument);
-    const provider: string = data.issuers[0].name;
+    const provider: string = data.issuers[0].identityProof?.location ?? "UNKOWN";
     this.provider = provider;
     trace(`provider ${provider} attempting to notarise pdt...`);
   };
