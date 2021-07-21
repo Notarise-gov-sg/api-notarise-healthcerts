@@ -18,7 +18,7 @@ describe("test cloudwatch middleware", () => {
     await cloudWatchMiddleware.before(request);
 
     expect(log.trace).toHaveBeenCalledWith(
-      "provider SAMPLE CLINIC attempting to notarise pdt..."
+      "provider donotverify.testing.verify.gov.sg attempting to notarise pdt..."
     );
   });
 
