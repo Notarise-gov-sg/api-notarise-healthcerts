@@ -1,11 +1,6 @@
 import { APIGatewayProxyResult, Handler } from "aws-lambda";
-import createError from "http-errors";
 import { v4 as uuid } from "uuid";
-import {
-  getData,
-  validateSchema,
-  WrappedDocument,
-} from "@govtechsg/open-attestation";
+import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
 import {
   getTestDataFromHealthCert,
@@ -59,11 +54,13 @@ export const main: Handler = async (
   trace("config", config);
   const reference = uuid();
   const certificate = event.body;
+
   const errorWithRef = error.extend(`reference:${reference}`);
 
   try {
     await validateInputs(certificate);
     const data = getData(certificate);
+
     // ensure that all the required parameters can be read
     getTestDataFromHealthCert(data);
   } catch (e) {
@@ -79,7 +76,7 @@ export const main: Handler = async (
     };
   }
 
-  let result;
+  let result: NotarisationResult;
 
   try {
     result = await notarisePdt(reference, certificate);
@@ -121,9 +118,4 @@ export const main: Handler = async (
   };
 };
 
-export const handler = middyfy(main).before(async (req) => {
-  const { body } = req.event;
-  if (!body || !validateSchema(body)) {
-    throw new createError.BadRequest("Body must be a wrapped health cert");
-  }
-});
+export const handler = middyfy(main);

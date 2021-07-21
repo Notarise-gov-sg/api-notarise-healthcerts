@@ -21,6 +21,10 @@ When running locally, the required API key will be printed to the console on sta
 
 A response should be returned within 15 seconds.
 
+#### Alternatively:
+`npm run dev` on one terminal  
+`npm run invoke-local:notarisePdt` on another terminal. This will run the script to the curl command above
+
 ---
 
 # Configuration
