@@ -21,6 +21,7 @@ export class CloudWatchMiddleware
   provider = "";
 
   before = async (req: Request): Promise<void> => {
+    trace(req);
     const wrappedDocument = req.event
       .body as WrappedDocument<HealthCertDocument>;
     const data = getData(wrappedDocument);
