@@ -22,9 +22,11 @@ export class CloudWatchMiddleware
 
   before = async (req: Request): Promise<void> => {
     trace(req);
+    trace(`type of req.body: ${typeof req.event.body}`);
     const wrappedDocument = req.event
       .body as WrappedDocument<HealthCertDocument>;
     const data = getData(wrappedDocument);
+    trace(`data: ${data}`);
     const provider: string =
       data.issuers[0].identityProof?.location ?? "UNKNOWN";
     this.provider = provider;
