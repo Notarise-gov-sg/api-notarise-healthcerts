@@ -4,7 +4,7 @@ import { SignedNotarizedHealthCert } from "../../types";
 import { config } from "../../config";
 import { getLogger } from "../../common/logger";
 
-const { trace, info } = getLogger("transientStorage");
+const { trace } = getLogger("src/services/transientStorage");
 
 export const SuccessfulGetQueueNumberResponseDef = Record({
   id: String,
