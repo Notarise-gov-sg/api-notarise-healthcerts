@@ -13,9 +13,7 @@ import { config } from "../../../config";
 import { getLogger } from "../../../common/logger";
 
 const { didSigner } = config;
-const { trace } = getLogger(
-  "src/models/notarizedHealthCert/createNotarizedHealthCert/createNotarizedHealthCert.ts"
-);
+const { trace } = getLogger("api-notarise-healthcerts");
 
 const signWrappedDocument = (
   wrappedDocument: WrappedDocument<NotarizedHealthCert>
@@ -38,7 +36,7 @@ export const createNotarizedHealthCert = async (
     storedUrl
   );
   const wrappedNotarisedDocument = wrapDocument(unwrappedNotarisedDocument);
-  const traceWithRef = trace.extend("reference");
-  traceWithRef("Document successfully notarized");
+  const traceWithRef = trace.extend(`reference: $[reference}`);
+  traceWithRef("Document successfully notarised");
   return signWrappedDocument(wrappedNotarisedDocument);
 };

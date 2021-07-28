@@ -4,7 +4,7 @@ import { SignedNotarizedHealthCert } from "../../types";
 import { config } from "../../config";
 import { getLogger } from "../../common/logger";
 
-const { trace } = getLogger("src/services/transientStorage");
+const { trace } = getLogger("api-notarise-healthcerts");
 
 export const SuccessfulGetQueueNumberResponseDef = Record({
   id: String,
@@ -77,10 +77,9 @@ export const uploadDocument = async (
     data: { document },
     headers: {
       "x-api-key": apiKey,
-      "x-trace-key": reference,
+      "x-trace-id": reference,
     },
   });
-  traceWithRef(`document uploaded at ${id}`);
   const response = SuccessfulResponseDef.check(data);
   return {
     ...response,
