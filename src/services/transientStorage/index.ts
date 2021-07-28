@@ -49,7 +49,8 @@ export const buildStoredUrl = (id: string, key: string) => {
 };
 
 export const getQueueNumber = async (reference: string) => {
-  trace("get queue number");
+  const traceWithRef = trace.extend(`reference:${reference}`);
+  traceWithRef("get queue number");
   const { data } = await axios({
     method: "POST",
     url: `${endpoint}/queue-number`,
@@ -59,7 +60,7 @@ export const getQueueNumber = async (reference: string) => {
     },
   });
   const queueNumber = SuccessfulGetQueueNumberResponseDef.check(data);
-  info(`queueNumber=${queueNumber.id}`);
+  traceWithRef(`queueNumber=${queueNumber.id}`);
   return queueNumber;
 };
 
@@ -68,7 +69,8 @@ export const uploadDocument = async (
   id: string,
   reference: string
 ) => {
-  trace(`start to upload document to ${id}`);
+  const traceWithRef = trace.extend(`reference:${reference}`);
+  traceWithRef(`start to upload document to ${id}`);
   const { data } = await axios({
     method: "PUT",
     url: `${endpoint}/${id}`,
@@ -78,7 +80,7 @@ export const uploadDocument = async (
       "x-trace-key": reference,
     },
   });
-  trace(`document uploaded at ${id}`);
+  traceWithRef(`document uploaded at ${id}`);
   const response = SuccessfulResponseDef.check(data);
   return {
     ...response,
