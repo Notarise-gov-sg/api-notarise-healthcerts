@@ -36,7 +36,6 @@ export const notarisePdt = async (
   traceWithRef(`placeholder document id: $id}`);
 
   const storedUrl = buildStoredUrl(id, key);
-  traceWithRef(`URL for certificate: ${storedUrl}`);
 
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,

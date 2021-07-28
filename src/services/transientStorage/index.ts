@@ -80,6 +80,7 @@ export const uploadDocument = async (
       "x-trace-id": reference,
     },
   });
+  traceWithRef(`document uploaded at ${id}`);
   const response = SuccessfulResponseDef.check(data);
   return {
     ...response,
