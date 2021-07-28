@@ -13,8 +13,9 @@ import { config } from "../../../config";
 import { getLogger } from "../../../common/logger";
 
 const { didSigner } = config;
-const { trace } = getLogger("src/models/notarizedHealthCert/createNotarizedHealthCert/createNotarizedHealthCert.ts");
-
+const { trace } = getLogger(
+  "src/models/notarizedHealthCert/createNotarizedHealthCert/createNotarizedHealthCert.ts"
+);
 
 const signWrappedDocument = (
   wrappedDocument: WrappedDocument<NotarizedHealthCert>
