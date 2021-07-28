@@ -31,9 +31,12 @@ export const notarisePdt = async (
   certificate: WrappedDocument<HealthCertDocument>
 ): Promise<NotarisationResult> => {
   const traceWithRef = trace.extend(`reference:${reference}`);
+
   const { id, key } = await getQueueNumber(reference);
-  const storedUrl = await buildStoredUrl(id, key);
-  traceWithRef(`URL for certificate: ${storedUrl}`);
+  traceWithRef(`placeholder document id: $id}`);
+
+  const storedUrl = buildStoredUrl(id, key);
+
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
     reference,

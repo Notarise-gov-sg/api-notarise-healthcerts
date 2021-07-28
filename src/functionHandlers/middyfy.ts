@@ -8,8 +8,8 @@ import { validateSchemaMiddleware } from "../middleware/validateSchema";
 export const middyfy = (handler: Handler) =>
   middy(handler).use([
     jsonBodyParser(),
-    cloudWatchMiddleware(),
     validateSchemaMiddleware(),
+    cloudWatchMiddleware(),
     httpErrorHandler(),
   ]);
 
