@@ -51,7 +51,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.14.8",
+    "@babel/preset-env": "^7.14.9",
     "@babel/preset-typescript": "^7.14.5",
     "@govtechsg/serverless-selective-functions": "^0.1.1",
     "@types/aws-lambda": "^8.10.81",
