@@ -32,7 +32,7 @@
     "@middy/http-json-body-parser": "^2.4.3",
     "@notarise-gov-sg/sns-notify-recipients": "^1.0.9",
     "@types/url-join": "^4.0.1",
-    "aws-sdk": "^2.954.0",
+    "aws-sdk": "^2.959.0",
     "aws-xray-sdk-core": "^3.3.3",
     "axios": "^0.21.1",
     "debug": "^4.3.2",
