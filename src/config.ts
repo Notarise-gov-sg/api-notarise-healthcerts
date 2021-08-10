@@ -47,9 +47,9 @@ const getEuSigner = () => ({
     process.env.SIGNING_EU_QR_NAME,
     sampleSigningDidName
   ),
-  validityInMonths: getDefaultIfUndefined(
-    process.env.SIGNING_EU_QR_VALIDITY_IN_MONTHS,
-    "1"
+  validityInMonths: parseInt(
+    getDefaultIfUndefined(process.env.SIGNING_EU_QR_VALIDITY_IN_MONTHS, "1"),
+    10
   ),
   publicKey: getDefaultIfUndefined(
     process.env.SIGNING_EU_QR_PUBLIC_KEY?.replace(/\\n/g, "\n"),
@@ -61,7 +61,7 @@ const getEuSigner = () => ({
   ),
 });
 
-const getSwapTestTypes = () => ({
+const getSwabTestTypes = () => ({
   ART: "697989009",
   PCR: "258500001",
 });
@@ -86,7 +86,7 @@ const generateConfig = () => ({
     enabled: isTruthy(process.env.NOTIFICATION_ENABLED),
   },
   isOfflineQrEnabled: !!process.env.OFFLINE_QR_ENABLED,
-  swapTestTypes: getSwapTestTypes(),
+  swabTestTypes: getSwabTestTypes(),
 });
 
 export const config = generateConfig();

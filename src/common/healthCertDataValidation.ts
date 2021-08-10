@@ -4,7 +4,7 @@ import { TestData } from "../models/healthCert";
 import { DataInvalidError } from "./error";
 import { config } from "../config";
 
-const { swapTestTypes } = config;
+const { swabTestTypes } = config;
 
 const toEnglishWords = (variableName: string): string => {
   let newString = "";
@@ -27,7 +27,7 @@ export const validateHealthCertData = (testDataList: TestData[]) => {
   testDataList.forEach((testData) => {
     // art cert need to have device identifier
     if (
-      testData.swabTypeCode === swapTestTypes.ART &&
+      testData.swabTypeCode === swabTestTypes.ART &&
       !testData.deviceIdentifier
     ) {
       invalidParams.push(toEnglishWords("deviceIdentifier"));

@@ -4,7 +4,7 @@ import { TestData } from "src/models/healthCert";
 import { config } from "../../../config";
 import { EuHealthCert, EuNameParams, EuTestParams } from "../../../types";
 
-const { euSigner, swapTestTypes } = config;
+const { euSigner, swabTestTypes } = config;
 
 export const createEuTestCert = (
   testData: TestData[],
@@ -33,10 +33,10 @@ export const createEuTestCert = (
       is: euSigner.name,
       ci: UniqueCertificateId,
     };
-    if (item.swabTypeCode === swapTestTypes.PCR) {
+    if (item.swabTypeCode === swabTestTypes.PCR) {
       testGroup.tt = "LP6464-4"; // test type code for PCR test [Nucleic acid amplification with probe detection]
       testGroup.nm = item.testType;
-    } else if (item.swabTypeCode === swapTestTypes.ART) {
+    } else if (item.swabTypeCode === swabTestTypes.ART) {
       testGroup.tt = "LP217198-3"; // test type code for ART test [Rapid immunoassay]
       testGroup.ma = item.deviceIdentifier;
     }
