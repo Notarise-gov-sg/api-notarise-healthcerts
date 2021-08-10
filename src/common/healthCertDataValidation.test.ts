@@ -45,11 +45,13 @@ describe("validateHealthCertData", () => {
         swabType: "Anterior nares swab",
         swabTypeCode: "697989009",
         testType: "123",
-        deviceIdentifier: "1232"
+        deviceIdentifier: "1232",
       },
     ];
     // @ts-ignore
-    expect(() => validateHealthCertData(testData)).not.toThrow(DataInvalidError);
+    expect(() => validateHealthCertData(testData)).not.toThrow(
+      DataInvalidError
+    );
   });
 
   test("should flag device data missing as invalid in ART cert", () => {
