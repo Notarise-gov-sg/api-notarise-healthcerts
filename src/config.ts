@@ -42,12 +42,37 @@ const getDidSigner = () => ({
   ),
 });
 
+const getEuSigner = () => ({
+  name: getDefaultIfUndefined(
+    process.env.SIGNING_EU_QR_NAME,
+    sampleSigningDidName
+  ),
+  validityInMonths: getDefaultIfUndefined(
+    process.env.SIGNING_EU_QR_VALIDITY_IN_MONTHS,
+    "1"
+  ),
+  publicKey: getDefaultIfUndefined(
+    process.env.SIGNING_EU_QR_PUBLIC_KEY?.replace(/\\n/g, "\n"),
+    ""
+  ),
+  privateKey: getDefaultIfUndefined(
+    process.env.SIGNING_EU_QR_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    ""
+  ),
+});
+
+const getSwapTestTypes = () => ({
+  ART: "697989009",
+  PCR: "258500001",
+});
+
 const generateConfig = () => ({
   documentName: "HealthCert",
   isOffline: isTruthy(process.env.IS_OFFLINE),
   transientStorage: getTransientStorageConfig(),
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
   didSigner: getDidSigner(),
+  euSigner: getEuSigner(),
   env: process.env.NODE_ENV,
   network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "ropsten"),
   isValidationEnabled: !(
@@ -60,6 +85,8 @@ const generateConfig = () => ({
   notification: {
     enabled: isTruthy(process.env.NOTIFICATION_ENABLED),
   },
+  isOfflineQrEnabled: !!process.env.OFFLINE_QR_ENABLED,
+  swapTestTypes: getSwapTestTypes(),
 });
 
 export const config = generateConfig();

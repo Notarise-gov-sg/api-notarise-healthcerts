@@ -51,6 +51,11 @@ To run local tests against dynamodb-local, run commands
   - SIGNING_DID: check with ops
   - SIGNING_DID_KEY: check wth ops. For ethereum DID, it's equal to `SIGNING_DID` prepended with `#controller`
   - SIGNING_DID_PRIVATE_KEY: check with ops
+  - OFFLINE_QR_ENABLED: Feature toggle for Offline Qr certification
+  - SIGNING_EU_QR_NAME: Display name of the certification issuer
+  - SIGNING_EU_QR_VALIDITY_IN_MONTHS: For set QR validity in months
+  - SIGNING_EU_QR_PUBLIC_KEY: Public key of signing offline QR with single line string and include `\n` for newline
+  - SIGNING_EU_QR_PRIVATE_KEY: Private key of signing offline QR with single line string and include `\n` for newline
 - start the local environment: `npm run dev`
 
 ## Generating a wrapped cert

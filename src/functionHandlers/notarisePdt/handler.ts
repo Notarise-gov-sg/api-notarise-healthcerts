@@ -17,6 +17,10 @@ import { HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
 import { config } from "../../config";
+import {
+  createEuSignedTestQr,
+  createEuTestCert,
+} from "../../models/euHealthCert";
 
 const { trace, error } = getLogger("src/functionHandlers/notarisePdt/handler");
 
@@ -59,6 +63,7 @@ export const main: Handler = async (
   const certificate = event.body;
 
   const errorWithRef = error.extend(`reference:${reference}`);
+  const traceWithRef = trace.extend(`reference:${reference}`);
 
   try {
     await validateInputs(certificate);
@@ -92,6 +97,32 @@ export const main: Handler = async (
       },
       body: "",
     };
+  }
+
+  if (config.isOfflineQrEnabled) {
+    try {
+      const data = getData(certificate);
+      const testData = getTestDataFromHealthCert(data);
+
+      traceWithRef("EU test cert...");
+      const euTestCert = await createEuTestCert(
+        testData,
+        reference,
+        result.url
+      );
+
+      traceWithRef("Generating EU test cert qr...");
+      const euTestQrData = await createEuSignedTestQr(euTestCert);
+
+      if (!euTestQrData) {
+        errorWithRef("Invalid EU test cert generated");
+      } else {
+        traceWithRef(euTestCert);
+        traceWithRef(`EU test cert qr : ${euTestQrData}`);
+      }
+    } catch (e) {
+      errorWithRef(`Offline Qr error: ${e.message}`);
+    }
   }
 
   /* Notify recipient via SPM (only if enabled) */

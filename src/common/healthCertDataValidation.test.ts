@@ -27,6 +27,30 @@ describe("validateHealthCertData", () => {
     );
   });
 
+  test("should flag device data missing as invalid in ART cert", () => {
+    const testData = [
+      {
+        provider: "name",
+        gender: "M",
+        lab: "lab",
+        nationality: "SG",
+        nric: undefined,
+        observationDate: "123",
+        passportNumber: "123",
+        patientName: "123",
+        performerMcr: "123",
+        performerName: "123",
+        birthDate: "123",
+        swabCollectionDate: "123",
+        swabType: "Anterior nares swab",
+        swabTypeCode: "697989009",
+        testType: "123",
+      },
+    ];
+    // @ts-ignore
+    expect(() => validateHealthCertData(testData)).toThrow(DataInvalidError);
+  });
+
   test("should flag missing required fields as invalid", () => {
     const testData = [
       {

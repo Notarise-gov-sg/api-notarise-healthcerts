@@ -1,13 +1,12 @@
 // @ts-nocheck
 // TODO: remove no check. The code to get test data was copied from health cert renderer which also did not enforce type safety
-import { Patient } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/healthcert/1.0/schema";
+import { Patient } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/pdt-healthcert/1.0/schema";
 import { pdtHealthcert as healthcert } from "@govtechsg/oa-schemata";
+import moment from "moment-timezone";
 import { HealthCertDocument } from "../types";
 import { validateHealthCertData } from "../common/healthCertDataValidation";
 import { DataInvalidError } from "../common/error";
 import { getNationality } from "../common/nationality";
-
-const DATE_LOCALE = "en-SG";
 
 const getPatientFromHealthCert = (document: HealthCertDocument) =>
   document.fhirBundle.entry.find(
@@ -40,6 +39,7 @@ export interface TestData {
   provider: string;
   lab: string;
   swabType: string;
+  swabTypeCode: string;
   patientName: string;
   swabCollectionDate: string;
   performerName: string;
@@ -52,17 +52,15 @@ export interface TestData {
   nationality: string;
   gender: string;
   testResult: string;
+  testResultCode: string;
+  deviceIdentifier?: string;
 }
 
 export const parseDateTime = (dateString: string | undefined): string =>
   dateString
-    ? `${Intl.DateTimeFormat(DATE_LOCALE, {
-        timeStyle: "medium",
-        dateStyle: "short",
-        timeZone: "Asia/Singapore",
-      })
-        .format(new Date(dateString))
-        .replace(",", "")} GMT+08:00`
+    ? `${moment
+        .tz(dateString, "Asia/Singapore")
+        .format("M/D/YY h:mm:ss A")} GMT+08:00`
     : "";
 
 export const getTestDataFromHealthCert = (
@@ -74,6 +72,9 @@ export const getTestDataFromHealthCert = (
   const observations = document.fhirBundle.entry.filter(
     (entry) => entry.resourceType === "Observation"
   );
+  const device = document.fhirBundle.entry.find(
+    (entry) => entry.resourceType === "Device"
+  );
 
   const { passportNumber, nric } = getParticularsFromHealthCert(document);
 
@@ -84,6 +85,10 @@ export const getTestDataFromHealthCert = (
       extension.url ===
       "http://hl7.org/fhir/StructureDefinition/patient-nationality"
   );
+  const deviceIdentifier =
+    typeof device?.identifier?.[0] === "object"
+      ? device?.identifier?.[0].value
+      : null;
 
   const testData = [];
 
@@ -139,10 +144,11 @@ export const getTestDataFromHealthCert = (
         ? "She"
         : "He";
 
-    testData.push({
+    const testDataValue: TestData = {
       provider: provider?.name,
       lab: lab?.name,
       swabType: swabType?.display,
+      swabTypeCode: swabType?.code,
       patientName,
       swabCollectionDate,
       performerName,
@@ -155,7 +161,13 @@ export const getTestDataFromHealthCert = (
       nationality,
       gender,
       testResult,
-    });
+      testResultCode,
+    };
+
+    if (deviceIdentifier) {
+      testDataValue.deviceIdentifier = deviceIdentifier;
+    }
+    testData.push(testDataValue);
   } else {
     observations.forEach((observation) => {
       const specimenReference = observation?.specimen?.reference;
@@ -221,10 +233,11 @@ export const getTestDataFromHealthCert = (
           ? "She"
           : "He";
 
-      testData.push({
+      const testDataValue: TestData = {
         provider: provider?.name,
         lab: lab?.name,
         swabType: swabType?.display,
+        swabTypeCode: swabType?.code,
         patientName,
         swabCollectionDate,
         performerName,
@@ -237,7 +250,13 @@ export const getTestDataFromHealthCert = (
         nationality,
         gender,
         testResult,
-      });
+        testResultCode,
+      };
+
+      if (deviceIdentifier) {
+        testDataValue.deviceIdentifier = deviceIdentifier;
+      }
+      testData.push(testDataValue);
     });
   }
   validateHealthCertData(testData);
