@@ -1,5 +1,5 @@
 import { NotarisationResult } from "src/functionHandlers/notarisePdt/handler";
-import wrappedDocument from "../../test/fixtures/example_healthcert_with_nric_wrapped.json";
+import wrappedDocument from "../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import { CloudWatchMiddleware, Request } from "./cloudWatch";
 import * as log from "./trace";
 

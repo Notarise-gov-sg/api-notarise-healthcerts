@@ -88,6 +88,42 @@ functions:
           path: /notarise/pdt
           method: post
           private: true
+      - http:
+          path: /v1/notarise/pdt
+          method: post
+          private: true
+  notarisePdtV2:
+    environment:
+      DEBUG: "*,-follow-redirects"
+      INFURA_API_KEY: ${self:custom.${self:custom.envSource}.INFURA_API_KEY}
+      SIGNING_DID_NAME: ${self:custom.${self:custom.envSource}.SIGNING_DID_NAME}
+      SIGNING_DNS_DID_LOCATION: ${self:custom.${self:custom.envSource}.SIGNING_DNS_DID_LOCATION}
+      SIGNING_DID: ${self:custom.${self:custom.envSource}.SIGNING_DID}
+      SIGNING_DID_KEY: ${self:custom.${self:custom.envSource}.SIGNING_DID_KEY}
+      SIGNING_DID_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_DID_PRIVATE_KEY}
+      TRANSIENT_STORAGE_URL: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_URL}
+      TRANSIENT_STORAGE_API_KEY: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_API_KEY}
+      NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.NOTIFICATION_ENABLED}
+      NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.NOTIFICATION_TOPIC_ARN}
+      NOTIFICATION_SENDER_NAME: ${self:custom.${self:custom.envSource}.NOTIFICATION_SENDER_NAME}
+      NOTIFICATION_SENDER_LOGO: ${self:custom.${self:custom.envSource}.NOTIFICATION_SENDER_LOGO}
+      NOTIFICATION_TEMPLATE_ID: ${self:custom.${self:custom.envSource}.NOTIFICATION_TEMPLATE_ID}
+      AUTHORIZED_ISSUERS_MAP: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_MAP}
+      ETHEREUM_NETWORK: ${self:custom.ethereumConfig.${self:provider.stage}, self:custom.ethereumConfig.stg}
+      USE_API_AUTHORISED_ISSUER: ${self:custom.${self:custom.envSource}.USE_API_AUTHORISED_ISSUER}
+      AUTHORIZED_ISSUERS_API_URL: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_URL}
+      AUTHORIZED_ISSUERS_API_KEY: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_KEY}
+      OFFLINE_QR_ENABLED: ${self:custom.${self:custom.envSource}.OFFLINE_QR_ENABLED}
+      SIGNING_EU_QR_NAME: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_NAME}
+      SIGNING_EU_QR_VALIDITY_IN_MONTHS: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_VALIDITY_IN_MONTHS}
+      SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
+      SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
+    handler: src/functionHandlers/notarisePdtV2/handler.handler
+    events:
+      - http:
+          path: /v2/notarise/pdt
+          method: post
+          private: true
 
 custom:
   serverless-offline:

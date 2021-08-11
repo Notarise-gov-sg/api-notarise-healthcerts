@@ -1,7 +1,7 @@
-import exampleHealthCertWithNric from "../../test/fixtures/example_healthcert_with_nric_unwrapped.json";
-import exampleHealthCertWithoutNric from "../../test/fixtures/example_healthcert_without_nric_unwrapped.json";
-import exampleMultiResultHealthCert from "../../test/fixtures/example_healthcert_multi_result_unwrapped.json";
-import exampleArtHealthCertWithNric from "../../test/fixtures/example_art_healthcert_with_nric_unwrapped.json";
+import exampleHealthCertWithNric from "../../test/fixtures/v1/example_healthcert_with_nric_unwrapped.json";
+import exampleHealthCertWithoutNric from "../../test/fixtures/v1/example_healthcert_without_nric_unwrapped.json";
+import exampleMultiResultHealthCert from "../../test/fixtures/v1/example_healthcert_multi_result_unwrapped.json";
+import exampleArtHealthCertWithNric from "../../test/fixtures/v1/example_art_healthcert_with_nric_unwrapped.json";
 import {
   getParticularsFromHealthCert,
   getTestDataFromHealthCert,
