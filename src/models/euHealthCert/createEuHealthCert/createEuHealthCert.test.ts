@@ -53,7 +53,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {
         {
           tg: "840539006",
           tt: "LP6464-4",
-          nm: "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+          nm: testData[0].testType,
           sc: "2021-06-27T14:15:00+08:00",
           tr: "260373001",
           tc: "MacRitchie Medical Clinic",
@@ -124,7 +124,7 @@ describe("createEuTestCert for ART Anterior Nares Swab", () => {
         {
           tg: "840539006",
           tt: "LP217198-3",
-          ma: "1232",
+          ma: testData[0].deviceIdentifier,
           sc: "2021-06-27T14:15:00+08:00",
           tr: "260373001",
           tc: "MacRitchie Medical Clinic",

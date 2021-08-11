@@ -56,7 +56,8 @@ export interface Device {
     coding: [
       { 
         system: string; 
-        value: string; 
+        code: string; 
+        display: string;
       }
     ];
     text: string;

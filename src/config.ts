@@ -61,11 +61,6 @@ const getEuSigner = () => ({
   ),
 });
 
-const getSwabTestTypes = () => ({
-  ART: "697989009",
-  PCR: "258500001",
-});
-
 const generateConfig = () => ({
   documentName: "HealthCert",
   isOffline: isTruthy(process.env.IS_OFFLINE),
@@ -86,7 +81,10 @@ const generateConfig = () => ({
     enabled: isTruthy(process.env.NOTIFICATION_ENABLED),
   },
   isOfflineQrEnabled: !!process.env.OFFLINE_QR_ENABLED,
-  swabTestTypes: getSwabTestTypes(),
+  swabTestTypes: {
+    ART: "697989009",
+    PCR: "258500001",
+  },
 });
 
 export const config = generateConfig();

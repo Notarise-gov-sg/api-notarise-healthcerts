@@ -82,7 +82,8 @@
           "coding": [
             {
               "system": "http://device-system",
-              "value": "xxx"
+              "code": "xxx",
+              "display": "some device"
             }
           ],
           "text": "Test device (ART/RAT tests only)"
