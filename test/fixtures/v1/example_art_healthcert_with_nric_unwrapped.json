@@ -81,19 +81,12 @@
         "type": {
           "coding": [
             {
-              "system": "http://device-system",
-              "code": "xxx",
-              "display": "some device"
+              "system": "https://covid-19-diagnostics.jrc.ec.europa.eu/devices",
+              "code": "1232",
+              "display": "Abbott Rapid Diagnostics, Panbio COVID-19 Ag Rapid Test"
             }
-          ],
-          "text": "Test device (ART/RAT tests only)"
-        },
-        "identifier": [
-          {
-            "system": "https://covid-19-diagnostics.jrc.ec.europa.eu/devices",
-            "value": "1232"
-          }
-        ]
+          ]
+        }
       }
     ]
   },
