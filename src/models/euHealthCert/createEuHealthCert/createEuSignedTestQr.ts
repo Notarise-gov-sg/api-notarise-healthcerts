@@ -16,5 +16,5 @@ export const createEuSignedTestQr = async (euHealthCerts: EuHealthCert[]) => {
       testHealthCertsQr.push({ qrData });
     })
   );
-  return Promise.all(testHealthCertsQr);
+  return testHealthCertsQr;
 };
