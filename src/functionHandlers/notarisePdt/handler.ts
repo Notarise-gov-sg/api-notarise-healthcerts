@@ -13,7 +13,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../services/transientStorage";
-import { HealthCertDocument } from "../../types";
+import { EuHealthCertQr, HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
 import { config } from "../../config";
@@ -34,12 +34,40 @@ export const notarisePdt = async (
   reference: string,
   certificate: WrappedDocument<HealthCertDocument>
 ): Promise<NotarisationResult> => {
+  const errorWithRef = trace.extend(`reference:${reference}`);
   const traceWithRef = trace.extend(`reference:${reference}`);
 
   const { id, key } = await getQueueNumber(reference);
   traceWithRef(`placeholder document id: $id}`);
 
   const storedUrl = buildStoredUrl(id, key);
+
+  let euHealthCertsInfo: any[] = [];
+  if (config.isOfflineQrEnabled) {
+    try {
+      const data = getData(certificate);
+      const testData = getTestDataFromHealthCert(data);
+
+      traceWithRef("EU test cert...");
+      const euTestCert = await createEuTestCert(testData, reference, storedUrl);
+      traceWithRef(euTestCert);
+
+      traceWithRef("Generating EU test cert qr...");
+      const testQrHealthCerts = await createEuSignedTestQr(euTestCert);
+      euHealthCertsInfo = testQrHealthCerts.map(
+        (testHealthCert: EuHealthCertQr) => testHealthCert.qrData
+      );
+      traceWithRef(euHealthCertsInfo);
+
+      if (euHealthCertsInfo.length > 0) {
+        euHealthCertsInfo.forEach((euHealthCertInfo, index) => {
+          traceWithRef(`EU test cert qr ${index + 1} : ${euHealthCertInfo}`);
+        });
+      }
+    } catch (e) {
+      errorWithRef(`Offline Qr error: ${e.message}`);
+    }
+  }
 
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
@@ -63,7 +91,6 @@ export const main: Handler = async (
   const certificate = event.body;
 
   const errorWithRef = error.extend(`reference:${reference}`);
-  const traceWithRef = trace.extend(`reference:${reference}`);
 
   try {
     await validateInputs(certificate);
@@ -97,32 +124,6 @@ export const main: Handler = async (
       },
       body: "",
     };
-  }
-
-  if (config.isOfflineQrEnabled) {
-    try {
-      const data = getData(certificate);
-      const testData = getTestDataFromHealthCert(data);
-
-      traceWithRef("EU test cert...");
-      const euTestCert = await createEuTestCert(
-        testData,
-        reference,
-        result.url
-      );
-
-      traceWithRef("Generating EU test cert qr...");
-      const euTestQrData = await createEuSignedTestQr(euTestCert);
-
-      if (!euTestQrData) {
-        errorWithRef("Invalid EU test cert generated");
-      } else {
-        traceWithRef(euTestCert);
-        traceWithRef(`EU test cert qr : ${euTestQrData}`);
-      }
-    } catch (e) {
-      errorWithRef(`Offline Qr error: ${e.message}`);
-    }
   }
 
   /* Notify recipient via SPM (only if enabled) */

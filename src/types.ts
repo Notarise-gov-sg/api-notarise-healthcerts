@@ -136,3 +136,7 @@ export type SignedNotarizedHealthCert =
   export interface EuHealthCert extends EuHealthCertDocument {
     meta: NotarisationMetadata;
   } 
+
+  export interface EuHealthCertQr {
+    qrData?: string;
+  }

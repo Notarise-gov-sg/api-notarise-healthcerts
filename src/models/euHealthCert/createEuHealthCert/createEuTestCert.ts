@@ -10,17 +10,25 @@ export const createEuTestCert = (
   testData: TestData[],
   reference: string,
   storedUrl: string
-): EuHealthCert => {
+): EuHealthCert[] => {
   const fhirVersion = "1.3.0";
-  const EuName: EuNameParams = {
-    fnt: testData[0].patientName.replace(/ /g, "<").toUpperCase(),
-    gnt: testData[0].patientName.replace(/ /g, "<").toUpperCase(),
-  };
   // Set Unique Cert Id with version + country + unique ref
   const UniqueCertificateId = `REF:V1:SG:${reference.toUpperCase()}`;
+  const dateString = new Date().toISOString();
 
-  const testGroups: EuTestParams[] = [];
+  const testHealthCerts: EuHealthCert[] = [];
   testData.forEach((item) => {
+    const euName: EuNameParams = {
+      fnt: item.patientName.replace(/ /g, "<").toUpperCase(),
+      gnt: item.patientName.replace(/ /g, "<").toUpperCase(),
+    };
+    const dob = item.birthDate?.split("/")?.reverse()?.join("-");
+    const meta: notarise.NotarisationMetadata = {
+      reference,
+      notarisedOn: dateString,
+      passportNumber: item.passportNumber,
+      url: storedUrl,
+    };
     const testGroup: EuTestParams = {
       tg: "840539006",
       tt: "LP6464-4", // need to confirm with MOH for for Serology, it can either be [Nucleic acid amplification with probe detection] or [Rapid immunoassay]
@@ -40,22 +48,14 @@ export const createEuTestCert = (
       testGroup.tt = "LP217198-3"; // test type code for ART test [Rapid immunoassay]
       testGroup.ma = item.deviceIdentifier;
     }
-    testGroups.push(testGroup);
+    testHealthCerts.push({
+      ver: fhirVersion,
+      nam: euName,
+      dob,
+      t: [testGroup],
+      meta,
+    });
   });
 
-  const dateString = new Date().toISOString();
-  const meta: notarise.NotarisationMetadata = {
-    reference,
-    notarisedOn: dateString,
-    passportNumber: testData[0].passportNumber,
-    url: storedUrl,
-  };
-
-  return {
-    ver: fhirVersion,
-    nam: EuName,
-    dob: testData[0].birthDate?.split("/")?.reverse()?.join("-"),
-    t: testGroups,
-    meta,
-  };
+  return testHealthCerts;
 };
