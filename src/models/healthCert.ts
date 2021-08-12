@@ -86,8 +86,8 @@ export const getTestDataFromHealthCert = (
       "http://hl7.org/fhir/StructureDefinition/patient-nationality"
   );
   const deviceIdentifier =
-    typeof device?.identifier?.[0] === "object"
-      ? device?.identifier?.[0].value
+    typeof device?.type?.coding?.[0] === "object"
+      ? device?.type?.coding?.[0].code
       : null;
 
   const testData = [];
