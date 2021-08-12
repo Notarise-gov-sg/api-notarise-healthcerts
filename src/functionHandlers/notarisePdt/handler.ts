@@ -60,8 +60,8 @@ export const notarisePdt = async (
       traceWithRef(euHealthCertsInfo);
 
       if (euHealthCertsInfo.length > 0) {
-        euHealthCertsInfo.forEach((testQrHealthCert: any, index: any) => {
-          traceWithRef(`EU test cert qr ${index + 1} : ${testQrHealthCert}`);
+        euHealthCertsInfo.forEach((euHealthCertInfo, index) => {
+          traceWithRef(`EU test cert qr ${index + 1} : ${euHealthCertInfo}`);
         });
       }
     } catch (e) {
