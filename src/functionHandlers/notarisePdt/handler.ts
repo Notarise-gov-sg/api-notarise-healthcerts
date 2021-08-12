@@ -13,7 +13,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../services/transientStorage";
-import { HealthCertDocument } from "../../types";
+import { EuHealthCertQr, HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
 import { config } from "../../config";
@@ -28,6 +28,7 @@ export interface NotarisationResult {
   notarisedDocument: WrappedDocument<HealthCertDocument>;
   ttl: number;
   url: string;
+  encryptedEuHealthCerts?: EuHealthCertQr[];
 }
 
 export const notarisePdt = async (
@@ -112,14 +113,18 @@ export const main: Handler = async (
       );
 
       traceWithRef("Generating EU test cert qr...");
-      const euTestQrData = await createEuSignedTestQr(euTestCert);
-
-      if (!euTestQrData) {
-        errorWithRef("Invalid EU test cert generated");
-      } else {
-        traceWithRef(euTestCert);
-        traceWithRef(`EU test cert qr : ${euTestQrData}`);
-      }
+      const testHealthCerts = await createEuSignedTestQr(euTestCert);
+      testHealthCerts.forEach((testHealthCert) => {
+        if (!testHealthCert.qrData) {
+          errorWithRef("Invalid EU test cert generated");
+        } else {
+          traceWithRef(euTestCert);
+          traceWithRef(`EU test cert qr : ${testHealthCert.qrData}`);
+          result.encryptedEuHealthCerts?.push({
+            qrData: testHealthCert.qrData,
+          });
+        }
+      });
     } catch (e) {
       errorWithRef(`Offline Qr error: ${e.message}`);
     }
