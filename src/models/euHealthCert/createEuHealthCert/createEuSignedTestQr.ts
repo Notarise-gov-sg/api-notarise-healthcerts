@@ -4,17 +4,17 @@ import { config } from "../../../config";
 
 const { euSigner } = config;
 
-export const createEuSignedTestQr = (
-  euHealthCerts: EuHealthCert[]
-): EuHealthCertQr[] => {
-  const testHealthCertQr: EuHealthCertQr[] = [];
-  euHealthCerts.forEach(async (euHealthCert) => {
-    const qrData = await signAndPack(
-      await makeCWT(euHealthCert, euSigner.validityInMonths, euSigner.name),
-      euSigner.publicKey,
-      euSigner.privateKey
-    );
-    testHealthCertQr.push({ qrData });
-  });
-  return testHealthCertQr;
+export const createEuSignedTestQr = async (euHealthCerts: EuHealthCert[]) => {
+  const testHealthCertsQr: EuHealthCertQr[] = [];
+  await Promise.all(
+    euHealthCerts.map(async (euHealthCert) => {
+      const qrData = await signAndPack(
+        await makeCWT(euHealthCert, euSigner.validityInMonths, euSigner.name),
+        euSigner.publicKey,
+        euSigner.privateKey
+      );
+      testHealthCertsQr.push({ qrData });
+    })
+  );
+  return Promise.all(testHealthCertsQr);
 };
