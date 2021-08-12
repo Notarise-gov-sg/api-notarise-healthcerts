@@ -13,7 +13,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../services/transientStorage";
-import { EuHealthCertQr, HealthCertDocument } from "../../types";
+import { HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
 import { config } from "../../config";
@@ -28,7 +28,6 @@ export interface NotarisationResult {
   notarisedDocument: WrappedDocument<HealthCertDocument>;
   ttl: number;
   url: string;
-  encryptedEuHealthCerts?: EuHealthCertQr[];
 }
 
 export const notarisePdt = async (
@@ -120,9 +119,6 @@ export const main: Handler = async (
         } else {
           traceWithRef(euTestCert);
           traceWithRef(`EU test cert qr : ${testHealthCert.qrData}`);
-          result.encryptedEuHealthCerts?.push({
-            qrData: testHealthCert.qrData,
-          });
         }
       });
     } catch (e) {
