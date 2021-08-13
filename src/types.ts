@@ -8,6 +8,7 @@ enum EntryResourceType {
   Observation = "Observation",
   Specimen = "Specimen",
   Organization = "Organization",
+  Device = "Device",
 }
 /* eslint-disable */
 
@@ -49,13 +50,33 @@ export interface Organisation {
   resourceType: EntryResourceType.Organization;
 }
 
+export interface Device {
+  resourceType: EntryResourceType.Device;
+  type: {
+    coding: [
+      { 
+        system: string; 
+        code: string; 
+        display: string;
+      }
+    ];
+    text: string;
+  };
+  identifier: [
+    {
+      system: string;
+      value: string;
+    }
+  ];
+}
+
 export interface HealthCertDocument extends v2.OpenAttestationDocument {
   name: string;
   validFrom: string;
   fhirVersion: string;
   logo: string;
   fhirBundle: {
-    entry: [Patient | Observation | Specimen | Organisation];
+    entry: [Patient | Observation | Specimen | Organisation | Device];
   };
 }
 
@@ -85,3 +106,38 @@ export type WorkflowContextData = Static<typeof WorkflowContextData>;
 
 export type SignedNotarizedHealthCert =
   SignedWrappedDocument<NotarizedHealthCert>;
+
+  export interface EuTestParams {
+    tg: string;
+    tt: string;
+    nm?: string;
+    ma?: string;
+    sc: string;
+    tr: string;
+    tc: string;
+    co: string;
+    is: string;
+    ci: string;
+  }
+  
+  export interface EuNameParams {
+    fn?: string;
+    fnt: string;
+    gn?: string;
+    gnt?: string;
+  }
+  
+  export interface EuHealthCertDocument {
+    ver: string;
+    nam: EuNameParams;
+    dob: string;
+    t: EuTestParams[];
+  }
+  export interface EuHealthCert extends EuHealthCertDocument {
+    meta: NotarisationMetadata;
+  } 
+
+  export interface EuHealthCertQr {
+    qrData?: string;
+  }
+  

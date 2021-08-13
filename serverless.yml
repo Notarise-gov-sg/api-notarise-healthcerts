@@ -78,6 +78,11 @@ functions:
       USE_API_AUTHORISED_ISSUER: ${self:custom.${self:custom.envSource}.USE_API_AUTHORISED_ISSUER}
       AUTHORIZED_ISSUERS_API_URL: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_URL}
       AUTHORIZED_ISSUERS_API_KEY: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_KEY}
+      OFFLINE_QR_ENABLED: ${self:custom.${self:custom.envSource}.OFFLINE_QR_ENABLED}
+      SIGNING_EU_QR_NAME: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_NAME}
+      SIGNING_EU_QR_VALIDITY_IN_MONTHS: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_VALIDITY_IN_MONTHS}
+      SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
+      SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
     handler: src/functionHandlers/notarisePdt/handler.handler
     events:
       - http:
@@ -135,6 +140,11 @@ custom:
     USE_API_AUTHORISED_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/USE_API_AUTHORISED_ISSUER, ""}
     AUTHORIZED_ISSUERS_API_URL: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_URL, ""}
     AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY~true, ""}
+    OFFLINE_QR_ENABLED: ${ssm:/serverless/OFFLINE_QR_ENABLED, ""}
+    SIGNING_EU_QR_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_NAME, ""}
+    SIGNING_EU_QR_VALIDITY_IN_MONTHS: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_VALIDITY_IN_MONTHS, ""}
+    SIGNING_EU_QR_PUBLIC_KEY: ${ssm:/serverless/SIGNING_EU_QR_PUBLIC_KEY, ""}
+    SIGNING_EU_QR_PRIVATE_KEY: ${ssm:/serverless/SIGNING_EU_QR_PRIVATE_KEY~true, ""}
   dotenv:
     INFURA_API_KEY: ${env:INFURA_API_KEY, ""}
     SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
@@ -153,6 +163,11 @@ custom:
     USE_API_AUTHORISED_ISSUER: ${env:USE_API_AUTHORISED_ISSUER, ""}
     AUTHORIZED_ISSUERS_API_URL: ${env:AUTHORIZED_ISSUERS_API_URL, ""}
     AUTHORIZED_ISSUERS_API_KEY: ${env:AUTHORIZED_ISSUERS_API_KEY, ""}
+    OFFLINE_QR_ENABLED: ${env:OFFLINE_QR_ENABLED, ""}
+    SIGNING_EU_QR_NAME: ${env:SIGNING_EU_QR_NAME, ""}
+    SIGNING_EU_QR_VALIDITY_IN_MONTHS: ${env:SIGNING_EU_QR_VALIDITY_IN_MONTHS, ""}
+    SIGNING_EU_QR_PUBLIC_KEY: ${env:SIGNING_EU_QR_PUBLIC_KEY, ""}
+    SIGNING_EU_QR_PRIVATE_KEY: ${env:SIGNING_EU_QR_PRIVATE_KEY, ""}
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:

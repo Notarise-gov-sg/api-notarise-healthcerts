@@ -1,0 +1,61 @@
+import { notarise } from "@govtechsg/oa-schemata";
+import moment from "moment-timezone";
+import { TestData } from "src/models/healthCert";
+import { config } from "../../../config";
+import { EuHealthCert, EuNameParams, EuTestParams } from "../../../types";
+
+const { euSigner, swabTestTypes } = config;
+
+export const createEuTestCert = (
+  testData: TestData[],
+  reference: string,
+  storedUrl: string
+): EuHealthCert[] => {
+  const fhirVersion = "1.3.0";
+  // Set Unique Cert Id with version + country + unique ref
+  const UniqueCertificateId = `REF:V1:SG:${reference.toUpperCase()}`;
+  const dateString = new Date().toISOString();
+
+  const testHealthCerts: EuHealthCert[] = [];
+  testData.forEach((item) => {
+    const euName: EuNameParams = {
+      fnt: item.patientName.replace(/ /g, "<").toUpperCase(),
+      gnt: item.patientName.replace(/ /g, "<").toUpperCase(),
+    };
+    const dob = item.birthDate?.split("/")?.reverse()?.join("-");
+    const meta: notarise.NotarisationMetadata = {
+      reference,
+      notarisedOn: dateString,
+      passportNumber: item.passportNumber,
+      url: storedUrl,
+    };
+    const testGroup: EuTestParams = {
+      tg: "840539006",
+      tt: "LP6464-4", // need to confirm with MOH for for Serology, it can either be [Nucleic acid amplification with probe detection] or [Rapid immunoassay]
+      sc: moment
+        .tz(item.swabCollectionDate, "M/D/YY h:mm:ss A", "Asia/Singapore")
+        .format(),
+      tr: item.testResultCode,
+      tc: item.provider,
+      co: "SG",
+      is: euSigner.name,
+      ci: UniqueCertificateId,
+    };
+    if (item.swabTypeCode === swabTestTypes.PCR) {
+      testGroup.tt = "LP6464-4"; // test type code for PCR test [Nucleic acid amplification with probe detection]
+      testGroup.nm = item.testType;
+    } else if (item.swabTypeCode === swabTestTypes.ART) {
+      testGroup.tt = "LP217198-3"; // test type code for ART test [Rapid immunoassay]
+      testGroup.ma = item.deviceIdentifier;
+    }
+    testHealthCerts.push({
+      ver: fhirVersion,
+      nam: euName,
+      dob,
+      t: [testGroup],
+      meta,
+    });
+  });
+
+  return testHealthCerts;
+};

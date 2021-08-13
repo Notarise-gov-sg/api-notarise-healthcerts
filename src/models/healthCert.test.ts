@@ -1,6 +1,7 @@
 import exampleHealthCertWithNric from "../../test/fixtures/example_healthcert_with_nric_unwrapped.json";
 import exampleHealthCertWithoutNric from "../../test/fixtures/example_healthcert_without_nric_unwrapped.json";
 import exampleMultiResultHealthCert from "../../test/fixtures/example_healthcert_multi_result_unwrapped.json";
+import exampleArtHealthCertWithNric from "../../test/fixtures/example_art_healthcert_with_nric_unwrapped.json";
 import {
   getParticularsFromHealthCert,
   getTestDataFromHealthCert,
@@ -11,7 +12,8 @@ import { DataInvalidError } from "../common/error";
 type testCert =
   | typeof exampleHealthCertWithNric
   | typeof exampleHealthCertWithoutNric
-  | typeof exampleMultiResultHealthCert;
+  | typeof exampleMultiResultHealthCert
+  | typeof exampleArtHealthCertWithNric;
 const getSwabCollectionDates = (document: testCert): string[] => {
   const entries: any[] = document.fhirBundle.entry;
   return entries
@@ -20,7 +22,7 @@ const getSwabCollectionDates = (document: testCert): string[] => {
 };
 
 const getObservationDates = (document: testCert): (string | undefined)[] => {
-  const entries = document.fhirBundle.entry;
+  const entries: any[] = document.fhirBundle.entry;
   return entries
     .filter((entry) => entry?.effectiveDateTime != null)
     .map((entry) => entry.effectiveDateTime);
@@ -49,7 +51,52 @@ describe("src/models/healthCert", () => {
   });
   describe("getTestDataFromHealthCert", () => {
     describe("single observation flow", () => {
-      test("should correctly extract test data from a well formed healthcert", () => {
+      test("should correctly extract test data from a well formed ART healthcert", () => {
+        const swabCollectionDates: string[] = getSwabCollectionDates(
+          exampleArtHealthCertWithNric
+        );
+        const observationDates: (string | undefined)[] = getObservationDates(
+          exampleArtHealthCertWithNric
+        );
+
+        const swabCollectionDate = parseDateTime(swabCollectionDates[0]);
+        const observationDate = parseDateTime(observationDates[0]);
+        expect(
+          getTestDataFromHealthCert(exampleArtHealthCertWithNric as any)
+        ).toStrictEqual([
+          {
+            lab: undefined,
+            nric: "S9098989Z",
+            observationDate,
+            passportNumber: "E7831177G",
+            birthDate: "15/01/1990",
+            patientName: "Tan Chen Chen",
+            nationality: "Singaporean",
+            gender: "She",
+            performerMcr: "MCR 123214",
+            performerName: "Dr Michael Lim",
+            provider: "MacRitchie Medical Clinic",
+            swabCollectionDate,
+            swabType: "Anterior nares swab",
+            swabTypeCode: "697989009",
+            testResult: "Negative",
+            testResultCode: "260385009",
+            testType:
+              "SARS-CoV-2 (COVID-19) Ag [Presence] in Upper respiratory specimen by Rapid immunoassay",
+            deviceIdentifier: "1232",
+          },
+        ]);
+      });
+
+      test("should throw error if ART healthcert not have device identifier", () => {
+        const malformedHealthCert = exampleArtHealthCertWithNric as any;
+        malformedHealthCert.fhirBundle.entry.pop();
+        expect(() =>
+          getTestDataFromHealthCert(malformedHealthCert)
+        ).toThrowError(DataInvalidError);
+      });
+
+      test("should correctly extract test data from a well formed PCR healthcert", () => {
         const swabCollectionDates: string[] = getSwabCollectionDates(
           exampleHealthCertWithNric
         );
@@ -77,7 +124,9 @@ describe("src/models/healthCert", () => {
             provider: "MacRitchie Medical Clinic",
             swabCollectionDate,
             swabType: "Nasopharyngeal swab",
+            swabTypeCode: "258500001",
             testResult: "Negative",
+            testResultCode: "260385009",
             testType: "REAL TIME RT-PCR SWAB",
           },
         ]);
@@ -279,7 +328,9 @@ describe("src/models/healthCert", () => {
             provider: "MacRitchie Medical Clinic",
             swabCollectionDate: swabCollectionDate1,
             swabType: "Nasopharyngeal swab",
+            swabTypeCode: "258500001",
             testResult: "Negative",
+            testResultCode: "260385009",
             testType: "REAL TIME RT-PCR SWAB",
           },
           {
@@ -296,7 +347,9 @@ describe("src/models/healthCert", () => {
             provider: "MacRitchie Medical Clinic2",
             swabCollectionDate: swabCollectionDate2,
             swabType: "Nasopharyngeal swab",
+            swabTypeCode: "258500001",
             testResult: "Negative",
+            testResultCode: "260385009",
             testType: "REAL TIME RT-PCR SWAB",
           },
         ]);

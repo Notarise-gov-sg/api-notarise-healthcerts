@@ -2,6 +2,9 @@
 // e.g passportNumber to passport number
 import { TestData } from "../models/healthCert";
 import { DataInvalidError } from "./error";
+import { config } from "../config";
+
+const { swabTestTypes } = config;
 
 const toEnglishWords = (variableName: string): string => {
   let newString = "";
@@ -19,9 +22,16 @@ const toEnglishWords = (variableName: string): string => {
 // concats all required missing fields of test data to an a string array to be used
 // in the error message
 export const validateHealthCertData = (testDataList: TestData[]) => {
-  const optionalData = ["nric", "lab"];
+  const optionalData = ["nric", "lab", "deviceIdentifier"];
   const invalidParams: string[] = [];
   testDataList.forEach((testData) => {
+    // art cert need to have device identifier
+    if (
+      testData.swabTypeCode === swabTestTypes.ART &&
+      !testData.deviceIdentifier
+    ) {
+      invalidParams.push(toEnglishWords("deviceIdentifier"));
+    }
     Object.entries(testData).forEach((entry) => {
       const [key, value] = entry;
       if (!value && !optionalData.includes(key)) {
