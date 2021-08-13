@@ -140,3 +140,4 @@ export type SignedNotarizedHealthCert =
   export interface EuHealthCertQr {
     qrData?: string;
   }
+  
