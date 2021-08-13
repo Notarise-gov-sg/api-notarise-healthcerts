@@ -1,0 +1,108 @@
+{
+  "id": "TEST001",
+  "name": "HealthCert",
+  "validFrom": "2020-11-20T06:43:12.152Z",
+  "fhirVersion": "4.0.1",
+  "fhirBundle": {
+    "resourceType": "Bundle",
+    "type": "collection",
+    "entry": [
+      {
+        "resourceType": "Patient",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-nationality",
+            "code": { "text": "SG" }
+          }
+        ],
+        "identifier": [
+          { "type": "PPN", "value": "E7831177G" },
+          { "type": { "text": "NRIC" }, "value": "S9098989Z" }
+        ],
+        "name": [{ "text": "Tan Chen Chen" }],
+        "gender": "female",
+        "birthDate": "1990-01-15"
+      },
+      {
+        "resourceType": "Specimen",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "697989009",
+              "display": "Anterior nares swab"
+            }
+          ]
+        },
+        "collection": { "collectedDateTime": "2020-09-27T06:15:00Z" }
+      },
+      {
+        "resourceType": "Observation",
+        "identifier": [{ "value": "123456789", "type": "ACSN" }],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "97097-0",
+              "display": "SARS-CoV-2 (COVID-19) Ag [Presence] in Upper respiratory specimen by Rapid immunoassay"
+            }
+          ]
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260385009",
+              "display": "Negative"
+            }
+          ]
+        },
+        "effectiveDateTime": "2020-09-28T06:15:00Z",
+        "status": "final",
+        "performer": { "name": [{ "text": "Dr Michael Lim" }] },
+        "qualification": [{ "identifier": "MCR 123214", "issuer": "MOH" }]
+      },
+      {
+        "resourceType": "Organization",
+        "name": "MacRitchie Medical Clinic",
+        "type": "Licensed Healthcare Provider",
+        "endpoint": { "address": "https://www.macritchieclinic.com.sg" },
+        "contact": {
+          "telecom": [{ "system": "phone", "value": "+6563113111" }],
+          "address": {
+            "type": "physical",
+            "use": "work",
+            "text": "MacRitchie Hospital Thomson Road Singapore 123000"
+          }
+        }
+      },
+      {
+        "resourceType": "Device",
+        "type": {
+          "coding": [
+            {
+              "system": "https://covid-19-diagnostics.jrc.ec.europa.eu/devices",
+              "code": "1232",
+              "display": "Abbott Rapid Diagnostics, Panbio COVID-19 Ag Rapid Test"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "issuers": [
+    {
+      "name": "GovTech",
+      "documentStore": "0x8Fc57204c35fb9317D91285eF52D6b892EC08cD3",
+      "identityProof": { "type": "DNS-TXT", "location": "example.openattestation.com" }
+    }
+  ],
+  "$template": { "name": "HEALTH_CERT", "type": "EMBEDDED_RENDERER", "url": "https://healthcert.renderer.moh.gov.sg/" },
+  "notarisationMetadata": {
+    "reference": "ABC-123-XYZ",
+    "notarisedOn": "2020-09-27T06:15:00Z",
+    "passportNumber": "E7831177G",
+    "url": "https://action.openattestation.com/?q=%7B%22type%22%3A%22DOCUMENT%22%2C%22payload%22%3A%7B%22uri%22%3A%22https%3A%2F%2Fgallery.openattestation.com%2Fstatic%2Fdocuments%2Fhealthcerts-memo-notarised.json%22%2C%22permittedActions%22%3A%5B%22VIEW%22%5D%2C%22redirect%22%3A%22https%3A%2F%2Fdev.opencerts.io%22%7D%7D"
+  },
+  "logo": ""
+}

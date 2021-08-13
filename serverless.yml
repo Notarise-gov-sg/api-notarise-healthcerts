@@ -47,6 +47,7 @@ provider:
     - ${opt:stage, "dev"}-notariseHealthcertKey-Edufied
     - ${opt:stage, "dev"}-notariseHealthcertKey-Jedtrade
     - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
+    - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
   usagePlan:
     quota:
       limit: 10000
