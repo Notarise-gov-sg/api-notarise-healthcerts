@@ -12,8 +12,14 @@ const { Fhir } = require("fhir");
 
 const fhir = new Fhir();
 
+/**
+ * The mapping definition of each FHIR resource.
+ *
+ * Note: This function will ONLY validate a resource against FHIR base spec.
+ * @param resource Raw FHIR resource
+ * @returns Parsed FHIR resource (simplified)
+ */
 const parsers = (resource: R4.IResourceList | undefined) => {
-  /* Validate resource against FHIR base spec */
   const validator = fhir.validate(resource, { errorOnUnexpected: true });
   if (!validator.valid) {
     throw new Error(JSON.stringify(validator.messages));
@@ -75,7 +81,13 @@ const parsers = (resource: R4.IResourceList | undefined) => {
   }
 };
 
-export const parse = (type: "PCR" | "ART", fhirBundle: R4.IBundle) => {
+/**
+ * Parses a Bundle of resources into a simplified format.
+ *
+ * @param fhirBundle Raw FHIR Bundle resource
+ * @returns An object containing all the parsed resources in the bundle (simplified)
+ */
+export const parse = (fhirBundle: R4.IBundle) => {
   //  0. Bundle resource
   parsers(fhirBundle);
 
