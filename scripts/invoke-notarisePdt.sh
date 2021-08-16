@@ -9,3 +9,10 @@ curl -v POST "$DEV_URL/notarise/pdt" \
         --header "Content-Type: application/json" \
         --header "x-api-key: $X_API_KEY" \
         --max-time 60
+
+curl -v POST "$DEV_URL/v2/notarise/pdt" \
+        -d @./test/fixtures/v2/example_healthcert_with_nric_wrapped.json \
+        --show-error \
+        --header "Content-Type: application/json" \
+        --header "x-api-key: $X_API_KEY" \
+        --max-time 60

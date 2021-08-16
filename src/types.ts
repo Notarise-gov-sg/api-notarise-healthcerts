@@ -22,6 +22,20 @@ export interface Patient {
   ];
   name: string;
 }
+export interface PatientV2 {
+  resourceType: EntryResourceType.Patient;
+  identifier: [
+    {
+      id: "PPN";
+      value: string;
+    },
+    {
+      id: "NRIC-FIN",
+      value: string;
+    }
+  ];
+  name: string;
+}
 
 export interface Observation {
   resourceType: EntryResourceType.Observation;
@@ -81,6 +95,21 @@ export interface HealthCertDocument extends v2.OpenAttestationDocument {
 }
 
 export interface NotarizedHealthCert extends HealthCertDocument {
+  notarisationMetadata: NotarisationMetadata;
+}
+
+export interface HealthCertDocumentV2 extends v2.OpenAttestationDocument {
+  version: string;
+  type: string;
+  validFrom: string;
+  fhirVersion: string;
+  logo: string;
+  fhirBundle: {
+    entry: [PatientV2 | Observation | Specimen | Organisation | Device];
+  };
+}
+
+export interface NotarizedHealthCertV2 extends HealthCertDocumentV2 {
   notarisationMetadata: NotarisationMetadata;
 }
 

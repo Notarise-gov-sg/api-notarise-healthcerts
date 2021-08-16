@@ -1,0 +1,321 @@
+{
+  "version": "https://schema.openattestation.com/2.0/schema.json",
+  "data": {
+    "id": "90f2ddaf-0dca-4692-9cf4-87cef4a98615:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
+    "version": "3442c4ec-ec96-4bcd-ac38-c9999f1079f8:string:pdt-healthcert-v2.0",
+    "type": "02bcfc11-b93e-420a-ade7-9916ded092ea:string:PCR",
+    "validFrom": "97183958-b0a8-4e02-82b7-e9ffdb720072:string:2021-05-18T06:43:12.152Z",
+    "fhirVersion": "2644f67b-cc6d-44c3-bbd9-b03c989ae9cd:string:4.0.1",
+    "fhirBundle": {
+      "resourceType": "9539d59a-08ec-4162-a358-b50d350498b2:string:Bundle",
+      "type": "bdfcc1e5-5fcc-4b39-9554-75299393f78e:string:collection",
+      "entry": [
+        {
+          "fullUrl": "c0be932d-ff97-4f50-a0c0-6da92e079370:string:urn:uuid:ba7b7c8d-c509-4d9d-be4e-f99b6de29e23",
+          "resource": {
+            "resourceType": "391877ba-2f98-4027-8441-8852ca34ae79:string:Patient",
+            "extension": [
+              {
+                "url": "39dea627-9a04-44e7-9690-f33bb5f06a44:string:http://hl7.org/fhir/StructureDefinition/patient-nationality",
+                "extension": [
+                  {
+                    "url": "ab218dfb-0e78-452a-bb19-89d6e120198a:string:code",
+                    "valueCodeableConcept": {
+                      "text": "113c6021-0982-465b-b2d6-6e1d66c46fdd:string:Patient Nationality",
+                      "coding": [
+                        {
+                          "system": "88cc2d7f-41e9-4afb-913f-f8f69665e2b1:string:urn:iso:std:iso:3166",
+                          "code": "6cff0938-0653-4bea-918e-331bddafa044:string:SG"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "id": "8e01329f-50d5-4482-a74b-18a36fac45ec:string:PPN",
+                "type": {
+                  "coding": [
+                    {
+                      "system": "8dbe22be-6080-4315-ba5a-e9688a18dff3:string:http://terminology.hl7.org/CodeSystem/v2-0203",
+                      "code": "2f9604b0-ba5e-4aae-b77d-1290b3624757:string:PPN",
+                      "display": "9c7714e3-f0cd-431a-94d6-b2ccc7bd2795:string:Passport Number"
+                    }
+                  ]
+                },
+                "value": "02ff7732-2e10-44a6-8a00-b4668b77f584:string:E7831177G"
+              },
+              {
+                "id": "b0381a5b-12ea-4aaa-808d-7d42e6bd4262:string:NRIC-FIN",
+                "value": "fb529219-8625-4fef-aaae-ce6e9983cd63:string:S9098989Z"
+              }
+            ],
+            "name": [
+              {
+                "text": "9dc174df-1b3e-40ea-9501-0b82a040a014:string:Tan Chen Chen"
+              }
+            ],
+            "gender": "d35adbec-96ec-449c-bc6b-f1ddec032d56:string:female",
+            "birthDate": "1ba5e177-4078-425e-bfc7-f14c85583b37:string:1990-01-15"
+          }
+        },
+        {
+          "fullUrl": "9159bea0-cb66-4828-a03b-7508fb46d44b:string:urn:uuid:0275bfaf-48fb-44e0-80cd-9c504f80e6ae",
+          "resource": {
+            "resourceType": "a62026f0-9baa-4dce-ab24-47413ad1717b:string:Specimen",
+            "type": {
+              "coding": [
+                {
+                  "system": "55830cd2-3b2d-4859-b114-92db79601eb9:string:http://snomed.info/sct",
+                  "code": "4557db8f-4f3c-4edb-889c-2bd815aebc3b:string:258500001",
+                  "display": "dc85de55-9cf9-4c3c-98c0-58cd8811c7a2:string:Nasopharyngeal swab"
+                }
+              ]
+            },
+            "collection": {
+              "collectedDateTime": "fed3906e-11f6-4e40-87ca-7122add68f65:string:2020-09-27T06:15:00Z"
+            }
+          }
+        },
+        {
+          "fullUrl": "90d5fccd-574a-4c79-992f-b3301391bd73:string:urn:uuid:7729970e-ab26-469f-b3e5-36a42ec24146",
+          "resource": {
+            "resourceType": "acdb26d7-367a-49ee-b3ec-57a67dddf358:string:Observation",
+            "performer": [
+              {
+                "type": "2d2ddf3d-bfc7-4d91-84df-230ced965eab:string:Practitioner",
+                "reference": "5780884b-a949-4812-956b-58ffe2bd5909:string:urn:uuid:3dbff0de-d4a4-4e1d-98bf-af7428b8a04b"
+              }
+            ],
+            "identifier": [
+              {
+                "id": "c027cb24-5e10-4683-96be-6fbf2437d04c:string:ACSN",
+                "type": {
+                  "coding": [
+                    {
+                      "system": "985bf7a7-223e-491a-81b8-d2217346327e:string:http://terminology.hl7.org/CodeSystem/v2-0203",
+                      "code": "382945a6-61b7-40f4-8fc8-70c287644e7f:string:ACSN",
+                      "display": "c5f68e78-e4aa-4336-bb12-eea96188a6d1:string:Accession ID"
+                    }
+                  ]
+                },
+                "value": "e4620df1-babd-47e9-9717-b39bc49f33fe:string:123456789"
+              }
+            ],
+            "category": [
+              {
+                "coding": [
+                  {
+                    "system": "f4812178-3b92-4bd7-ab09-1e5efe744c1b:string:http://snomed.info/sct",
+                    "code": "ef79f8ae-0cae-412d-8931-8f36dd5318d4:string:840539006",
+                    "display": "aec3f7a7-a333-4b05-b8cb-f86808c3d395:string:COVID-19"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "system": "9cf15cf4-70e8-497f-b95a-c90a970a5581:string:http://loinc.org",
+                  "code": "d39eeebc-6cb2-4fdd-840f-c879a0f485e4:string:94531-1",
+                  "display": "ad4dd1c6-2c60-4fe6-b50e-cdbfcb4346ea:string:SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "57aa8544-4ef1-43ce-af32-03a8d91fefdb:string:http://snomed.info/sct",
+                  "code": "3e68e59d-c329-41ab-88b4-8f33d45d359b:string:260385009",
+                  "display": "e4390b1f-85cf-4e82-9d24-274fb0228613:string:Negative"
+                }
+              ]
+            },
+            "effectiveDateTime": "d4555328-be91-48d6-8a94-2d6f7a135589:string:2020-09-28T06:15:00Z",
+            "status": "8bac640c-64d1-4a9d-a584-c049778220f6:string:final"
+          }
+        },
+        {
+          "fullUrl": "2934f819-cd5e-4720-a8fe-c7f5dc1643d9:string:urn:uuid:3dbff0de-d4a4-4e1d-98bf-af7428b8a04b",
+          "resource": {
+            "resourceType": "1847e0e2-2d8f-4c5c-829b-eb769f1a616a:string:Practitioner",
+            "name": [
+              {
+                "text": "471f2979-e366-465f-a90a-2a90060a3298:string:Dr Michael Lim"
+              }
+            ],
+            "qualification": [
+              {
+                "code": {
+                  "coding": [
+                    {
+                      "system": "a5feb742-4e4f-4c17-90a6-6e713a87d514:string:http://terminology.hl7.org/CodeSystem/v2-0203",
+                      "code": "022c4f1a-5153-4a83-846a-6e2142867dbf:string:MCR",
+                      "display": "16632534-5e69-4dc7-9f8a-c38f4a2523ec:string:Practitioner Medicare number"
+                    }
+                  ]
+                },
+                "identifier": [
+                  {
+                    "id": "ee7e88c9-527c-45e2-a7b6-510e208590e5:string:MCR",
+                    "value": "aceaff2f-c8c8-4d97-b5ad-5519545e9529:string:123214"
+                  }
+                ],
+                "issuer": {
+                  "type": "7368270f-5907-4505-b20c-a06dcfd90542:string:Organization",
+                  "reference": "7a0f9b3c-a1b2-4af7-82f4-1b1aff97b6e1:string:urn:uuid:bc7065ee-42aa-473a-a614-afd8a7b30b1e"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "46fd01f3-15e0-4af1-ad7a-29663efbc4fd:string:urn:uuid:bc7065ee-42aa-473a-a614-afd8a7b30b1e",
+          "resource": {
+            "resourceType": "6c8cb022-4f56-4358-a842-d224811e2d62:string:Organization",
+            "name": "eff2d9b1-0679-463b-93b4-b68923552f23:string:Ministry of Health (MOH)",
+            "type": [
+              {
+                "coding": [
+                  {
+                    "system": "9f4524ff-ce3e-436e-b052-67149695bf41:string:http://terminology.hl7.org/CodeSystem/organization-type",
+                    "code": "f63a4a35-b7b5-43c0-83d5-0facf51bd99c:string:govt",
+                    "display": "9f0848af-ee89-471f-97cb-a16c7458913e:string:Government"
+                  }
+                ]
+              }
+            ],
+            "contact": [
+              {
+                "telecom": [
+                  {
+                    "system": "8522c184-2058-4247-b1cb-29e6c55c4c48:string:url",
+                    "value": "7fa22720-9e6a-49bb-be74-28df81da8aa8:string:https://www.moh.gov.sg"
+                  },
+                  {
+                    "system": "0140d555-f431-42e4-bdfa-3dfb987f85c1:string:phone",
+                    "value": "8f20a56b-e1ef-47b5-9348-f08dc26402d6:string:+6563259220"
+                  }
+                ],
+                "address": {
+                  "type": "50159e5b-875f-4130-b5b6-adad63209e0d:string:physical",
+                  "use": "bef423c9-04d5-4e36-b5ed-a70f01e429f6:string:work",
+                  "text": "9bb93ed7-c612-4ea6-9e55-f59fc07f5006:string:Ministry of Health, 16 College Road, College of Medicine Building, Singapore 169854"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "4ff9378a-3a32-4dff-a554-87e248071811:string:urn:uuid:fa2328af-4882-4eaa-8c28-66dab46950f1",
+          "resource": {
+            "resourceType": "3bdd36e3-1730-438e-8058-4ae36b360798:string:Organization",
+            "name": "e9594029-c1d7-4c96-9deb-9914d73ef3f0:string:MacRitchie Medical Clinic",
+            "type": [
+              {
+                "coding": [
+                  {
+                    "system": "fdf590cb-81c7-4e7a-98b9-753db5c26c71:string:http://terminology.hl7.org/CodeSystem/organization-type",
+                    "code": "ef8134ad-fee3-4d00-96fd-645114caf498:string:prov",
+                    "display": "65a24cd0-3ecd-4a9e-9d9a-60114971d0c4:string:Healthcare Provider"
+                  }
+                ],
+                "text": "7cd4ac85-3fb8-48e2-a032-27c374681612:string:Licensed Healthcare Provider"
+              }
+            ],
+            "contact": [
+              {
+                "telecom": [
+                  {
+                    "system": "ed783103-b530-4c4c-878b-9961e3647950:string:url",
+                    "value": "256c684c-d25a-4c4a-899b-8ea39f4a6572:string:https://www.macritchieclinic.com.sg"
+                  },
+                  {
+                    "system": "c703fd3b-321b-4fd8-b610-a06bda1d4e3e:string:phone",
+                    "value": "1042ce97-6b28-4c06-8d65-e2edf654597a:string:+6561234567"
+                  }
+                ],
+                "address": {
+                  "type": "ddc5d50a-fe72-4428-aafe-a926a3c155bb:string:physical",
+                  "use": "21414d23-1313-484b-89ae-5ba354e654e2:string:work",
+                  "text": "aea247f6-b60c-4d34-88b4-1303441b624b:string:MacRitchie Hospital, Thomson Road, Singapore 123000"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "008a10c8-95eb-4863-bd56-711088b47c1b:string:urn:uuid:839a7c54-6b40-41cb-b10d-9295d7e75f77",
+          "resource": {
+            "resourceType": "2999a96f-91fc-4685-adc0-7fe388f3aa96:string:Organization",
+            "name": "ab4866b9-f544-48e8-9520-d8a44aade742:string:MacRitchie Laboratory",
+            "type": [
+              {
+                "coding": [
+                  {
+                    "system": "08356df9-e57e-4567-9c2e-a51962cf468b:string:http://terminology.hl7.org/CodeSystem/organization-type",
+                    "code": "d45d514d-5c8d-4b65-bf97-a86cbfe1c681:string:prov",
+                    "display": "7ba6d719-938a-4d6c-85ba-a830b8ba994f:string:Healthcare Provider"
+                  }
+                ],
+                "text": "8774f146-273a-45f1-84e2-303805910aec:string:Accredited Laboratory"
+              }
+            ],
+            "contact": [
+              {
+                "telecom": [
+                  {
+                    "system": "8b60719e-ee0a-4ab9-b2cf-71edd7f60266:string:phone",
+                    "value": "7f8bcbba-b41b-4582-a0a7-ad8bcdb1cf11:string:+6567654321"
+                  }
+                ],
+                "address": {
+                  "type": "c26d1de0-e23e-461c-98c6-2a88c590a086:string:physical",
+                  "use": "289cc576-a5e2-4044-affe-668a0d40b5aa:string:work",
+                  "text": "89e70d05-e87f-423d-a50d-6cbc156bd41b:string:2 Thomson Avenue 4, Singapore 098888"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "issuers": [
+      {
+        "id": "b405337f-7cbc-4797-a0b9-6d141abe0b37:string:did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830",
+        "revocation": {
+          "type": "6c6eb7a8-a718-43f6-ada7-37d49240a4b7:string:NONE"
+        },
+        "name": "f067464e-69e1-47ef-9362-104eec052f26:string:SAMPLE CLINIC",
+        "identityProof": {
+          "type": "081a7a4c-4bc7-4199-a90d-68ca480ab697:string:DNS-DID",
+          "location": "87986dbf-a292-4e9b-84b8-b3b3217e3e63:string:donotverify.testing.verify.gov.sg",
+          "key": "5c381478-743d-4070-9919-1c064b579a9a:string:did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830#controller"
+        }
+      }
+    ],
+    "logo": "26d7adbe-f504-46a5-9807-7157d62e3cfe:string:data:image/png;base64,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",
+    "$template": {
+      "name": "4c251672-4208-49ab-8338-5e951e049329:string:HEALTHCERT",
+      "type": "a3ce7ccd-4eaa-46df-91bc-9f6b7c06123e:string:EMBEDDED_RENDERER",
+      "url": "e274944b-3c28-48b2-a198-e8a9e04a959b:string:https://moh-healthcert-renderer.netlify.app/"
+    }
+  },
+  "signature": {
+    "type": "SHA3MerkleProof",
+    "targetHash": "1e3f8b56a0626171a11a5eac68aca3efca0e57d7144407a1995852eea1536415",
+    "proof": [],
+    "merkleRoot": "1e3f8b56a0626171a11a5eac68aca3efca0e57d7144407a1995852eea1536415"
+  },
+  "proof": [
+    {
+      "type": "OpenAttestationSignature2018",
+      "created": "2021-08-16T02:49:54.942Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830#controller",
+      "signature": "0x2cd1299172b1ab77846e681fc12980e3b692fab4f27650a2c72a3a42bbd2baf4489dc9b1044efba21a43b02638eea00fc6a9320e574118ceaa2399f19d03e3f71c"
+    }
+  ]
+}
