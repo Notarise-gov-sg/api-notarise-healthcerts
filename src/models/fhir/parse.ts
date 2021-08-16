@@ -7,66 +7,10 @@ import {
   Organization,
 } from "./types";
 
-const Fhir = require("fhir").Fhir;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { Fhir } = require("fhir");
+
 const fhir = new Fhir();
-
-export const parse = (type: "PCR" | "ART", fhirBundle: R4.IBundle) => {
-  //  0. Bundle resource
-  parsers(fhirBundle);
-
-  // 1. Patient resource
-  const fhirPatient = fhirBundle.entry?.find(
-    (entry) => entry.resource?.resourceType === "Patient"
-  )?.resource;
-  const patient = parsers(fhirPatient) as Patient;
-
-  // 2. Specimen resource
-  const fhirSpecimen = fhirBundle.entry?.find(
-    (entry) => entry.resource?.resourceType === "Specimen"
-  )?.resource;
-  const specimen = parsers(fhirSpecimen) as Specimen;
-
-  // 3. Observation resource(s)
-  const observations = fhirBundle.entry
-    ?.filter((entry) => entry.resource?.resourceType === "Observation")
-    ?.map((o) => parsers(o.resource) as Observation)!;
-
-  // 4. Practitioner resource
-  const fhirPractitioner = fhirBundle.entry?.find(
-    (entry) => entry.fullUrl === observations?.[0].practitionerResourceUuid
-  )?.resource;
-  const practitioner = parsers(fhirPractitioner) as Practitioner;
-
-  // 5. Organization (MOH) resource
-  const fhirOrganizationMoh = fhirBundle.entry?.find(
-    (entry) => entry.fullUrl === practitioner.organizationResourceUuid
-  )?.resource;
-  const moh = parsers(fhirOrganizationMoh) as Organization;
-
-  // 6. Organization (Licensed Healthcare Provider) resource
-  const fhirOrganizationLhp = fhirBundle.entry?.find(
-    (entry) =>
-      entry.resource?.resourceType === "Organization" &&
-      entry.resource?.type?.[0].text === "Licensed Healthcare Provider"
-  )?.resource;
-  const lhp = parsers(fhirOrganizationLhp) as Organization;
-
-  // 7. Organization (Accredited Laboratory) resource
-  const fhirOrganizationAl = fhirBundle.entry?.find(
-    (entry) =>
-      entry.resource?.resourceType === "Organization" &&
-      entry.resource?.type?.[0].text === "Accredited Laboratory"
-  )?.resource;
-  const al = parsers(fhirOrganizationAl) as Organization; // Only for PCR
-
-  return {
-    patient,
-    specimen,
-    observations,
-    practitioner,
-    organisation: { moh, lhp, al },
-  };
-};
 
 const parsers = (resource: R4.IResourceList | undefined) => {
   /* Validate resource against FHIR base spec */
@@ -129,4 +73,62 @@ const parsers = (resource: R4.IResourceList | undefined) => {
     default:
       throw new Error(`Unable to find an appropriate parser for: ${resource}`);
   }
+};
+
+export const parse = (type: "PCR" | "ART", fhirBundle: R4.IBundle) => {
+  //  0. Bundle resource
+  parsers(fhirBundle);
+
+  // 1. Patient resource
+  const fhirPatient = fhirBundle.entry?.find(
+    (entry) => entry.resource?.resourceType === "Patient"
+  )?.resource;
+  const patient = parsers(fhirPatient) as Patient;
+
+  // 2. Specimen resource
+  const fhirSpecimen = fhirBundle.entry?.find(
+    (entry) => entry.resource?.resourceType === "Specimen"
+  )?.resource;
+  const specimen = parsers(fhirSpecimen) as Specimen;
+
+  // 3. Observation resource(s)
+  const observations = fhirBundle.entry
+    ?.filter((entry) => entry.resource?.resourceType === "Observation")
+    ?.map((o) => parsers(o.resource)) as Observation[];
+
+  // 4. Practitioner resource
+  const fhirPractitioner = fhirBundle.entry?.find(
+    (entry) => entry.fullUrl === observations?.[0].practitionerResourceUuid
+  )?.resource;
+  const practitioner = parsers(fhirPractitioner) as Practitioner;
+
+  // 5. Organization (MOH) resource
+  const fhirOrganizationMoh = fhirBundle.entry?.find(
+    (entry) => entry.fullUrl === practitioner.organizationResourceUuid
+  )?.resource;
+  const moh = parsers(fhirOrganizationMoh) as Organization;
+
+  // 6. Organization (Licensed Healthcare Provider) resource
+  const fhirOrganizationLhp = fhirBundle.entry?.find(
+    (entry) =>
+      entry.resource?.resourceType === "Organization" &&
+      entry.resource?.type?.[0].text === "Licensed Healthcare Provider"
+  )?.resource;
+  const lhp = parsers(fhirOrganizationLhp) as Organization;
+
+  // 7. Organization (Accredited Laboratory) resource
+  const fhirOrganizationAl = fhirBundle.entry?.find(
+    (entry) =>
+      entry.resource?.resourceType === "Organization" &&
+      entry.resource?.type?.[0].text === "Accredited Laboratory"
+  )?.resource;
+  const al = parsers(fhirOrganizationAl) as Organization; // Only for PCR
+
+  return {
+    patient,
+    specimen,
+    observations,
+    practitioner,
+    organisation: { moh, lhp, al },
+  };
 };
