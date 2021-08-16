@@ -1,6 +1,7 @@
 import { verify, isValid } from "@govtechsg/oa-verify";
 import exampleHealthcertWrapped from "../../../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
-import { validateDocument } from "./validateDocument";
+import exampleHealthcertV2Wrapped from "../../../../test/fixtures/v2/example_healthcert_with_nric_wrapped.json";
+import { validateDocument, validateV2Document } from "./validateDocument";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 
 jest.mock("@govtechsg/oa-verify");
@@ -12,6 +13,7 @@ jest.mock("./../authorizedIssuers");
 const mockIsAuthorizedIssuer = isAuthorizedIssuer as jest.Mock;
 
 const sampleDocument = exampleHealthcertWrapped as any;
+const sampleDocumentV2 = exampleHealthcertV2Wrapped as any;
 
 const validFragments = [
   {
@@ -187,5 +189,17 @@ it("should throw on document with unauthorized issuer domain", async () => {
   mockIsAuthorizedIssuer.mockResolvedValue(false);
   await expect(validateDocument(sampleDocument)).rejects.toThrow(
     /Unrecognised clinic error/
+  );
+});
+
+it("should not throw on valid v2 document", async () => {
+  whenFragmentsAreValid();
+  await expect(validateV2Document(sampleDocumentV2)).resolves.not.toThrow();
+});
+
+it("should throw on v2 document failing when pass v1 document data", async () => {
+  whenFragmentsAreValid();
+  await expect(validateV2Document(sampleDocument)).rejects.toThrow(
+    /Invalid document error/
   );
 });

@@ -3,14 +3,12 @@
 import { Patient } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/pdt-healthcert/1.0/schema";
 import { pdtHealthcert as healthcert } from "@govtechsg/oa-schemata";
 import moment from "moment-timezone";
-import { HealthCertDocument, HealthCertDocumentV2, PatientV2 } from "../types";
+import { HealthCertDocument, PatientV2 } from "../types";
 import { validateHealthCertData } from "../common/healthCertDataValidation";
 import { DataInvalidError } from "../common/error";
 import { getNationality } from "../common/nationality";
 
-const getPatientFromHealthCert = (
-  document: HealthCertDocument | HealthCertDocumentV2
-) =>
+const getPatientFromHealthCert = (document: HealthCertDocument) =>
   document?.version === "pdt-healthcert-v2.0"
     ? (document.fhirBundle.entry.find(
         (entry) => entry?.resource?.resourceType === "Patient"
@@ -62,9 +60,7 @@ export const getParticularsFromHealthCertV2 = (
   return { nric: nric?.value, fin: fin?.value, passportNumber: ppn?.value };
 };
 
-export const getParticularsFromHealthCert = (
-  document: HealthCertDocument | HealthCertDocumentV2
-) => {
+export const getParticularsFromHealthCert = (document: HealthCertDocument) => {
   const patient = getPatientFromHealthCert(document);
   return document?.version === "pdt-healthcert-v2.0"
     ? getParticularsFromHealthCertV2(patient)
@@ -299,7 +295,7 @@ export const getTestDataFromHealthCertV1 = (
 };
 
 export const getTestDataFromHealthCertV2 = (
-  document: HealthCertDocumentV2
+  document: HealthCertDocument
 ): TestData[] => {
   const patient = document.fhirBundle.entry.find(
     (entry) => entry.resource.resourceType === "Patient"
@@ -525,7 +521,7 @@ export const getTestDataFromHealthCertV2 = (
 };
 
 export const getTestDataFromHealthCert = (
-  document: HealthCertDocument | HealthCertDocumentV2
+  document: HealthCertDocument
 ): TestData[] => {
   const testData =
     document?.version === "pdt-healthcert-v2.0"

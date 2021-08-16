@@ -5,3 +5,7 @@ import { HealthCertDocument } from "../../../types";
 export const validateInputs = async (
   attachment: WrappedDocument<HealthCertDocument>
 ) => Promise.all([validateDocument(attachment)]);
+
+export const validateV2Inputs = async (
+  attachment: WrappedDocument<HealthCertDocument>
+) => Promise.all([validateDocument(attachment)]);

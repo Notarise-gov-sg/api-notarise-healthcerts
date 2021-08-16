@@ -85,31 +85,18 @@ export interface Device {
 }
 
 export interface HealthCertDocument extends v2.OpenAttestationDocument {
-  name: string;
+  version?: string;
+  type?: string;
+  name?: string;
   validFrom: string;
   fhirVersion: string;
   logo: string;
   fhirBundle: {
-    entry: [Patient | Observation | Specimen | Organisation | Device];
+    entry: [Patient | PatientV2 | Observation | Specimen | Organisation | Device];
   };
 }
 
 export interface NotarizedHealthCert extends HealthCertDocument {
-  notarisationMetadata: NotarisationMetadata;
-}
-
-export interface HealthCertDocumentV2 extends v2.OpenAttestationDocument {
-  version: string;
-  type: string;
-  validFrom: string;
-  fhirVersion: string;
-  logo: string;
-  fhirBundle: {
-    entry: [PatientV2 | Observation | Specimen | Organisation | Device];
-  };
-}
-
-export interface NotarizedHealthCertV2 extends HealthCertDocumentV2 {
   notarisationMetadata: NotarisationMetadata;
 }
 

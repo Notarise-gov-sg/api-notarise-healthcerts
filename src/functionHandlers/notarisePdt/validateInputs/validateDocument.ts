@@ -53,3 +53,13 @@ export const validateDocument = async (
   const validDomain = await isAuthorizedIssuer(issuerDomain);
   if (!validDomain) throw new UnrecognisedClinicError(issuerDomain);
 };
+
+export const validateV2Document = async (
+  attachment: WrappedDocument<HealthCertDocument>
+) => {
+  if (!attachment.data?.version)
+    throw new DocumentInvalidError(
+      "Document should include version attribute. e.g version:'pdt-healthcert-v2.0'"
+    );
+  validateDocument(attachment);
+};

@@ -83,6 +83,31 @@ export const notarisePdt = async (
   };
 };
 
+export const notifySpm = async (
+  reference: string,
+  certificate: WrappedDocument<HealthCertDocument>,
+  result: NotarisationResult
+): Promise<void> => {
+  const errorWithRef = trace.extend(`reference:${reference}`);
+  /* Notify recipient via SPM (only if enabled) */
+  if (config.notification.enabled) {
+    try {
+      const data = getData(certificate);
+      const { nric, fin } = getParticularsFromHealthCert(data);
+      const testData = getTestDataFromHealthCert(data);
+      await notifyPdt({
+        url: result.url,
+        nric: nric || fin,
+        passportNumber: testData[0].passportNumber,
+        testData,
+        validFrom: data.validFrom,
+      });
+    } catch (e) {
+      errorWithRef(`Notification error: ${e.message}`);
+    }
+  }
+};
+
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<HealthCertDocument>>
 ): Promise<APIGatewayProxyResult> => {
@@ -126,23 +151,7 @@ export const main: Handler = async (
     };
   }
 
-  /* Notify recipient via SPM (only if enabled) */
-  if (config.notification.enabled) {
-    try {
-      const data = getData(certificate);
-      const { nric, fin } = getParticularsFromHealthCert(data);
-      const testData = getTestDataFromHealthCert(data);
-      await notifyPdt({
-        url: result.url,
-        nric: nric || fin,
-        passportNumber: testData[0].passportNumber,
-        testData,
-        validFrom: data.validFrom,
-      });
-    } catch (e) {
-      errorWithRef(`Notification error: ${e.message}`);
-    }
-  }
+  await notifySpm(reference, certificate, result);
 
   return {
     statusCode: 200,
