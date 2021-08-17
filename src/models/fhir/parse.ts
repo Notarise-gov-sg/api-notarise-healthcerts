@@ -70,6 +70,7 @@ const parsers = (resource: R4.IResourceList | undefined) => {
         )?.reference,
         acsn: resource.identifier?.find((i) => i.id === "ACSN")?.value,
         targetDisease: resource.category?.[0].coding?.[0],
+        testType: resource.code?.coding?.[0],
         result: resource.valueCodeableConcept?.coding?.[0],
         effectiveDateTime: resource.effectiveDateTime,
         status: resource.status,

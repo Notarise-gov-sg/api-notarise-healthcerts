@@ -1,6 +1,6 @@
 // converts camelCase words to space seperated words
 // e.g passportNumber to passport number
-import { TestData } from "../models/healthCert";
+import { TestData } from "src/types";
 import { DataInvalidError } from "./error";
 import { config } from "../config";
 
@@ -54,7 +54,6 @@ export const validateHealthCertData = (testDataList: TestData[]) => {
       "organisation",
     ]);
   }
-
   if (invalidParams.length > 0) {
     throw new DataInvalidError(invalidParams);
   }

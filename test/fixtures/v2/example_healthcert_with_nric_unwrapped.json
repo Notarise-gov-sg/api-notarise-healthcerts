@@ -83,6 +83,16 @@
           "resourceType": "Observation",
           "performer": [
             {
+              "id": "LHP",
+              "type": "Organization",
+              "reference": "urn:uuid:fa2328af-4882-4eaa-8c28-66dab46950f1"
+            },
+            {
+              "id": "AL",
+              "type": "Organization",
+              "reference": "urn:uuid:839a7c54-6b40-41cb-b10d-9295d7e75f77"
+            },
+            {
               "type": "Practitioner",
               "reference": "urn:uuid:3dbff0de-d4a4-4e1d-98bf-af7428b8a04b"
             }

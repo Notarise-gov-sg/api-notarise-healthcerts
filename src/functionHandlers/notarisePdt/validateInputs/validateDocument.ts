@@ -59,7 +59,10 @@ export const validateV2Document = async (
 ) => {
   if (!attachment.data?.version)
     throw new DocumentInvalidError(
-      "Document should include version attribute. e.g version:'pdt-healthcert-v2.0'"
+      "Document should include 'version' attribute"
     );
+  const documentType = (attachment.data?.type ?? "").toLowerCase();
+  if (!attachment.data?.type || !documentType.match(/(pcr|art)$/))
+    throw new DocumentInvalidError("Document should include 'type' attribute");
   validateDocument(attachment);
 };

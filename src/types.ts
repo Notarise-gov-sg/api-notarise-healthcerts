@@ -1,6 +1,7 @@
 import { v2, SignedWrappedDocument } from "@govtechsg/open-attestation";
 import { Record, String, Static } from "runtypes";
 import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
+import { R4 } from "@ahryman40k/ts-fhir-types";
 
 /* eslint-disable */
 enum EntryResourceType {
@@ -17,20 +18,6 @@ export interface Patient {
   identifier: [
     {
       type: "PPN" | { text: "NRIC" };
-      value: string;
-    }
-  ];
-  name: string;
-}
-export interface PatientV2 {
-  resourceType: EntryResourceType.Patient;
-  identifier: [
-    {
-      id: "PPN";
-      value: string;
-    },
-    {
-      id: "NRIC-FIN",
       value: string;
     }
   ];
@@ -92,8 +79,8 @@ export interface HealthCertDocument extends v2.OpenAttestationDocument {
   fhirVersion: string;
   logo: string;
   fhirBundle: {
-    entry: [Patient | PatientV2 | Observation | Specimen | Organisation | Device];
-  };
+    entry: [Patient | Observation | Specimen | Organisation | Device];
+  } | R4.IBundle;
 }
 
 export interface NotarizedHealthCert extends HealthCertDocument {
@@ -123,36 +110,57 @@ export type WorkflowContextData = Static<typeof WorkflowContextData>;
 export type SignedNotarizedHealthCert =
   SignedWrappedDocument<NotarizedHealthCert>;
 
-  export interface EuTestParams {
-    tg: string;
-    tt: string;
-    nm?: string;
-    ma?: string;
-    sc: string;
-    tr: string;
-    tc: string;
-    co: string;
-    is: string;
-    ci: string;
-  }
-  
-  export interface EuNameParams {
-    fn?: string;
-    fnt: string;
-    gn?: string;
-    gnt?: string;
-  }
-  
-  export interface EuHealthCertDocument {
-    ver: string;
-    nam: EuNameParams;
-    dob: string;
-    t: EuTestParams[];
-  }
-  export interface EuHealthCert extends EuHealthCertDocument {
-    meta: NotarisationMetadata;
-  } 
+export interface TestData {
+  provider: string;
+  lab?: string;
+  swabType: string;
+  swabTypeCode: string;
+  patientName: string;
+  swabCollectionDate: string;
+  performerName: string;
+  performerMcr: string;
+  observationDate: string;
+  nric: string;
+  passportNumber: string;
+  birthDate: string;
+  testType: string;
+  nationality: string;
+  gender: string;
+  testResult: string;
+  testResultCode: string;
+  deviceIdentifier?: string;
+}
 
-  export interface EuHealthCertQr {
-    qrData?: string;
-  }
+export interface EuTestParams {
+  tg: string;
+  tt: string;
+  nm?: string;
+  ma?: string;
+  sc: string;
+  tr: string;
+  tc: string;
+  co: string;
+  is: string;
+  ci: string;
+}
+
+export interface EuNameParams {
+  fn?: string;
+  fnt: string;
+  gn?: string;
+  gnt?: string;
+}
+
+export interface EuHealthCertDocument {
+  ver: string;
+  nam: EuNameParams;
+  dob: string;
+  t: EuTestParams[];
+}
+export interface EuHealthCert extends EuHealthCertDocument {
+  meta: NotarisationMetadata;
+} 
+
+export interface EuHealthCertQr {
+  qrData?: string;
+}

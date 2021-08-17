@@ -5,9 +5,9 @@ import exampleArtHealthCertWithNric from "../../test/fixtures/v1/example_art_hea
 import {
   getParticularsFromHealthCert,
   getTestDataFromHealthCert,
-  parseDateTime,
 } from "./healthCert";
 import { DataInvalidError } from "../common/error";
+import { parseDateTime } from "./healthCertV2";
 
 type testCert =
   | typeof exampleHealthCertWithNric

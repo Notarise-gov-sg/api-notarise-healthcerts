@@ -119,7 +119,7 @@ functions:
       SIGNING_EU_QR_VALIDITY_IN_MONTHS: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_VALIDITY_IN_MONTHS}
       SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
       SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
-    handler: src/functionHandlers/notarisePdt/v2handler.handler
+    handler: src/functionHandlers/notarisePdt/v2/handler.handler
     events:
       - http:
           path: /v2/notarise/pdt

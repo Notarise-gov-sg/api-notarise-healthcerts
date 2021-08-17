@@ -105,10 +105,12 @@
           },
           "performer": [
             {
+              "id": "LHP",
               "type": "Organization",
               "reference": "urn:uuid:fa2328af-4882-4eaa-8c28-66dab46950f1"
             },
             {
+              "id": "AL",
               "type": "Organization",
               "reference": "urn:uuid:839a7c54-6b40-41cb-b10d-9295d7e75f77"
             },
@@ -175,10 +177,12 @@
           },
           "performer": [
             {
+              "id": "LHP",
               "type": "Organization",
               "reference": "urn:uuid:abd39a2a-a62c-4630-8217-5532b6fb7eed"
             },
             {
+              "id": "AL",
               "type": "Organization",
               "reference": "urn:uuid:5896fc98-e1b8-40e2-bd1e-ba309e0d3d34"
             },

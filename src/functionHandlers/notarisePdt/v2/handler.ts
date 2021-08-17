@@ -2,25 +2,25 @@ import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
-import {
-  getTestDataFromHealthCert,
-  getParticularsFromHealthCert,
-} from "../../models/healthCert";
-import { getLogger } from "../../common/logger";
-import { createNotarizedHealthCert } from "../../models/notarizedHealthCert";
+import { R4 } from "@ahryman40k/ts-fhir-types";
+import fhir from "src/models/fhir";
+import { Bundle } from "src/models/fhir/types";
+import { getTestDataFromParseFhirBundle } from "../../../models/healthCertV2";
+import { getLogger } from "../../../common/logger";
+import { createNotarizedHealthCert } from "../../../models/notarizedHealthCertV2";
 import {
   buildStoredUrl,
   getQueueNumber,
   uploadDocument,
-} from "../../services/transientStorage";
-import { EuHealthCertQr, HealthCertDocument } from "../../types";
-import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
-import { validateInputs } from "./validateInputs";
-import { config } from "../../config";
+} from "../../../services/transientStorage";
+import { EuHealthCertQr, HealthCertDocument, TestData } from "../../../types";
+import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
+import { validateV2Inputs } from "../validateInputs";
+import { config } from "../../../config";
 import {
   createEuSignedTestQr,
   createEuTestCert,
-} from "../../models/euHealthCert";
+} from "../../../models/euHealthCert";
 
 const { trace, error } = getLogger("src/functionHandlers/notarisePdt/handler");
 
@@ -32,7 +32,9 @@ export interface NotarisationResult {
 
 export const notarisePdt = async (
   reference: string,
-  certificate: WrappedDocument<HealthCertDocument>
+  certificate: WrappedDocument<HealthCertDocument>,
+  parseFhirBundle: Bundle,
+  testData: TestData[]
 ): Promise<NotarisationResult> => {
   const errorWithRef = trace.extend(`reference:${reference}`);
   const traceWithRef = trace.extend(`reference:${reference}`);
@@ -45,9 +47,6 @@ export const notarisePdt = async (
   let euHealthCertsInfo: any[] = [];
   if (config.isOfflineQrEnabled) {
     try {
-      const data = getData(certificate);
-      const testData = getTestDataFromHealthCert(data);
-
       traceWithRef("EU test cert...");
       const euTestCert = await createEuTestCert(testData, reference, storedUrl);
       traceWithRef(euTestCert);
@@ -71,6 +70,7 @@ export const notarisePdt = async (
 
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
+    parseFhirBundle,
     reference,
     storedUrl
   );
@@ -83,21 +83,49 @@ export const notarisePdt = async (
   };
 };
 
+export const notifySpm = async (
+  reference: string,
+  validFrom: string,
+  testData: TestData[],
+  result: NotarisationResult
+): Promise<void> => {
+  const errorWithRef = trace.extend(`reference:${reference}`);
+  /* Notify recipient via SPM (only if enabled) */
+  if (config.notification.enabled) {
+    try {
+      await notifyPdt({
+        url: result.url,
+        nric: testData[0].nric,
+        passportNumber: testData[0].passportNumber,
+        testData,
+        validFrom,
+      });
+    } catch (e) {
+      errorWithRef(`Notification error: ${e.message}`);
+    }
+  }
+};
+
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<HealthCertDocument>>
 ): Promise<APIGatewayProxyResult> => {
   trace("config", config);
   const reference = uuid();
   const certificate = event.body;
-
   const errorWithRef = error.extend(`reference:${reference}`);
 
+  let parseFhirBundle: Bundle;
+  let data: HealthCertDocument;
+  let testData: TestData[];
   try {
-    await validateInputs(certificate);
-    const data = getData(certificate);
+    await validateV2Inputs(certificate);
+    data = getData(certificate);
 
     // ensure that all the required parameters can be read
-    getTestDataFromHealthCert(data);
+    parseFhirBundle = fhir.parse(data.fhirBundle as R4.IBundle);
+
+    // convert parseFhirBundle to testdata[] with validation
+    testData = getTestDataFromParseFhirBundle(parseFhirBundle);
   } catch (e) {
     errorWithRef(
       `Error while validating certificate: ${e.title}, ${e.messageBody}`
@@ -114,7 +142,12 @@ export const main: Handler = async (
   let result: NotarisationResult;
 
   try {
-    result = await notarisePdt(reference, certificate);
+    result = await notarisePdt(
+      reference,
+      certificate,
+      parseFhirBundle,
+      testData
+    );
   } catch (e) {
     errorWithRef(`Unhandled error: ${e.message}`);
     return {
@@ -126,23 +159,7 @@ export const main: Handler = async (
     };
   }
 
-  /* Notify recipient via SPM (only if enabled) */
-  if (config.notification.enabled) {
-    try {
-      const data = getData(certificate);
-      const { nric, fin } = getParticularsFromHealthCert(data);
-      const testData = getTestDataFromHealthCert(data);
-      await notifyPdt({
-        url: result.url,
-        nric: nric || fin,
-        passportNumber: testData[0].passportNumber,
-        testData,
-        validFrom: data.validFrom,
-      });
-    } catch (e) {
-      errorWithRef(`Notification error: ${e.message}`);
-    }
-  }
+  await notifySpm(reference, data.validFrom, testData, result);
 
   return {
     statusCode: 200,
