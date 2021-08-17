@@ -17,6 +17,8 @@ export interface Specimen {
 
 export interface Observation {
   practitionerResourceUuid: string;
+  organizationLhpResourceUuid: string;
+  organizationAlResourceUuid?: string;
   acsn: string;
   targetDisease: R4.ICoding;
   testType: R4.ICoding;
@@ -28,7 +30,7 @@ export interface Observation {
 export interface Practitioner {
   fullName: string;
   mcr: string;
-  organizationResourceUuid: string;
+  organizationMohResourceUuid: string;
 }
 
 export interface Organization {
@@ -47,11 +49,16 @@ export interface Device {
   type: R4.ICoding;
 }
 
+export interface GroupedObservation {
+  observation: Observation;
+  practitioner: Practitioner;
+  organization: { lhp: Organization; al?: Organization };
+}
+
 export interface Bundle {
   patient: Patient;
   specimen: Specimen;
-  observations: Observation[];
-  practitioner: Practitioner;
-  organization: { moh: Organization; lhp: Organization; al?: Organization };
+  observations: GroupedObservation[];
+  organization: { moh: Organization };
   device?: Device;
 }

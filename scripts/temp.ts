@@ -8,4 +8,4 @@ const parsed = fhirHelper.parse(sample.fhirBundle as R4.IBundle);
 fhirHelper.hasRequiredFields("PCR", parsed);
 
 // eslint-disable-next-line no-console
-console.log(parsed);
+console.log(JSON.stringify(parsed, null, 2));
