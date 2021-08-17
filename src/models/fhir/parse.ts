@@ -161,7 +161,7 @@ export const parse = (fhirBundle: R4.IBundle): Bundle => {
     specimen,
     observations,
     practitioner,
-    organisation: { moh, lhp, al },
+    organization: { moh, lhp, al },
     device,
   };
 };

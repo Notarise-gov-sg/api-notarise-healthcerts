@@ -52,6 +52,6 @@ export interface Bundle {
   specimen: Specimen;
   observations: Observation[];
   practitioner: Practitioner;
-  organisation: { moh: Organization; lhp: Organization; al?: Organization };
+  organization: { moh: Organization; lhp: Organization; al?: Organization };
   device?: Device;
 }
