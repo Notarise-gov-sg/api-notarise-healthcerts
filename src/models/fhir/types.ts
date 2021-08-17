@@ -42,3 +42,7 @@ export interface Organization {
     text: string;
   };
 }
+
+export interface Device {
+  type: R4.ICoding;
+}

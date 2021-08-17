@@ -5,6 +5,7 @@ import {
   Observation,
   Practitioner,
   Organization,
+  Device,
 } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -20,9 +21,15 @@ const fhir = new Fhir();
  * @returns Parsed FHIR resource (simplified)
  */
 const parsers = (resource: R4.IResourceList | undefined) => {
+  if (!resource) return; // Skip parsing an undefined resource
+
   const validator = fhir.validate(resource, { errorOnUnexpected: true });
   if (!validator.valid) {
-    throw new Error(JSON.stringify(validator.messages));
+    throw new Error(
+      `Validation against FHIR base spec has failed for ${
+        resource.resourceType
+      }: ${JSON.stringify(validator.messages)}`
+    );
   }
 
   switch (resource?.resourceType) {
@@ -45,7 +52,7 @@ const parsers = (resource: R4.IResourceList | undefined) => {
       return {
         swabType: resource.type?.coding?.[0],
         collectionDateTime: resource.collection?.collectedDateTime,
-        // deviceResourceUuid: resource.subject?.reference, // Only for ART
+        deviceResourceUuid: resource.subject?.reference, // Only for ART
       } as Specimen;
 
     case "Observation":
@@ -76,6 +83,12 @@ const parsers = (resource: R4.IResourceList | undefined) => {
           ?.value,
         address: resource.contact?.[0].address,
       } as Organization;
+
+    case "Device":
+      return {
+        type: resource.type?.coding?.[0],
+      } as Device;
+
     default:
       throw new Error(`Unable to find an appropriate parser for: ${resource}`);
   }
@@ -128,13 +141,19 @@ export const parse = (fhirBundle: R4.IBundle) => {
   )?.resource;
   const lhp = parsers(fhirOrganizationLhp) as Organization;
 
-  // 7. Organization (Accredited Laboratory) resource
+  // 7. Organization (Accredited Laboratory) resource [Only for PCR]
   const fhirOrganizationAl = fhirBundle.entry?.find(
     (entry) =>
       entry.resource?.resourceType === "Organization" &&
       entry.resource?.type?.[0].text === "Accredited Laboratory"
   )?.resource;
-  const al = parsers(fhirOrganizationAl) as Organization; // Only for PCR
+  const al = parsers(fhirOrganizationAl) as Organization;
+
+  // 8. Device resource [Only for ART]
+  const fhirDevice = fhirBundle.entry?.find(
+    (entry) => entry.fullUrl === specimen.deviceResourceUuid
+  )?.resource;
+  const device = parsers(fhirDevice) as Device;
 
   return {
     patient,
@@ -142,5 +161,6 @@ export const parse = (fhirBundle: R4.IBundle) => {
     observations,
     practitioner,
     organisation: { moh, lhp, al },
+    device,
   };
 };
