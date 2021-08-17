@@ -46,3 +46,12 @@ export interface Organization {
 export interface Device {
   type: R4.ICoding;
 }
+
+export interface Bundle {
+  patient: Patient;
+  specimen: Specimen;
+  observations: Observation[];
+  practitioner: Practitioner;
+  organisation: { moh: Organization; lhp: Organization; al?: Organization };
+  device?: Device;
+}

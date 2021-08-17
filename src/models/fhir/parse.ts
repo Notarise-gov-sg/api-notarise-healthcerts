@@ -1,5 +1,6 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import {
+  Bundle,
   Patient,
   Specimen,
   Observation,
@@ -100,7 +101,7 @@ const parsers = (resource: R4.IResourceList | undefined) => {
  * @param fhirBundle Raw FHIR Bundle resource
  * @returns An object containing all the parsed resources in the bundle (simplified)
  */
-export const parse = (fhirBundle: R4.IBundle) => {
+export const parse = (fhirBundle: R4.IBundle): Bundle => {
   //  0. Bundle resource
   parsers(fhirBundle);
 
