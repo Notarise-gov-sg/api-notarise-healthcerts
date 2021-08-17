@@ -25,7 +25,7 @@
   "dependencies": {
     "@ahryman40k/ts-fhir-types": "^4.0.36",
     "@govtechsg/oa-did-sign": "^2.2.0",
-    "@govtechsg/oa-schemata": "^1.11.2",
+    "@govtechsg/oa-schemata": "^1.11.3",
     "@govtechsg/oa-verify": "^7.4.4",
     "@govtechsg/open-attestation": "^5.4.0",
     "@middy/core": "^2.4.3",
