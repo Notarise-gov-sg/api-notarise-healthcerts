@@ -61,8 +61,8 @@ export const validateV2Document = async (
     throw new DocumentInvalidError(
       "Document should include 'version' attribute"
     );
-  const documentType = (attachment.data?.type ?? "").toLowerCase();
-  if (!attachment.data?.type || !documentType.match(/(pcr|art)$/))
+  const documentType = (attachment.data?.type ?? "").toUpperCase();
+  if (!attachment.data?.type || !documentType.match(/(PCR|ART)$/))
     throw new DocumentInvalidError("Document should include 'type' attribute");
   validateDocument(attachment);
 };

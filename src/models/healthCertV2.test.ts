@@ -5,7 +5,7 @@ import exampleMultiResultHealthCert from "../../test/fixtures/v2/example_healthc
 import exampleArtHealthCertWithNric from "../../test/fixtures/v2/example_art_healthcert_with_nric_unwrapped.json";
 import { DataInvalidError } from "../common/error";
 import { getTestDataFromParseFhirBundle, parseDateTime } from "./healthCertV2";
-import fhir from "./fhir";
+import fhirHelper from "./fhir";
 
 type testCert =
   | typeof exampleHealthCertWithNric
@@ -29,7 +29,7 @@ const getObservationDates = (document: testCert): (string | undefined)[] => {
 describe("src/models/healthCert", () => {
   describe("getParticularsFromHealthCert", () => {
     test("should correctly extract patient particulars from a well formed healthcert containing nric", () => {
-      const parseFhirBundle = fhir.parse(
+      const parseFhirBundle = fhirHelper.parse(
         exampleHealthCertWithNric.fhirBundle as R4.IBundle
       );
       expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
@@ -55,7 +55,7 @@ describe("src/models/healthCert", () => {
       ]);
     });
     test("should correctly extract patient particulars from a well formed healthcert without nric", () => {
-      const parseFhirBundle = fhir.parse(
+      const parseFhirBundle = fhirHelper.parse(
         exampleHealthCertWithoutNric.fhirBundle as R4.IBundle
       );
       expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
@@ -93,7 +93,7 @@ describe("src/models/healthCert", () => {
 
         const swabCollectionDate = parseDateTime(swabCollectionDates[0]);
         const observationDate = parseDateTime(observationDates[0]);
-        const parseFhirBundle = fhir.parse(
+        const parseFhirBundle = fhirHelper.parse(
           exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
         );
         expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
@@ -124,7 +124,7 @@ describe("src/models/healthCert", () => {
       test("should throw error if ART healthcert not have device identifier", () => {
         const malformedHealthCert = exampleArtHealthCertWithNric as any;
         malformedHealthCert.fhirBundle.entry.pop();
-        const parseFhirBundle = fhir.parse(
+        const parseFhirBundle = fhirHelper.parse(
           malformedHealthCert.fhirBundle as R4.IBundle
         );
         expect(() =>
@@ -142,7 +142,7 @@ describe("src/models/healthCert", () => {
 
         const swabCollectionDate = parseDateTime(swabCollectionDates[0]);
         const observationDate = parseDateTime(observationDates[0]);
-        const parseFhirBundle = fhir.parse(
+        const parseFhirBundle = fhirHelper.parse(
           exampleHealthCertWithNric.fhirBundle as R4.IBundle
         );
         expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
@@ -181,7 +181,7 @@ describe("src/models/healthCert", () => {
         };
         expect(() =>
           // @ts-ignore
-          fhir.parse(malformedHealthCert.fhirBundle as R4.IBundle)
+          fhirHelper.parse(malformedHealthCert.fhirBundle as R4.IBundle)
         ).toThrowError(Error);
       });
 
@@ -215,8 +215,8 @@ describe("src/models/healthCert", () => {
           },
         };
         expect(() =>
-          // @ts-ignore
-          fhir.parse(
+          fhirHelper.parse(
+            // @ts-ignore
             malformedHealthCertWithoutValueCodeableConcept.fhirBundle as R4.IBundle
           )
         ).toThrowError(Error);
@@ -251,8 +251,10 @@ describe("src/models/healthCert", () => {
           },
         };
         expect(() =>
-          // @ts-ignore
-          fhir.parse(malformedHealthCertWithoutCode.fhirBundle as R4.IBundle)
+          fhirHelper.parse(
+            // @ts-ignore
+            malformedHealthCertWithoutCode.fhirBundle as R4.IBundle
+          )
         ).toThrowError(Error);
       });
 
@@ -292,8 +294,8 @@ describe("src/models/healthCert", () => {
           },
         };
         expect(() =>
-          // @ts-ignore
-          fhir.parse(
+          fhirHelper.parse(
+            // @ts-ignore
             malformedHealthCertWithoutSpecimenReference.fhirBundle as R4.IBundle
           )
         ).toThrowError(Error);
@@ -332,8 +334,8 @@ describe("src/models/healthCert", () => {
           },
         };
         expect(() =>
-          // @ts-ignore
-          fhir.parse(
+          fhirHelper.parse(
+            // @ts-ignore
             malformedHealthCertWithoutSpecimen.fhirBundle as R4.IBundle
           )
         ).toThrowError(Error);
@@ -353,7 +355,7 @@ describe("src/models/healthCert", () => {
         const swabCollectionDate2 = parseDateTime(swabCollectionDates[1]);
         const observationDate2 = parseDateTime(observationDates[1]);
 
-        const parseFhirBundle = fhir.parse(
+        const parseFhirBundle = fhirHelper.parse(
           exampleMultiResultHealthCert.fhirBundle as R4.IBundle
         );
 

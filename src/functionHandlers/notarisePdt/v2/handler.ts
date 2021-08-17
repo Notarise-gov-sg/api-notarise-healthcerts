@@ -3,8 +3,8 @@ import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
 import { R4 } from "@ahryman40k/ts-fhir-types";
-import fhir from "src/models/fhir";
-import { Bundle } from "src/models/fhir/types";
+import fhirHelper from "../../../models/fhir";
+import { Bundle } from "../../../models/fhir/types";
 import { getTestDataFromParseFhirBundle } from "../../../models/healthCertV2";
 import { getLogger } from "../../../common/logger";
 import { createNotarizedHealthCert } from "../../../models/notarizedHealthCertV2";
@@ -122,7 +122,7 @@ export const main: Handler = async (
     data = getData(certificate);
 
     // ensure that all the required parameters can be read
-    parseFhirBundle = fhir.parse(data.fhirBundle as R4.IBundle);
+    parseFhirBundle = fhirHelper.parse(data.fhirBundle as R4.IBundle);
 
     // convert parseFhirBundle to testdata[] with validation
     testData = getTestDataFromParseFhirBundle(parseFhirBundle);

@@ -1,5 +1,5 @@
 import { WrappedDocument } from "@govtechsg/open-attestation";
-import { validateDocument } from "./validateDocument";
+import { validateDocument, validateV2Document } from "./validateDocument";
 import { HealthCertDocument } from "../../../types";
 
 export const validateInputs = async (
@@ -8,4 +8,4 @@ export const validateInputs = async (
 
 export const validateV2Inputs = async (
   attachment: WrappedDocument<HealthCertDocument>
-) => Promise.all([validateDocument(attachment)]);
+) => Promise.all([validateV2Document(attachment)]);

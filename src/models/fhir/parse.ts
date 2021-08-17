@@ -22,7 +22,7 @@ const fhir = new Fhir();
  * @param resource Raw FHIR resource
  * @returns Parsed FHIR resource (simplified)
  */
-const parsers = (resource: R4.IResourceList | undefined) => {
+export const parsers = (resource: R4.IResourceList | undefined) => {
   if (!resource) return undefined; // Skip parsing an undefined resource
 
   const validator = fhir.validate(resource, { errorOnUnexpected: true });

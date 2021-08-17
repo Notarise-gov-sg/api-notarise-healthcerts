@@ -3,7 +3,7 @@ import {
   signDocument,
   SUPPORTED_SIGNING_ALGORITHM,
 } from "@govtechsg/oa-did-sign";
-import { Bundle } from "src/models/fhir/types";
+import { Bundle } from "../../fhir/types";
 import {
   HealthCertDocument,
   NotarizedHealthCert,

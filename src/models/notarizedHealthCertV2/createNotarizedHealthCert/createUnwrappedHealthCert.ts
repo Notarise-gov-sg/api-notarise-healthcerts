@@ -1,6 +1,6 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
-import { Bundle } from "src/models/fhir/types";
+import { Bundle } from "../../fhir/types";
 import { config } from "../../../config";
 import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
 

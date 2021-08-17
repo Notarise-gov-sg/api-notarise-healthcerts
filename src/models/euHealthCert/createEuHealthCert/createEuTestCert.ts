@@ -1,8 +1,12 @@
 import { notarise } from "@govtechsg/oa-schemata";
 import moment from "moment-timezone";
-import { TestData } from "src/models/healthCert";
 import { config } from "../../../config";
-import { EuHealthCert, EuNameParams, EuTestParams } from "../../../types";
+import {
+  EuHealthCert,
+  EuNameParams,
+  EuTestParams,
+  TestData,
+} from "../../../types";
 
 const { euSigner, swabTestTypes } = config;
 

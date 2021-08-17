@@ -1,5 +1,5 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
-import fhir from "../../fhir";
+import fhirHelper from "../../fhir";
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
 import exampleHealthcertWrapped from "../../../../test/fixtures/v2/example_healthcert_with_nric_wrapped.json";
 import exampleHealthcertUnWrapped from "../../../../test/fixtures/v2/example_healthcert_with_nric_unwrapped.json";
@@ -14,7 +14,7 @@ beforeAll(mockDate);
 afterAll(unmockDate);
 
 it("should create the unwrapped v2 document from input data", () => {
-  const parseFhirBundle = fhir.parse(
+  const parseFhirBundle = fhirHelper.parse(
     sampleDocumentUnWrapped.fhirBundle as R4.IBundle
   );
   const createdDocument = createUnwrappedDocument(
