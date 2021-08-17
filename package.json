@@ -23,6 +23,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ahryman40k/ts-fhir-types": "^4.0.36",
     "@govtechsg/oa-did-sign": "^2.2.0",
     "@govtechsg/oa-schemata": "^1.11.2",
     "@govtechsg/oa-verify": "^7.4.4",
@@ -37,6 +38,7 @@
     "aws-xray-sdk-core": "^3.3.3",
     "axios": "^0.21.1",
     "debug": "^4.3.2",
+    "fhir": "^4.9.0",
     "file-loader": "^6.2.0",
     "he": "1.2.0",
     "http-errors": "1.8.0",
@@ -50,7 +52,8 @@
     "serverless-offline-ses": "https://github.com/rjchow/serverless-offline-ses/tarball/release/1",
     "serverless-vpc-discovery": "^3.0.0",
     "url-join": "^4.0.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "validate.js": "^0.13.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.8",
