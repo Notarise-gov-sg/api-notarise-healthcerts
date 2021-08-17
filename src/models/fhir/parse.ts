@@ -21,7 +21,7 @@ const fhir = new Fhir();
  * @returns Parsed FHIR resource (simplified)
  */
 const parsers = (resource: R4.IResourceList | undefined) => {
-  if (!resource) return; // Skip parsing an undefined resource
+  if (!resource) return undefined; // Skip parsing an undefined resource
 
   const validator = fhir.validate(resource, { errorOnUnexpected: true });
   if (!validator.valid) {
@@ -32,7 +32,7 @@ const parsers = (resource: R4.IResourceList | undefined) => {
     );
   }
 
-  switch (resource?.resourceType) {
+  switch (resource.resourceType) {
     case "Bundle":
       return resource;
 
