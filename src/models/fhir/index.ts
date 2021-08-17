@@ -1,3 +1,4 @@
 import { parse } from "./parse";
+import { hasRequiredFields } from "./required";
 
-export default { parse };
+export default { parse, hasRequiredFields };
