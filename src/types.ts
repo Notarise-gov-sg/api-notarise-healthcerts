@@ -13,6 +13,9 @@ enum EntryResourceType {
 }
 /* eslint-disable */
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Patient {
   resourceType: EntryResourceType.Patient;
   identifier: [
@@ -24,6 +27,9 @@ export interface Patient {
   name: string;
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Observation {
   resourceType: EntryResourceType.Observation;
   valueCodeableConcept: {
@@ -37,6 +43,9 @@ export interface Observation {
   };
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Specimen {
   fullUrl?: string;
   resourceType: EntryResourceType.Specimen;
@@ -45,12 +54,18 @@ export interface Specimen {
   };
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Organisation {
   fullUrl?: string;
   type: string;
   resourceType: EntryResourceType.Organization;
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Device {
   resourceType: EntryResourceType.Device;
   type: {
@@ -71,6 +86,13 @@ export interface Device {
   ];
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
+export interface fhirBundleV1 {
+  entry: [Patient | Observation | Specimen | Organisation | Device];
+}
+
 export interface HealthCertDocument extends v2.OpenAttestationDocument {
   version?: string;
   type?: string;
@@ -78,9 +100,7 @@ export interface HealthCertDocument extends v2.OpenAttestationDocument {
   validFrom: string;
   fhirVersion: string;
   logo: string;
-  fhirBundle: {
-    entry: [Patient | Observation | Specimen | Organisation | Device];
-  } | R4.IBundle;
+  fhirBundle: fhirBundleV1 | R4.IBundle;
 }
 
 export interface NotarizedHealthCert extends HealthCertDocument {

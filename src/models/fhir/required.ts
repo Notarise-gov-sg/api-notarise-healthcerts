@@ -163,6 +163,10 @@ export const hasRequiredFields = (type: "ART" | "PCR", bundle: Bundle) => {
 
   const errors = validate(bundle, constraints);
   if (errors) {
-    throw new Error(JSON.stringify(errors));
+    throw new Error(
+      `The following required fields in fhirBundle are missing: ${JSON.stringify(
+        errors
+      )}`
+    );
   }
 };

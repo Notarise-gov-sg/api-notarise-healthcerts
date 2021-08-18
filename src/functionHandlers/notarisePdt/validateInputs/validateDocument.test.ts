@@ -203,3 +203,80 @@ it("should throw on v2 document failing when pass v1 document data", async () =>
     /Invalid document error/
   );
 });
+
+it("should throw on v2 document failing when document data id string invalid", async () => {
+  const sampleDocumentV2InvalidId = {
+    version: "https://schema.openattestation.com/2.0/schema.json",
+    data: {
+      id: 123456,
+    },
+  } as any;
+  await expect(validateV2Document(sampleDocumentV2InvalidId)).rejects.toThrow(
+    /Invalid document error/
+  );
+});
+
+it("should throw on v2 document failing when document data version invalid", async () => {
+  const sampleDocumentV2InvalidVersion = {
+    version: "https://schema.openattestation.com/2.0/schema.json",
+    data: {
+      id: "5981af19-fe9f-43c1-9f31-9ccb9a1fcbd2:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
+      version:
+        "a9c30f4a-d12a-444f-b129-169f4151f9b8:string:invalid-healthcert-v2.0",
+    },
+  } as any;
+  await expect(
+    validateV2Document(sampleDocumentV2InvalidVersion)
+  ).rejects.toThrow(/Invalid document error/);
+});
+
+it("should throw on v2 document failing when document data validFrom invalid", async () => {
+  const sampleDocumentV2InvalidValidFrom = {
+    version: "https://schema.openattestation.com/2.0/schema.json",
+    data: {
+      id: "5981af19-fe9f-43c1-9f31-9ccb9a1fcbd2:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
+      version:
+        "a9c30f4a-d12a-444f-b129-169f4151f9b8:string:pdt-healthcert-v2.0",
+      validFrom:
+        "9a3aee04-5ff2-4a8a-8407-863dd951a7ef:string:18-05-2021T06:43:12.152Z",
+    },
+  } as any;
+  await expect(
+    validateV2Document(sampleDocumentV2InvalidValidFrom)
+  ).rejects.toThrow(/Invalid document error/);
+});
+
+it("should throw on v2 document failing when document data fhirVersion invalid", async () => {
+  const sampleDocumentV2InvalidFhirVersion = {
+    version: "https://schema.openattestation.com/2.0/schema.json",
+    data: {
+      id: "5981af19-fe9f-43c1-9f31-9ccb9a1fcbd2:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
+      version:
+        "a9c30f4a-d12a-444f-b129-169f4151f9b8:string:pdt-healthcert-v2.0",
+      validFrom:
+        "9a3aee04-5ff2-4a8a-8407-863dd951a7ef:string:2021-05-18T06:43:12.152Z",
+      fhirVersion: "e68b58fd-318e-4c5b-88ed-06b52c2247bc:string:0.0.1",
+    },
+  } as any;
+  await expect(
+    validateV2Document(sampleDocumentV2InvalidFhirVersion)
+  ).rejects.toThrow(/Invalid document error/);
+});
+
+it("should throw on v2 document failing when document data type invalid", async () => {
+  const sampleDocumentV2InvalidType = {
+    version: "https://schema.openattestation.com/2.0/schema.json",
+    data: {
+      id: "5981af19-fe9f-43c1-9f31-9ccb9a1fcbd2:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
+      version:
+        "a9c30f4a-d12a-444f-b129-169f4151f9b8:string:pdt-healthcert-v2.0",
+      validFrom:
+        "9a3aee04-5ff2-4a8a-8407-863dd951a7ef:string:2021-05-18T06:43:12.152Z",
+      fhirVersion: "e68b58fd-318e-4c5b-88ed-06b52c2247bc:string:4.0.1",
+      type: "a60dd179-4029-44c5-8b77-296b10412836:string:Other",
+    },
+  } as any;
+  await expect(validateV2Document(sampleDocumentV2InvalidType)).rejects.toThrow(
+    /Invalid document error/
+  );
+});
