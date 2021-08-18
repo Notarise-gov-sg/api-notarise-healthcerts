@@ -22,7 +22,9 @@ import {
   createEuTestCert,
 } from "../../../models/euHealthCert";
 
-const { trace, error } = getLogger("src/functionHandlers/notarisePdt/handler");
+const { trace, error } = getLogger(
+  "src/functionHandlers/notarisePdt/v2/handler"
+);
 
 export interface NotarisationResult {
   notarisedDocument: WrappedDocument<HealthCertDocument>;
@@ -83,29 +85,6 @@ export const notarisePdt = async (
   };
 };
 
-export const notifySpm = async (
-  reference: string,
-  validFrom: string,
-  testData: TestData[],
-  result: NotarisationResult
-): Promise<void> => {
-  const errorWithRef = trace.extend(`reference:${reference}`);
-  /* Notify recipient via SPM (only if enabled) */
-  if (config.notification.enabled) {
-    try {
-      await notifyPdt({
-        url: result.url,
-        nric: testData[0].nric,
-        passportNumber: testData[0].passportNumber,
-        testData,
-        validFrom,
-      });
-    } catch (e) {
-      errorWithRef(`Notification error: ${e.message}`);
-    }
-  }
-};
-
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<HealthCertDocument>>
 ): Promise<APIGatewayProxyResult> => {
@@ -163,7 +142,20 @@ export const main: Handler = async (
     };
   }
 
-  await notifySpm(reference, data.validFrom, testData, result);
+  /* Notify recipient via SPM (only if enabled) */
+  if (config.notification.enabled) {
+    try {
+      await notifyPdt({
+        url: result.url,
+        nric: parseFhirBundle.patient?.nricFin,
+        passportNumber: parseFhirBundle.patient?.passportNumber,
+        testData,
+        validFrom: data.validFrom,
+      });
+    } catch (e) {
+      errorWithRef(`Notification error: ${e.message}`);
+    }
+  }
 
   return {
     statusCode: 200,

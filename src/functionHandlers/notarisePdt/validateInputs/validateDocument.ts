@@ -64,5 +64,5 @@ export const validateV2Document = async (
   const documentType = (attachment.data?.type ?? "").toUpperCase();
   if (!attachment.data?.type || !documentType.match(/(PCR|ART)$/))
     throw new DocumentInvalidError("Document should include 'type' attribute");
-  validateDocument(attachment);
+  await validateDocument(attachment);
 };
