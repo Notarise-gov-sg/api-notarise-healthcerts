@@ -3,7 +3,6 @@ import exampleHealthCertWithNric from "../../test/fixtures/v2/example_healthcert
 import exampleHealthCertWithoutNric from "../../test/fixtures/v2/example_healthcert_without_nric_unwrapped.json";
 import exampleMultiResultHealthCert from "../../test/fixtures/v2/example_healthcert_multi_result_unwrapped.json";
 import exampleArtHealthCertWithNric from "../../test/fixtures/v2/example_art_healthcert_with_nric_unwrapped.json";
-import { DataInvalidError } from "../common/error";
 import { getTestDataFromParseFhirBundle, parseDateTime } from "./healthCertV2";
 import fhirHelper from "./fhir";
 
@@ -26,7 +25,7 @@ const getObservationDates = (document: testCert): (string | undefined)[] => {
     .map((entry) => entry.resource.effectiveDateTime);
 };
 
-describe("src/models/healthCert", () => {
+describe("src/models/healthCertV2", () => {
   describe("getParticularsFromHealthCert", () => {
     test("should correctly extract patient particulars from a well formed healthcert containing nric", () => {
       const parseFhirBundle = fhirHelper.parse(
@@ -119,17 +118,6 @@ describe("src/models/healthCert", () => {
             deviceIdentifier: "1232",
           },
         ]);
-      });
-
-      test("should throw error if ART healthcert not have device identifier", () => {
-        const malformedHealthCert = exampleArtHealthCertWithNric as any;
-        malformedHealthCert.fhirBundle.entry.pop();
-        const parseFhirBundle = fhirHelper.parse(
-          malformedHealthCert.fhirBundle as R4.IBundle
-        );
-        expect(() =>
-          getTestDataFromParseFhirBundle(parseFhirBundle)
-        ).toThrowError(DataInvalidError);
       });
 
       test("should correctly extract test data from a well formed PCR healthcert", () => {

@@ -257,7 +257,13 @@
           ],
           "contact": [
             {
-              "telecom": [{ "system": "phone", "value": "+6567654321" }],
+              "telecom": [
+                {
+                  "system": "url",
+                  "value": "https://www.macritchielaboratory.com.sg"
+                },
+                { "system": "phone", "value": "+6567654321" }
+              ],
               "address": {
                 "type": "physical",
                 "use": "work",

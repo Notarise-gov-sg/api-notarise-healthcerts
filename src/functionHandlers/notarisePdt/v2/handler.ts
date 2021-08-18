@@ -121,10 +121,14 @@ export const main: Handler = async (
     await validateV2Inputs(certificate);
     data = getData(certificate);
 
-    // ensure that all the required parameters can be read
+    // validate basic FhirBundle standard and parse FhirBundle
     parseFhirBundle = fhirHelper.parse(data.fhirBundle as R4.IBundle);
 
-    // convert parseFhirBundle to testdata[] with validation
+    // validate parsed FhirBundle data with specific healthcert type constraints
+    const documentType = (data?.type ?? "").toUpperCase();
+    fhirHelper.hasRequiredFields(<"ART" | "PCR">documentType, parseFhirBundle);
+
+    // convert parsed Bundle to testdata[]
     testData = getTestDataFromParseFhirBundle(parseFhirBundle);
   } catch (e) {
     errorWithRef(

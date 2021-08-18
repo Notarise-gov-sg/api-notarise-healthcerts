@@ -1,7 +1,6 @@
 import { pdtHealthcert as healthcert } from "@govtechsg/oa-schemata";
 import moment from "moment-timezone";
 import { TestData } from "src/types";
-import { validateHealthCertData } from "../common/healthCertDataValidation";
 import { getNationality } from "../common/nationality";
 import { Bundle } from "./fhir/types";
 
@@ -74,6 +73,5 @@ export const getTestDataFromParseFhirBundle = (
     }
     testData.push(testDataValue);
   });
-  validateHealthCertData(testData);
   return testData;
 };
