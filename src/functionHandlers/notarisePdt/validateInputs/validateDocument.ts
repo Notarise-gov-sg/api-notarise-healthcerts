@@ -53,3 +53,40 @@ export const validateDocument = async (
   const validDomain = await isAuthorizedIssuer(issuerDomain);
   if (!validDomain) throw new UnrecognisedClinicError(issuerDomain);
 };
+
+export const validateV2Document = async (
+  attachment: WrappedDocument<HealthCertDocument>
+) => {
+  if (!attachment.data?.id || typeof attachment.data?.id !== "string")
+    throw new DocumentInvalidError(
+      "Document should include `id` attribute with valid string value"
+    );
+  if (
+    !attachment.data?.version ||
+    !(attachment.data?.version).match(/(pdt-healthcert-v2.0)$/)
+  )
+    throw new DocumentInvalidError(
+      "Document should include `version` attribute with valid `pdt-healthcert-v2.0` value"
+    );
+  // validate `validFrom` to be valid ISO 8601 date time (e.g. 2021-08-18T05:13:53.378Z)
+  if (
+    !attachment.data?.validFrom ||
+    !(attachment.data?.validFrom).match(
+      /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z)$/
+    )
+  )
+    throw new DocumentInvalidError(
+      "Document should include `validFrom` attribute with valid ISO 8601 datetime value"
+    );
+  if (
+    !attachment.data?.fhirVersion ||
+    !(attachment.data?.fhirVersion).match(/(4.0.1)$/)
+  )
+    throw new DocumentInvalidError(
+      "Document should include `fhirVersion` attribute with valid `4.0.1` value"
+    );
+  const documentType = (attachment.data?.type ?? "").toUpperCase();
+  if (!attachment.data?.type || !documentType.match(/(PCR|ART|SER)$/))
+    throw new DocumentInvalidError("Document should include 'type' attribute");
+  await validateDocument(attachment);
+};

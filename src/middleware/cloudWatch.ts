@@ -5,6 +5,8 @@ import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import middy, { MiddlewareObj } from "@middy/core";
 import { NotarisationResult } from "src/functionHandlers/notarisePdt/handler";
 import { HealthCertDocument, Observation } from "src/types";
+import { Observation as ObservationV2 } from "../models/fhir/types";
+import { parsers } from "../models/fhir/parse";
 import { logError, trace } from "./trace";
 
 // export const { trace } = getLogger("cloudWatchMiddleware");
@@ -36,10 +38,21 @@ export class CloudWatchMiddleware
       const notarisationResult: NotarisationResult = JSON.parse(body);
       const { notarisedDocument } = notarisationResult;
       const data: HealthCertDocument = getData(notarisedDocument);
-      const observation = data.fhirBundle.entry.find(
-        (entr) => entr.resourceType === "Observation"
-      ) as Observation;
-      const testName = observation.code.coding[0].display;
+      let testName = "";
+      if (data?.version === "pdt-healthcert-v2.0") {
+        // @ts-ignore
+        const observationResource = data.fhirBundle.entry?.find(
+          (entr: any) => entr.resource.resourceType === "Observation"
+        )?.resource;
+        const observation = parsers(observationResource) as ObservationV2;
+        testName = observation.testType?.display || "";
+      } else {
+        // @ts-ignore
+        const observation = data.fhirBundle.entry?.find(
+          (entr: any) => entr.resourceType === "Observation"
+        ) as Observation;
+        testName = observation.code.coding[0].display;
+      }
       const { provider } = this;
       if (/art/i.test(testName)) {
         trace(`${provider} successfully notarised pdt of type art`);

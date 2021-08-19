@@ -1,4 +1,4 @@
-import { TestData } from "src/models/healthCert";
+import { TestData } from "src/types";
 import { createEuTestCert } from "./index";
 
 describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {

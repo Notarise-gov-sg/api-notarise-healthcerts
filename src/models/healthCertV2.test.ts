@@ -1,13 +1,10 @@
-import exampleHealthCertWithNric from "../../test/fixtures/v1/example_healthcert_with_nric_unwrapped.json";
-import exampleHealthCertWithoutNric from "../../test/fixtures/v1/example_healthcert_without_nric_unwrapped.json";
-import exampleMultiResultHealthCert from "../../test/fixtures/v1/example_healthcert_multi_result_unwrapped.json";
-import exampleArtHealthCertWithNric from "../../test/fixtures/v1/example_art_healthcert_with_nric_unwrapped.json";
-import {
-  getParticularsFromHealthCert,
-  getTestDataFromHealthCert,
-} from "./healthCert";
-import { DataInvalidError } from "../common/error";
-import { parseDateTime } from "./healthCertV2";
+import { R4 } from "@ahryman40k/ts-fhir-types";
+import exampleHealthCertWithNric from "../../test/fixtures/v2/example_healthcert_with_nric_unwrapped.json";
+import exampleHealthCertWithoutNric from "../../test/fixtures/v2/example_healthcert_without_nric_unwrapped.json";
+import exampleMultiResultHealthCert from "../../test/fixtures/v2/example_healthcert_multi_result_unwrapped.json";
+import exampleArtHealthCertWithNric from "../../test/fixtures/v2/example_art_healthcert_with_nric_unwrapped.json";
+import { getTestDataFromParseFhirBundle, parseDateTime } from "./healthCertV2";
+import fhirHelper from "./fhir";
 
 type testCert =
   | typeof exampleHealthCertWithNric
@@ -17,36 +14,70 @@ type testCert =
 const getSwabCollectionDates = (document: testCert): string[] => {
   const entries: any[] = document.fhirBundle.entry;
   return entries
-    .filter((entry) => entry?.collection?.collectedDateTime != null)
-    .map((entry) => entry.collection.collectedDateTime);
+    .filter((entry) => entry?.resource?.collection?.collectedDateTime != null)
+    .map((entry) => entry.resource.collection.collectedDateTime);
 };
 
 const getObservationDates = (document: testCert): (string | undefined)[] => {
   const entries: any[] = document.fhirBundle.entry;
   return entries
-    .filter((entry) => entry?.effectiveDateTime != null)
-    .map((entry) => entry.effectiveDateTime);
+    .filter((entry) => entry?.resource?.effectiveDateTime != null)
+    .map((entry) => entry.resource.effectiveDateTime);
 };
 
-describe("src/models/healthCert", () => {
+describe("src/models/healthCertV2", () => {
   describe("getParticularsFromHealthCert", () => {
     test("should correctly extract patient particulars from a well formed healthcert containing nric", () => {
-      expect(
-        getParticularsFromHealthCert(exampleHealthCertWithNric as any)
-      ).toStrictEqual({
-        nric: "S9098989Z",
-        fin: undefined,
-        passportNumber: "E7831177G",
-      });
+      const parseFhirBundle = fhirHelper.parse(
+        exampleHealthCertWithNric.fhirBundle as R4.IBundle
+      );
+      expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
+        {
+          birthDate: "15/01/1990",
+          gender: "She",
+          lab: "MacRitchie Laboratory",
+          nationality: "Singaporean",
+          nric: "S9098989Z",
+          observationDate: "9/28/20 2:15:00 PM GMT+08:00",
+          passportNumber: "E7831177G",
+          patientName: "Tan Chen Chen",
+          performerMcr: "123214",
+          performerName: "Dr Michael Lim",
+          provider: "MacRitchie Medical Clinic",
+          swabCollectionDate: "9/27/20 2:15:00 PM GMT+08:00",
+          swabType: "Nasopharyngeal swab",
+          swabTypeCode: "258500001",
+          testResult: "Negative",
+          testResultCode: "260385009",
+          testType: "REAL TIME RT-PCR SWAB",
+        },
+      ]);
     });
     test("should correctly extract patient particulars from a well formed healthcert without nric", () => {
-      expect(
-        getParticularsFromHealthCert(exampleHealthCertWithoutNric as any)
-      ).toStrictEqual({
-        nric: undefined,
-        fin: undefined,
-        passportNumber: "E7831177G",
-      });
+      const parseFhirBundle = fhirHelper.parse(
+        exampleHealthCertWithoutNric.fhirBundle as R4.IBundle
+      );
+      expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
+        {
+          birthDate: "15/01/1990",
+          gender: "She",
+          lab: "MacRitchie Laboratory",
+          nationality: "Singaporean",
+          nric: "",
+          observationDate: "9/28/20 2:15:00 PM GMT+08:00",
+          passportNumber: "E7831177G",
+          patientName: "Tan Chen Chen",
+          performerMcr: "123456",
+          performerName: "Dr Michael Lim",
+          provider: "MacRitchie Medical Clinic",
+          swabCollectionDate: "9/27/20 2:15:00 PM GMT+08:00",
+          swabType: "Nasopharyngeal swab",
+          swabTypeCode: "258500001",
+          testResult: "Negative",
+          testResultCode: "260385009",
+          testType: "REAL TIME RT-PCR SWAB",
+        },
+      ]);
     });
   });
   describe("getTestDataFromHealthCert", () => {
@@ -61,9 +92,10 @@ describe("src/models/healthCert", () => {
 
         const swabCollectionDate = parseDateTime(swabCollectionDates[0]);
         const observationDate = parseDateTime(observationDates[0]);
-        expect(
-          getTestDataFromHealthCert(exampleArtHealthCertWithNric as any)
-        ).toStrictEqual([
+        const parseFhirBundle = fhirHelper.parse(
+          exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
+        );
+        expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
           {
             lab: undefined,
             nric: "S9098989Z",
@@ -73,7 +105,7 @@ describe("src/models/healthCert", () => {
             patientName: "Tan Chen Chen",
             nationality: "Singaporean",
             gender: "She",
-            performerMcr: "MCR 123214",
+            performerMcr: "123214",
             performerName: "Dr Michael Lim",
             provider: "MacRitchie Medical Clinic",
             swabCollectionDate,
@@ -88,14 +120,6 @@ describe("src/models/healthCert", () => {
         ]);
       });
 
-      test("should throw error if ART healthcert not have device identifier", () => {
-        const malformedHealthCert = exampleArtHealthCertWithNric as any;
-        malformedHealthCert.fhirBundle.entry.pop();
-        expect(() =>
-          getTestDataFromHealthCert(malformedHealthCert)
-        ).toThrowError(DataInvalidError);
-      });
-
       test("should correctly extract test data from a well formed PCR healthcert", () => {
         const swabCollectionDates: string[] = getSwabCollectionDates(
           exampleHealthCertWithNric
@@ -106,10 +130,10 @@ describe("src/models/healthCert", () => {
 
         const swabCollectionDate = parseDateTime(swabCollectionDates[0]);
         const observationDate = parseDateTime(observationDates[0]);
-
-        expect(
-          getTestDataFromHealthCert(exampleHealthCertWithNric as any)
-        ).toStrictEqual([
+        const parseFhirBundle = fhirHelper.parse(
+          exampleHealthCertWithNric.fhirBundle as R4.IBundle
+        );
+        expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
           {
             lab: "MacRitchie Laboratory",
             nric: "S9098989Z",
@@ -119,7 +143,7 @@ describe("src/models/healthCert", () => {
             patientName: "Tan Chen Chen",
             nationality: "Singaporean",
             gender: "She",
-            performerMcr: "MCR 123214",
+            performerMcr: "123214",
             performerName: "Dr Michael Lim",
             provider: "MacRitchie Medical Clinic",
             swabCollectionDate,
@@ -143,10 +167,10 @@ describe("src/models/healthCert", () => {
             ],
           },
         };
-
         expect(() =>
-          getTestDataFromHealthCert(malformedHealthCert as any)
-        ).toThrowError(DataInvalidError);
+          // @ts-ignore
+          fhirHelper.parse(malformedHealthCert.fhirBundle as R4.IBundle)
+        ).toThrowError(Error);
       });
 
       test("should throw error if valueCodeableConcept missing", () => {
@@ -179,10 +203,11 @@ describe("src/models/healthCert", () => {
           },
         };
         expect(() =>
-          getTestDataFromHealthCert(
-            malformedHealthCertWithoutValueCodeableConcept as any
+          fhirHelper.parse(
+            // @ts-ignore
+            malformedHealthCertWithoutValueCodeableConcept.fhirBundle as R4.IBundle
           )
-        ).toThrowError(DataInvalidError);
+        ).toThrowError(Error);
       });
 
       test("should throw error if code missing", () => {
@@ -214,8 +239,11 @@ describe("src/models/healthCert", () => {
           },
         };
         expect(() =>
-          getTestDataFromHealthCert(malformedHealthCertWithoutCode as any)
-        ).toThrowError(DataInvalidError);
+          fhirHelper.parse(
+            // @ts-ignore
+            malformedHealthCertWithoutCode.fhirBundle as R4.IBundle
+          )
+        ).toThrowError(Error);
       });
 
       test("should throw error if specimen reference is missing", () => {
@@ -254,10 +282,11 @@ describe("src/models/healthCert", () => {
           },
         };
         expect(() =>
-          getTestDataFromHealthCert(
-            malformedHealthCertWithoutSpecimenReference as any
+          fhirHelper.parse(
+            // @ts-ignore
+            malformedHealthCertWithoutSpecimenReference.fhirBundle as R4.IBundle
           )
-        ).toThrowError(DataInvalidError);
+        ).toThrowError(Error);
       });
 
       test("should throw error if specimen is missing", () => {
@@ -293,8 +322,11 @@ describe("src/models/healthCert", () => {
           },
         };
         expect(() =>
-          getTestDataFromHealthCert(malformedHealthCertWithoutSpecimen as any)
-        ).toThrowError(DataInvalidError);
+          fhirHelper.parse(
+            // @ts-ignore
+            malformedHealthCertWithoutSpecimen.fhirBundle as R4.IBundle
+          )
+        ).toThrowError(Error);
       });
     });
     describe("multi observation flow", () => {
@@ -311,9 +343,11 @@ describe("src/models/healthCert", () => {
         const swabCollectionDate2 = parseDateTime(swabCollectionDates[1]);
         const observationDate2 = parseDateTime(observationDates[1]);
 
-        expect(
-          getTestDataFromHealthCert(exampleMultiResultHealthCert as any)
-        ).toStrictEqual([
+        const parseFhirBundle = fhirHelper.parse(
+          exampleMultiResultHealthCert.fhirBundle as R4.IBundle
+        );
+
+        expect(getTestDataFromParseFhirBundle(parseFhirBundle)).toStrictEqual([
           {
             lab: "MacRitchie Laboratory",
             nric: "S9098989Z",
@@ -323,7 +357,7 @@ describe("src/models/healthCert", () => {
             patientName: "Tan Chen Chen",
             nationality: "Singaporean",
             gender: "She",
-            performerMcr: "MCR 123214",
+            performerMcr: "123214",
             performerName: "Dr Michael Lim",
             provider: "MacRitchie Medical Clinic",
             swabCollectionDate: swabCollectionDate1,
@@ -342,7 +376,7 @@ describe("src/models/healthCert", () => {
             patientName: "Tan Chen Chen",
             nationality: "Singaporean",
             gender: "She",
-            performerMcr: "MCR 123214",
+            performerMcr: "123214",
             performerName: "Dr Michael Lim",
             provider: "MacRitchie Medical Clinic2",
             swabCollectionDate: swabCollectionDate2,

@@ -2,11 +2,11 @@
 // TODO: remove no check. The code to get test data was copied from health cert renderer which also did not enforce type safety
 import { Patient } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/moh/pdt-healthcert/1.0/schema";
 import { pdtHealthcert as healthcert } from "@govtechsg/oa-schemata";
-import moment from "moment-timezone";
-import { HealthCertDocument } from "../types";
+import { HealthCertDocument, TestData } from "../types";
 import { validateHealthCertData } from "../common/healthCertDataValidation";
 import { DataInvalidError } from "../common/error";
 import { getNationality } from "../common/nationality";
+import { parseDateTime } from "./healthCertV2";
 
 const getPatientFromHealthCert = (document: HealthCertDocument) =>
   document.fhirBundle.entry.find(
@@ -34,34 +34,6 @@ export const getParticularsFromHealthCert = (document: HealthCertDocument) => {
 
   return { nric: nric?.value, fin: fin?.value, passportNumber: ppn?.value };
 };
-
-export interface TestData {
-  provider: string;
-  lab: string;
-  swabType: string;
-  swabTypeCode: string;
-  patientName: string;
-  swabCollectionDate: string;
-  performerName: string;
-  performerMcr: string;
-  observationDate: string;
-  nric: string;
-  passportNumber: string;
-  birthDate: string;
-  testType: string;
-  nationality: string;
-  gender: string;
-  testResult: string;
-  testResultCode: string;
-  deviceIdentifier?: string;
-}
-
-export const parseDateTime = (dateString: string | undefined): string =>
-  dateString
-    ? `${moment
-        .tz(dateString, "Asia/Singapore")
-        .format("M/D/YY h:mm:ss A")} GMT+08:00`
-    : "";
 
 export const getTestDataFromHealthCert = (
   document: HealthCertDocument

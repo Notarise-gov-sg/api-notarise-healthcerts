@@ -1,5 +1,5 @@
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
-import exampleHealthcertWrapped from "../../../../test/fixtures/example_healthcert_with_nric_wrapped.json";
+import exampleHealthcertWrapped from "../../../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import { mockDate, unmockDate } from "../../../../test/utils";
 
 const sampleDocument = exampleHealthcertWrapped as any;

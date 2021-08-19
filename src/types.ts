@@ -1,6 +1,7 @@
 import { v2, SignedWrappedDocument } from "@govtechsg/open-attestation";
 import { Record, String, Static } from "runtypes";
 import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
+import { R4 } from "@ahryman40k/ts-fhir-types";
 
 /* eslint-disable */
 enum EntryResourceType {
@@ -12,6 +13,9 @@ enum EntryResourceType {
 }
 /* eslint-disable */
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Patient {
   resourceType: EntryResourceType.Patient;
   identifier: [
@@ -23,6 +27,9 @@ export interface Patient {
   name: string;
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Observation {
   resourceType: EntryResourceType.Observation;
   valueCodeableConcept: {
@@ -36,6 +43,9 @@ export interface Observation {
   };
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Specimen {
   fullUrl?: string;
   resourceType: EntryResourceType.Specimen;
@@ -44,12 +54,18 @@ export interface Specimen {
   };
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Organisation {
   fullUrl?: string;
   type: string;
   resourceType: EntryResourceType.Organization;
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
 export interface Device {
   resourceType: EntryResourceType.Device;
   type: {
@@ -70,14 +86,21 @@ export interface Device {
   ];
 }
 
+/**
+ * @deprecated This interface should be remove after v1 healthcert deprecate.
+ */
+export interface fhirBundleV1 {
+  entry: [Patient | Observation | Specimen | Organisation | Device];
+}
+
 export interface HealthCertDocument extends v2.OpenAttestationDocument {
-  name: string;
+  version?: string;
+  type?: string;
+  name?: string;
   validFrom: string;
   fhirVersion: string;
   logo: string;
-  fhirBundle: {
-    entry: [Patient | Observation | Specimen | Organisation | Device];
-  };
+  fhirBundle: fhirBundleV1 | R4.IBundle;
 }
 
 export interface NotarizedHealthCert extends HealthCertDocument {
@@ -107,37 +130,57 @@ export type WorkflowContextData = Static<typeof WorkflowContextData>;
 export type SignedNotarizedHealthCert =
   SignedWrappedDocument<NotarizedHealthCert>;
 
-  export interface EuTestParams {
-    tg: string;
-    tt: string;
-    nm?: string;
-    ma?: string;
-    sc: string;
-    tr: string;
-    tc: string;
-    co: string;
-    is: string;
-    ci: string;
-  }
-  
-  export interface EuNameParams {
-    fn?: string;
-    fnt: string;
-    gn?: string;
-    gnt?: string;
-  }
-  
-  export interface EuHealthCertDocument {
-    ver: string;
-    nam: EuNameParams;
-    dob: string;
-    t: EuTestParams[];
-  }
-  export interface EuHealthCert extends EuHealthCertDocument {
-    meta: NotarisationMetadata;
-  } 
+export interface TestData {
+  provider: string;
+  lab?: string;
+  swabType: string;
+  swabTypeCode: string;
+  patientName: string;
+  swabCollectionDate: string;
+  performerName: string;
+  performerMcr: string;
+  observationDate: string;
+  nric: string;
+  passportNumber: string;
+  birthDate: string;
+  testType: string;
+  nationality: string;
+  gender: string;
+  testResult: string;
+  testResultCode: string;
+  deviceIdentifier?: string;
+}
 
-  export interface EuHealthCertQr {
-    qrData?: string;
-  }
-  
+export interface EuTestParams {
+  tg: string;
+  tt: string;
+  nm?: string;
+  ma?: string;
+  sc: string;
+  tr: string;
+  tc: string;
+  co: string;
+  is: string;
+  ci: string;
+}
+
+export interface EuNameParams {
+  fn?: string;
+  fnt: string;
+  gn?: string;
+  gnt?: string;
+}
+
+export interface EuHealthCertDocument {
+  ver: string;
+  nam: EuNameParams;
+  dob: string;
+  t: EuTestParams[];
+}
+export interface EuHealthCert extends EuHealthCertDocument {
+  meta: NotarisationMetadata;
+} 
+
+export interface EuHealthCertQr {
+  qrData?: string;
+}

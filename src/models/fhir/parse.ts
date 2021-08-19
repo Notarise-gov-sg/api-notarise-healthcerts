@@ -22,7 +22,7 @@ const fhir = new Fhir();
  * @param resource Raw FHIR resource
  * @returns Parsed FHIR resource (simplified)
  */
-const parsers = (resource: R4.IResourceList | undefined) => {
+export const parsers = (resource: R4.IResourceList | undefined) => {
   if (!resource) return undefined; // Skip parsing an undefined resource
 
   const validator = fhir.validate(resource, { errorOnUnexpected: true });
@@ -70,6 +70,7 @@ const parsers = (resource: R4.IResourceList | undefined) => {
         )?.reference,
         acsn: resource.identifier?.find((i) => i.id === "ACSN")?.value,
         targetDisease: resource.category?.[0].coding?.[0],
+        testType: resource.code?.coding?.[0],
         result: resource.valueCodeableConcept?.coding?.[0],
         effectiveDateTime: resource.effectiveDateTime,
         status: resource.status,
