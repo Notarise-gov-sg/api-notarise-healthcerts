@@ -105,7 +105,10 @@ export const main: Handler = async (
 
     // validate parsed FhirBundle data with specific healthcert type constraints
     const documentType = (data?.type ?? "").toUpperCase();
-    fhirHelper.hasRequiredFields(<"ART" | "PCR">documentType, parseFhirBundle);
+    fhirHelper.hasRequiredFields(
+      <"ART" | "PCR" | "SER">documentType,
+      parseFhirBundle
+    );
 
     // convert parsed Bundle to testdata[]
     testData = getTestDataFromParseFhirBundle(parseFhirBundle);

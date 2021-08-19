@@ -12,6 +12,14 @@ describe("validatePCRHealthCertData", () => {
       fhirHelper.hasRequiredFields("PCR", parseFhirBundle)
     ).not.toThrow();
   });
+  test("should pass for valid SER healthcert", () => {
+    const parseFhirBundle = fhirHelper.parse(
+      exampleHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+    expect(() =>
+      fhirHelper.hasRequiredFields("SER", parseFhirBundle)
+    ).not.toThrow();
+  });
   test("should throw error if PCR healthcert not have Accredited Laboratory", () => {
     const parseFhirBundle = fhirHelper.parse(
       exampleArtHealthCertWithNric.fhirBundle as R4.IBundle

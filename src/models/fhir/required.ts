@@ -141,14 +141,19 @@ const getPcrConstraints = (observationCount: number) => {
   return pcrConstraints;
 };
 
-export const hasRequiredFields = (type: "ART" | "PCR", bundle: Bundle) => {
+export const hasRequiredFields = (
+  type: "ART" | "PCR" | "SER",
+  bundle: Bundle
+) => {
   let constraints = getCommonConstraints(bundle.observations.length);
   switch (type) {
     case "ART":
       constraints = { ...constraints, ...artConstraints };
       break;
 
+    // currently PCR and SER have same validation constraint for now
     case "PCR":
+    case "SER":
       constraints = {
         ...constraints,
         ...getPcrConstraints(bundle.observations.length),
