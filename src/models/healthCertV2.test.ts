@@ -1,8 +1,8 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
-import exampleHealthCertWithNric from "../../test/fixtures/v2/example_healthcert_with_nric_unwrapped.json";
-import exampleHealthCertWithoutNric from "../../test/fixtures/v2/example_healthcert_without_nric_unwrapped.json";
-import exampleMultiResultHealthCert from "../../test/fixtures/v2/example_healthcert_multi_result_unwrapped.json";
-import exampleArtHealthCertWithNric from "../../test/fixtures/v2/example_art_healthcert_with_nric_unwrapped.json";
+import exampleHealthCertWithNric from "../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
+import exampleHealthCertWithoutNric from "../../test/fixtures/v2/pdt_pcr_without_nric_unwrapped.json";
+import exampleMultiResultHealthCert from "../../test/fixtures/v2/pdt_ser_multi_result_unwrapped.json";
+import exampleArtHealthCertWithNric from "../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
 import { getTestDataFromParseFhirBundle, parseDateTime } from "./healthCertV2";
 import fhirHelper from "./fhir";
 

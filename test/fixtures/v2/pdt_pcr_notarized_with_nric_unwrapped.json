@@ -1,6 +1,7 @@
 {
   "id": "e35f5d2a-4198-4f8f-96dc-d1afe0b67119",
-  "name": "HealthCert",
+  "version": "pdt-healthcert-v2.0",
+  "type": "PCR",
   "validFrom": "2021-05-18T06:43:12.152Z",
   "fhirVersion": "4.0.1",
   "fhirBundle": {
