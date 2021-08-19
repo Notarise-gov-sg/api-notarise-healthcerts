@@ -86,7 +86,7 @@ export const validateV2Document = async (
       "Document should include `fhirVersion` attribute with valid `4.0.1` value"
     );
   const documentType = (attachment.data?.type ?? "").toUpperCase();
-  if (!attachment.data?.type || !documentType.match(/(PCR|ART)$/))
+  if (!attachment.data?.type || !documentType.match(/(PCR|ART|SER)$/))
     throw new DocumentInvalidError("Document should include 'type' attribute");
   await validateDocument(attachment);
 };
