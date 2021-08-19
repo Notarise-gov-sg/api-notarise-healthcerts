@@ -1,6 +1,6 @@
 import { verify, isValid } from "@govtechsg/oa-verify";
 import exampleHealthcertWrapped from "../../../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
-import exampleHealthcertV2Wrapped from "../../../../test/fixtures/v2/example_healthcert_with_nric_wrapped.json";
+import exampleHealthcertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
 import { validateDocument, validateV2Document } from "./validateDocument";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 

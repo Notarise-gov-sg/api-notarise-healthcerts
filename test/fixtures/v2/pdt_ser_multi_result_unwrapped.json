@@ -1,7 +1,7 @@
 {
   "id": "76caf3f9-5591-4ef1-b756-1cb47a76dede",
   "version": "pdt-healthcert-v2.0",
-  "type": "PCR",
+  "type": "SER",
   "validFrom": "2021-05-18T06:43:12.152Z",
   "fhirVersion": "4.0.1",
   "fhirBundle": {
@@ -105,10 +105,12 @@
           },
           "performer": [
             {
+              "id": "LHP",
               "type": "Organization",
               "reference": "urn:uuid:fa2328af-4882-4eaa-8c28-66dab46950f1"
             },
             {
+              "id": "AL",
               "type": "Organization",
               "reference": "urn:uuid:839a7c54-6b40-41cb-b10d-9295d7e75f77"
             },
@@ -175,10 +177,12 @@
           },
           "performer": [
             {
+              "id": "LHP",
               "type": "Organization",
               "reference": "urn:uuid:abd39a2a-a62c-4630-8217-5532b6fb7eed"
             },
             {
+              "id": "AL",
               "type": "Organization",
               "reference": "urn:uuid:5896fc98-e1b8-40e2-bd1e-ba309e0d3d34"
             },
@@ -239,7 +243,30 @@
         "fullUrl": "urn:uuid:3dbff0de-d4a4-4e1d-98bf-af7428b8a04b",
         "resource": {
           "resourceType": "Practitioner",
-          "name": [{ "text": null }]
+          "name": [{ "text": "Dr Michael Lim" }],
+          "qualification": [
+            {
+              "code": {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                    "code": "MCR",
+                    "display": "Practitioner Medicare number"
+                  }
+                ]
+              },
+              "identifier": [
+                {
+                  "id": "MCR",
+                  "value": "123214"
+                }
+              ],
+              "issuer": {
+                "type": "Organization",
+                "reference": "urn:uuid:bc7065ee-42aa-473a-a614-afd8a7b30b1e"
+              }
+            }
+          ]
         }
       },
       {

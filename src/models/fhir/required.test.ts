@@ -1,7 +1,7 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import fhirHelper from "./index";
-import exampleHealthCertWithNric from "../../../test/fixtures/v2/example_healthcert_with_nric_unwrapped.json";
-import exampleArtHealthCertWithNric from "../../../test/fixtures/v2/example_art_healthcert_with_nric_unwrapped.json";
+import exampleHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
+import exampleArtHealthCertWithNric from "../../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
 
 describe("validatePCRHealthCertData", () => {
   test("should pass for valid PCR healthcert", () => {

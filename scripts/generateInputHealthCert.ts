@@ -5,10 +5,10 @@ import {
 } from "@govtechsg/oa-did-sign";
 import { writeFileSync } from "fs";
 import { config } from "../src/config";
-import sample from "../test/fixtures/v2/example_healthcert_with_nric_unwrapped.json";
+import sample from "../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 
 const OUTPUT_FILE =
-  "test/fixtures/v2/example_healthcert_with_nric_wrapped.json";
+  "test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
 
 const run = async () => {
   const healthCert = sample as v2.OpenAttestationDocument;

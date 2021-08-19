@@ -1,8 +1,8 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import fhirHelper from "../../fhir";
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
-import exampleHealthcertWrapped from "../../../../test/fixtures/v2/example_healthcert_with_nric_wrapped.json";
-import exampleHealthcertUnWrapped from "../../../../test/fixtures/v2/example_healthcert_with_nric_unwrapped.json";
+import exampleHealthcertWrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
+import exampleHealthcertUnWrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 import { mockDate, unmockDate } from "../../../../test/utils";
 
 const sampleDocument = exampleHealthcertWrapped as any;
