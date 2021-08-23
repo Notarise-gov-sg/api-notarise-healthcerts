@@ -28,7 +28,7 @@ const { endpoint, apiKey } = config.transientStorage;
 // type FailureResponse = Runtype<typeof SuccessfulResponseDef>;
 // type Response = Runtype<typeof ResponseDef>;
 
-const stringifyAndEncode = (obj: object): string =>
+const stringifyAndEncode = (obj: any): string =>
   encodeURIComponent(JSON.stringify(obj));
 
 const universalUrl = (url: string, key: string) => {
