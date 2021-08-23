@@ -28,19 +28,20 @@ const { endpoint, apiKey } = config.transientStorage;
 // type FailureResponse = Runtype<typeof SuccessfulResponseDef>;
 // type Response = Runtype<typeof ResponseDef>;
 
+const stringifyAndEncode = (obj: any): string =>
+  encodeURIComponent(JSON.stringify(obj));
+
 const universalUrl = (url: string, key: string) => {
-  const query = encodeURIComponent(
-    JSON.stringify({
-      type: "DOCUMENT",
-      payload: {
-        uri: url,
-        key,
-        permittedActions: ["VIEW", "STORE"],
-        redirect: "https://www.verify.gov.sg/verify",
-      },
-    })
-  );
-  return `https://action.openattestation.com/?q=${query}`;
+  const query = stringifyAndEncode({
+    type: "DOCUMENT",
+    payload: {
+      uri: url,
+      permittedActions: ["VIEW", "STORE"],
+      redirect: "https://www.verify.gov.sg/verify",
+    },
+  });
+  const anchor = key ? `#${stringifyAndEncode({ key })}` : ``;
+  return `https://action.openattestation.com/?q=${query}${anchor}`;
 };
 
 export const buildStoredUrl = (id: string, key: string) => {
