@@ -4,6 +4,7 @@ import {
   SUPPORTED_SIGNING_ALGORITHM,
 } from "@govtechsg/oa-did-sign";
 import {
+  EuHealthCertQr,
   HealthCertDocument,
   NotarizedHealthCert,
   SignedNotarizedHealthCert,
@@ -28,12 +29,14 @@ const signWrappedDocument = (
 export const createNotarizedHealthCert = async (
   certificate: WrappedDocument<HealthCertDocument>,
   reference: string,
-  storedUrl: string
+  storedUrl: string,
+  euHealthCertQr?: EuHealthCertQr
 ) => {
   const unwrappedNotarisedDocument = createUnwrappedDocument(
     certificate,
     reference,
-    storedUrl
+    storedUrl,
+    euHealthCertQr
   );
   const wrappedNotarisedDocument = wrapDocument(unwrappedNotarisedDocument);
   const traceWithRef = trace.extend(`reference: $[reference}`);

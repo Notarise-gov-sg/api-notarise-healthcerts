@@ -46,7 +46,7 @@ export const notarisePdt = async (
 
   const storedUrl = buildStoredUrl(id, key);
 
-  let euHealthCertsInfo: any[] = [];
+  let euHealthCertQr: EuHealthCertQr | undefined = {};
   if (config.isOfflineQrEnabled) {
     try {
       traceWithRef("EU test cert...");
@@ -54,16 +54,9 @@ export const notarisePdt = async (
       traceWithRef(euTestCert);
 
       traceWithRef("Generating EU test cert qr...");
-      const testQrHealthCerts = await createEuSignedTestQr(euTestCert);
-      euHealthCertsInfo = testQrHealthCerts.map(
-        (testHealthCert: EuHealthCertQr) => testHealthCert.qrData
-      );
-      traceWithRef(euHealthCertsInfo);
-
-      if (euHealthCertsInfo.length > 0) {
-        euHealthCertsInfo.forEach((euHealthCertInfo, index) => {
-          traceWithRef(`EU test cert qr ${index + 1} : ${euHealthCertInfo}`);
-        });
+      euHealthCertQr = await createEuSignedTestQr(euTestCert);
+      if (euHealthCertQr?.qrData) {
+        traceWithRef(`EU test cert qr : ${euHealthCertQr?.qrData}`);
       }
     } catch (e) {
       errorWithRef(`Offline Qr error: ${e.message}`);
@@ -74,7 +67,8 @@ export const notarisePdt = async (
     certificate,
     parseFhirBundle,
     reference,
-    storedUrl
+    storedUrl,
+    euHealthCertQr
   );
   const { ttl } = await uploadDocument(notarisedDocument, id, reference);
   traceWithRef("Document successfully notarised");

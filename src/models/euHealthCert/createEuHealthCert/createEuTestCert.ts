@@ -52,13 +52,19 @@ export const createEuTestCert = (
       testGroup.tt = "LP217198-3"; // test type code for ART test [Rapid immunoassay]
       testGroup.ma = item.deviceIdentifier;
     }
-    testHealthCerts.push({
-      ver: fhirVersion,
-      nam: euName,
-      dob,
-      t: [testGroup],
-      meta,
-    });
+    // generate test cert only for PCR and ART
+    if (
+      item.swabTypeCode === swabTestTypes.PCR ||
+      item.swabTypeCode === swabTestTypes.ART
+    ) {
+      testHealthCerts.push({
+        ver: fhirVersion,
+        nam: euName,
+        dob,
+        t: [testGroup],
+        meta,
+      });
+    }
   });
 
   return testHealthCerts;

@@ -256,9 +256,16 @@
   },
   "issuers": [
     {
-      "name": "GovTech",
-      "documentStore": "0x8Fc57204c35fb9317D91285eF52D6b892EC08cD3",
-      "identityProof": { "type": "DNS-TXT", "location": "example.openattestation.com" }
+      "id": "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830",
+      "revocation": {
+        "type": "NONE"
+      },
+      "name": "SAMPLE CLINIC",
+      "identityProof": {
+        "type": "DNS-DID",
+        "location": "donotverify.testing.verify.gov.sg",
+        "key": "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830#controller"
+      }
     }
   ],
   "$template": { "name": "HEALTH_CERT", "type": "EMBEDDED_RENDERER", "url": "https://healthcert.renderer.moh.gov.sg/" },

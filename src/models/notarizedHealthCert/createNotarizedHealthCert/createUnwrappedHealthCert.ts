@@ -1,7 +1,11 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
 import { config } from "../../../config";
-import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
+import {
+  EuHealthCertQr,
+  HealthCertDocument,
+  NotarizedHealthCert,
+} from "../../../types";
 import { getParticularsFromHealthCert } from "../../healthCert";
 
 const { didSigner, documentName } = config;
@@ -9,7 +13,8 @@ const { didSigner, documentName } = config;
 export const createUnwrappedDocument = (
   certificate: WrappedDocument<HealthCertDocument>,
   reference: string,
-  storedUrl: string
+  storedUrl: string,
+  euHealthCertQr?: EuHealthCertQr
 ): NotarizedHealthCert => {
   const certificateData =
     getData<WrappedDocument<HealthCertDocument>>(certificate);
@@ -31,6 +36,9 @@ export const createUnwrappedDocument = (
     passportNumber: passportNumber || "",
     url: storedUrl,
   };
+  if (euHealthCertQr) {
+    notarisationMetadata.encryptedEuHealthCert = euHealthCertQr.qrData;
+  }
 
   const attachments = [
     {
