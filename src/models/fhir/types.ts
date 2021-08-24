@@ -16,6 +16,7 @@ export interface Specimen {
 }
 
 export interface Observation {
+  specimenResourceUuid: string;
   practitionerResourceUuid: string;
   organizationLhpResourceUuid: string;
   organizationAlResourceUuid?: string;
@@ -51,14 +52,14 @@ export interface Device {
 
 export interface GroupedObservation {
   observation: Observation;
+  specimen: Specimen;
+  device?: Device;
   practitioner: Practitioner;
   organization: { lhp: Organization; al?: Organization };
 }
 
 export interface Bundle {
   patient: Patient;
-  specimen: Specimen;
   observations: GroupedObservation[];
   organization: { moh: Organization };
-  device?: Device;
 }

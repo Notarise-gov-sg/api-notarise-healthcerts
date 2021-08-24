@@ -59,6 +59,7 @@ export const parsers = (resource: R4.IResourceList | undefined) => {
 
     case "Observation":
       return {
+        specimenResourceUuid: resource.specimen?.reference,
         practitionerResourceUuid: resource.performer?.find(
           (p) => p.type === "Practitioner"
         )?.reference,
@@ -122,17 +123,17 @@ export const parse = (fhirBundle: R4.IBundle): Bundle => {
   )?.resource;
   const patient = parsers(fhirPatient) as Patient;
 
-  // 2. Specimen resource
-  const fhirSpecimen = fhirBundle.entry?.find(
-    (entry) => entry.resource?.resourceType === "Specimen"
-  )?.resource;
-  const specimen = parsers(fhirSpecimen) as Specimen;
-
   // 3. Observation resource(s)
   const observations = fhirBundle.entry
     ?.filter((entry) => entry.resource?.resourceType === "Observation")
     ?.map((o) => {
       const observation = parsers(o.resource) as Observation;
+
+      // 2. Specimen resource
+      const fhirSpecimen = fhirBundle.entry?.find(
+        (entry) => entry.fullUrl === observation.specimenResourceUuid
+      )?.resource;
+      const specimen = parsers(fhirSpecimen) as Specimen;
 
       // 3a. Practitioner resource
       const fhirPractitioner = fhirBundle.entry?.find(
@@ -152,7 +153,19 @@ export const parse = (fhirBundle: R4.IBundle): Bundle => {
       )?.resource;
       const al = parsers(fhirOrganizationAl) as Organization;
 
-      return { observation, practitioner, organization: { lhp, al } };
+      // 5. Device resource [Only for ART]
+      const fhirDevice = fhirBundle.entry?.find(
+        (entry) => entry.fullUrl === specimen.deviceResourceUuid
+      )?.resource;
+      const device = parsers(fhirDevice) as Device;
+
+      return {
+        observation,
+        specimen,
+        device,
+        practitioner,
+        organization: { lhp, al },
+      };
     }) as GroupedObservation[];
 
   // 4. Organization (MOH) resource
@@ -163,17 +176,9 @@ export const parse = (fhirBundle: R4.IBundle): Bundle => {
   )?.resource;
   const moh = parsers(fhirOrganizationMoh) as Organization;
 
-  // 5. Device resource [Only for ART]
-  const fhirDevice = fhirBundle.entry?.find(
-    (entry) => entry.fullUrl === specimen.deviceResourceUuid
-  )?.resource;
-  const device = parsers(fhirDevice) as Device;
-
   return {
     patient,
-    specimen,
     observations,
     organization: { moh },
-    device,
   };
 };

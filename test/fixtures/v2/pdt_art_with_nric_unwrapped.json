@@ -128,8 +128,8 @@
             "coding": [
               {
                 "system": "http://snomed.info/sct",
-                "code": "258500001",
-                "display": "Nasopharyngeal swab"
+                "code": "697989009",
+                "display": "Anterior nares swab"
               }
             ]
           },
