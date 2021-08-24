@@ -44,11 +44,11 @@ export const getTestDataFromParseFhirBundle = (
     const testDataValue: TestData = {
       provider: observationGroup.organization.lhp?.fullName,
       lab: observationGroup.organization.al?.fullName,
-      swabType: parseFhirBundle.specimen.swabType?.display || "",
-      swabTypeCode: parseFhirBundle.specimen.swabType?.code || "",
+      swabType: observationGroup.specimen.swabType?.display || "",
+      swabTypeCode: observationGroup.specimen.swabType?.code || "",
       patientName: parseFhirBundle.patient?.fullName,
       swabCollectionDate: parseDateTime(
-        parseFhirBundle.specimen.collectionDateTime
+        observationGroup.specimen.collectionDateTime
       ),
       performerName: observationGroup.practitioner?.fullName,
       performerMcr: observationGroup.practitioner?.mcr,
@@ -68,8 +68,8 @@ export const getTestDataFromParseFhirBundle = (
       testResultCode,
     };
 
-    if (parseFhirBundle.device) {
-      testDataValue.deviceIdentifier = parseFhirBundle.device.type.code;
+    if (observationGroup.device) {
+      testDataValue.deviceIdentifier = observationGroup.device.type.code;
     }
     testData.push(testDataValue);
   });

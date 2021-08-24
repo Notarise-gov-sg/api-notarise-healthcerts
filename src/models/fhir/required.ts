@@ -10,10 +10,6 @@ const getCommonConstraints = (observationCount: number) => {
     "patient.birthDate": { presence: true },
     "patient.nationality.code": { presence: true },
     "patient.passportNumber": { presence: true },
-    // specimen validation constraints
-    "specimen.swabType.code": { presence: true },
-    "specimen.swabType.display": { presence: true },
-    "specimen.collectionDateTime": { presence: true },
 
     // organization `moh` validation constraints
     "organization.moh.fullName": { presence: true },
@@ -28,6 +24,9 @@ const getCommonConstraints = (observationCount: number) => {
   let counter = 0;
   while (counter < observationCount) {
     // observations group validation constraints
+    commonConstraints[
+      `observations.${counter}.observation.specimenResourceUuid`
+    ] = { presence: true };
     commonConstraints[
       `observations.${counter}.observation.practitionerResourceUuid`
     ] = { presence: true };
@@ -49,6 +48,17 @@ const getCommonConstraints = (observationCount: number) => {
     commonConstraints[`observations.${counter}.observation.effectiveDateTime`] =
       { presence: true };
     commonConstraints[`observations.${counter}.observation.status`] = {
+      presence: true,
+    };
+
+    // specimen validation constraints
+    commonConstraints[`observations.${counter}.specimen.swabType.code`] = {
+      presence: true,
+    };
+    commonConstraints[`observations.${counter}.specimen.swabType.display`] = {
+      presence: true,
+    };
+    commonConstraints[`observations.${counter}.specimen.collectionDateTime`] = {
       presence: true,
     };
 
@@ -91,12 +101,31 @@ const getCommonConstraints = (observationCount: number) => {
   return commonConstraints;
 };
 
-const artConstraints = {
-  // Fields only ART HealthCerts should have
-  "specimen.deviceResourceUuid": { presence: true },
-  "device.type.system": { presence: true },
-  "device.type.code": { presence: true },
-  "device.type.display": { presence: true },
+const getArtConstraints = (observationCount: number) => {
+  const artConstraints: any = {
+    /* object validation constraints */
+  };
+  let counter = 0;
+  while (counter < observationCount) {
+    // observations group validation constraints
+    artConstraints[`observations.${counter}.specimen.deviceResourceUuid`] = {
+      presence: true,
+    };
+
+    // device validation constraints
+    artConstraints[`observations.${counter}.device.type.system`] = {
+      presence: true,
+    };
+    artConstraints[`observations.${counter}.device.type.code`] = {
+      presence: true,
+    };
+    artConstraints[`observations.${counter}.device.type.display`] = {
+      presence: true,
+    };
+
+    counter += 1;
+  }
+  return artConstraints;
 };
 
 const getPcrConstraints = (observationCount: number) => {
@@ -148,7 +177,10 @@ export const hasRequiredFields = (
   let constraints = getCommonConstraints(bundle.observations.length);
   switch (type) {
     case "ART":
-      constraints = { ...constraints, ...artConstraints };
+      constraints = {
+        ...constraints,
+        ...getArtConstraints(bundle.observations.length),
+      };
       break;
 
     // currently PCR and SER have same validation constraint for now
