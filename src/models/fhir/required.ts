@@ -1,100 +1,87 @@
 import validate from "validate.js";
 import { Bundle } from "./types";
 
+const presenceValidator = { presence: { allowEmpty: false } };
+
 const getCommonConstraints = (observationCount: number) => {
   const commonConstraints: any = {
     /* object validation constraints at here */
 
     // patient validation constraints
-    "patient.fullName": { presence: true },
-    "patient.birthDate": { presence: true },
-    "patient.nationality.code": { presence: true },
-    "patient.passportNumber": { presence: true },
+    "patient.fullName": presenceValidator,
+    "patient.birthDate": presenceValidator,
+    "patient.nationality.code": presenceValidator,
+    "patient.passportNumber": presenceValidator,
 
     // organization `moh` validation constraints
-    "organization.moh.fullName": { presence: true },
-    "organization.moh.type": { presence: true },
-    "organization.moh.url": { presence: true },
-    "organization.moh.phone": { presence: true },
-    "organization.moh.address": { presence: true },
-    "organization.moh.address.type": { presence: true },
-    "organization.moh.address.use": { presence: true },
-    "organization.moh.address.text": { presence: true },
+    "organization.moh.fullName": presenceValidator,
+    "organization.moh.type": presenceValidator,
+    "organization.moh.url": presenceValidator,
+    "organization.moh.phone": presenceValidator,
+    "organization.moh.address": presenceValidator,
+    "organization.moh.address.type": presenceValidator,
+    "organization.moh.address.use": presenceValidator,
+    "organization.moh.address.text": presenceValidator,
   };
   let counter = 0;
   while (counter < observationCount) {
     // observations group validation constraints
     commonConstraints[
       `observations.${counter}.observation.specimenResourceUuid`
-    ] = { presence: true };
+    ] = presenceValidator;
     commonConstraints[
       `observations.${counter}.observation.practitionerResourceUuid`
-    ] = { presence: true };
+    ] = presenceValidator;
     commonConstraints[
       `observations.${counter}.observation.organizationLhpResourceUuid`
-    ] = { presence: true };
-    commonConstraints[`observations.${counter}.observation.acsn`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.observation.targetDisease`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.observation.testType`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.observation.result`] = {
-      presence: true,
-    };
+    ] = presenceValidator;
+    commonConstraints[`observations.${counter}.observation.acsn`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.observation.targetDisease`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.observation.testType`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.observation.result`] =
+      presenceValidator;
     commonConstraints[`observations.${counter}.observation.effectiveDateTime`] =
-      { presence: true };
-    commonConstraints[`observations.${counter}.observation.status`] = {
-      presence: true,
-    };
+      presenceValidator;
+    commonConstraints[`observations.${counter}.observation.status`] =
+      presenceValidator;
 
     // specimen validation constraints
-    commonConstraints[`observations.${counter}.specimen.swabType.code`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.specimen.swabType.display`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.specimen.collectionDateTime`] = {
-      presence: true,
-    };
+    commonConstraints[`observations.${counter}.specimen.swabType.code`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.specimen.swabType.display`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.specimen.collectionDateTime`] =
+      presenceValidator;
 
     // practitioner in observations  group validation constraints
-    commonConstraints[`observations.${counter}.practitioner.fullName`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.practitioner.mcr`] = {
-      presence: true,
-    };
+    commonConstraints[`observations.${counter}.practitioner.fullName`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.practitioner.mcr`] =
+      presenceValidator;
     commonConstraints[
       `observations.${counter}.practitioner.organizationMohResourceUuid`
-    ] = { presence: true };
+    ] = presenceValidator;
 
     // lhp organization in observations  group validation constraints
-    commonConstraints[`observations.${counter}.organization.lhp.fullName`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.organization.lhp.type`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.organization.lhp.url`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.organization.lhp.phone`] = {
-      presence: true,
-    };
-    commonConstraints[`observations.${counter}.organization.lhp.address`] = {
-      presence: true,
-    };
+    commonConstraints[`observations.${counter}.organization.lhp.fullName`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.organization.lhp.type`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.organization.lhp.url`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.organization.lhp.phone`] =
+      presenceValidator;
+    commonConstraints[`observations.${counter}.organization.lhp.address`] =
+      presenceValidator;
     commonConstraints[`observations.${counter}.organization.lhp.address.type`] =
-      { presence: true };
+      presenceValidator;
     commonConstraints[`observations.${counter}.organization.lhp.address.use`] =
-      { presence: true };
+      presenceValidator;
     commonConstraints[`observations.${counter}.organization.lhp.address.text`] =
-      { presence: true };
+      presenceValidator;
 
     counter += 1;
   }
@@ -108,20 +95,16 @@ const getArtConstraints = (observationCount: number) => {
   let counter = 0;
   while (counter < observationCount) {
     // observations group validation constraints
-    artConstraints[`observations.${counter}.specimen.deviceResourceUuid`] = {
-      presence: true,
-    };
+    artConstraints[`observations.${counter}.specimen.deviceResourceUuid`] =
+      presenceValidator;
 
     // device validation constraints
-    artConstraints[`observations.${counter}.device.type.system`] = {
-      presence: true,
-    };
-    artConstraints[`observations.${counter}.device.type.code`] = {
-      presence: true,
-    };
-    artConstraints[`observations.${counter}.device.type.display`] = {
-      presence: true,
-    };
+    artConstraints[`observations.${counter}.device.type.system`] =
+      presenceValidator;
+    artConstraints[`observations.${counter}.device.type.code`] =
+      presenceValidator;
+    artConstraints[`observations.${counter}.device.type.display`] =
+      presenceValidator;
 
     counter += 1;
   }
@@ -137,33 +120,25 @@ const getPcrConstraints = (observationCount: number) => {
     // observations group validation constraints
     pcrConstraints[
       `observations.${counter}.observation.organizationAlResourceUuid`
-    ] = { presence: true };
+    ] = presenceValidator;
 
     // al organization in observations  group validation constraints
-    pcrConstraints[`observations.${counter}.organization.al.fullName`] = {
-      presence: true,
-    };
-    pcrConstraints[`observations.${counter}.organization.al.type`] = {
-      presence: true,
-    };
-    pcrConstraints[`observations.${counter}.organization.al.url`] = {
-      presence: true,
-    };
-    pcrConstraints[`observations.${counter}.organization.al.phone`] = {
-      presence: true,
-    };
-    pcrConstraints[`observations.${counter}.organization.al.address`] = {
-      presence: true,
-    };
-    pcrConstraints[`observations.${counter}.organization.al.address.type`] = {
-      presence: true,
-    };
-    pcrConstraints[`observations.${counter}.organization.al.address.use`] = {
-      presence: true,
-    };
-    pcrConstraints[`observations.${counter}.organization.al.address.text`] = {
-      presence: true,
-    };
+    pcrConstraints[`observations.${counter}.organization.al.fullName`] =
+      presenceValidator;
+    pcrConstraints[`observations.${counter}.organization.al.type`] =
+      presenceValidator;
+    pcrConstraints[`observations.${counter}.organization.al.url`] =
+      presenceValidator;
+    pcrConstraints[`observations.${counter}.organization.al.phone`] =
+      presenceValidator;
+    pcrConstraints[`observations.${counter}.organization.al.address`] =
+      presenceValidator;
+    pcrConstraints[`observations.${counter}.organization.al.address.type`] =
+      presenceValidator;
+    pcrConstraints[`observations.${counter}.organization.al.address.use`] =
+      presenceValidator;
+    pcrConstraints[`observations.${counter}.organization.al.address.text`] =
+      presenceValidator;
 
     counter += 1;
   }
