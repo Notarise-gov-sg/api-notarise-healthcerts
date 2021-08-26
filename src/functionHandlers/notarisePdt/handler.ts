@@ -65,7 +65,8 @@ export const notarisePdt = async (
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
     reference,
-    storedUrl
+    storedUrl,
+    euHealthCertQr
   );
   const { ttl } = await uploadDocument(notarisedDocument, id, reference);
   traceWithRef("Document successfully notarised");
