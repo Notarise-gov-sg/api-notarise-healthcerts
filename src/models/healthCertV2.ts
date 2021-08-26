@@ -28,12 +28,7 @@ export const getTestDataFromParseFhirBundle = (
         : "";
 
     const testCode = observationGroup.observation.testType?.code;
-    const testType =
-      testCode === "94531-1"
-        ? "REAL TIME RT-PCR SWAB"
-        : testCode === "94661-6"
-        ? "SEROLOGY"
-        : observationGroup.observation.testType?.display;
+    const testType = observationGroup.observation.testType?.display;
 
     const gender =
       parseFhirBundle.patient?.gender?.toLowerCase() ===
@@ -61,6 +56,7 @@ export const getTestDataFromParseFhirBundle = (
         ?.split("-")
         ?.reverse()
         ?.join("/"),
+      testCode: testCode || "",
       testType: testType || "",
       nationality: getNationality(parseFhirBundle.patient?.nationality?.code),
       gender,

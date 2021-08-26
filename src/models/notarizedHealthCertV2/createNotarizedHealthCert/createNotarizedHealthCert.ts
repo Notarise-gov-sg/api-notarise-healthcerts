@@ -5,6 +5,7 @@ import {
 } from "@govtechsg/oa-did-sign";
 import { Bundle } from "../../fhir/types";
 import {
+  EuHealthCertQr,
   HealthCertDocument,
   NotarizedHealthCert,
   SignedNotarizedHealthCert,
@@ -30,13 +31,15 @@ export const createNotarizedHealthCert = async (
   certificate: WrappedDocument<HealthCertDocument>,
   parseFhirBundle: Bundle,
   reference: string,
-  storedUrl: string
+  storedUrl: string,
+  euHealthCertQr?: EuHealthCertQr
 ) => {
   const unwrappedNotarisedDocument = createUnwrappedDocument(
     certificate,
     parseFhirBundle,
     reference,
-    storedUrl
+    storedUrl,
+    euHealthCertQr
   );
   const wrappedNotarisedDocument = wrapDocument(unwrappedNotarisedDocument);
   const traceWithRef = trace.extend(`reference: $[reference}`);
