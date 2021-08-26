@@ -33,6 +33,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {
       swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
       swabType: "Nasopharyngeal swab",
       swabTypeCode: "258500001",
+      testCode: "94531-1",
       testType:
         "Reverse transcription polymerase chain reaction (rRT-PCR) test",
       testResult: "Positive",
@@ -106,6 +107,7 @@ describe("createEuTestCert for ART Anterior Nares Swab", () => {
       swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
       swabType: "Anterior nares swab",
       swabTypeCode: "697989009",
+      testCode: "41112601",
       testType: "Quidel QuickVue At-Home OTC COVID-19 Test",
       testResult: "Positive",
       testResultCode: "260373001",
@@ -179,6 +181,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
       swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
       swabType: "Nasopharyngeal swab",
       swabTypeCode: "258500001",
+      testCode: "94531-1",
       testType:
         "Reverse transcription polymerase chain reaction (rRT-PCR) test",
       testResult: "Positive",
@@ -199,6 +202,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
       swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
       swabType: "Anterior nares swab",
       swabTypeCode: "697989009",
+      testCode: "41112601",
       testType: "Quidel QuickVue At-Home OTC COVID-19 Test",
       testResult: "Positive",
       testResultCode: "260373001",
