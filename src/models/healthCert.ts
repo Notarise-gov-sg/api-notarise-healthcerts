@@ -82,12 +82,7 @@ export const getTestDataFromHealthCert = (
     );
 
     const testCode = observation?.code?.coding?.[0]?.code;
-    const testType =
-      testCode === "94531-1"
-        ? "REAL TIME RT-PCR SWAB"
-        : testCode === "94661-6"
-        ? "SEROLOGY"
-        : observation?.code?.coding?.[0]?.display;
+    const testType = observation?.code?.coding?.[0]?.display;
 
     let testResult = observation?.valueCodeableConcept?.coding[0]?.display;
     const testResultCode = observation?.valueCodeableConcept?.coding?.[0]?.code;
@@ -129,6 +124,7 @@ export const getTestDataFromHealthCert = (
       nric,
       passportNumber,
       birthDate: patient?.birthDate?.split("-")?.reverse()?.join("/"),
+      testCode,
       testType,
       nationality,
       gender,
@@ -170,12 +166,7 @@ export const getTestDataFromHealthCert = (
           organisationReferences.includes(entry?.fullUrl)
       );
       const testCode = observation?.code?.coding?.[0]?.code;
-      const testType =
-        testCode === "94531-1"
-          ? "REAL TIME RT-PCR SWAB"
-          : testCode === "94661-6"
-          ? "SEROLOGY"
-          : observation?.code?.coding?.[0]?.display;
+      const testType = observation?.code?.coding?.[0]?.display;
       let testResult = observation?.valueCodeableConcept?.coding[0]?.display;
       const testResultCode =
         observation?.valueCodeableConcept?.coding?.[0]?.code;
@@ -218,6 +209,7 @@ export const getTestDataFromHealthCert = (
         nric,
         passportNumber,
         birthDate: patient?.birthDate?.split("-")?.reverse()?.join("/"),
+        testCode,
         testType,
         nationality,
         gender,

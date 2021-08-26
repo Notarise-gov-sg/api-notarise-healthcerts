@@ -144,6 +144,7 @@ export interface TestData {
   passportNumber: string;
   birthDate: string;
   testType: string;
+  testCode: string;
   nationality: string;
   gender: string;
   testResult: string;

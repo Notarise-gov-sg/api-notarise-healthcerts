@@ -49,7 +49,9 @@ describe("src/models/healthCertV2", () => {
           swabTypeCode: "258500001",
           testResult: "Negative",
           testResultCode: "260385009",
-          testType: "REAL TIME RT-PCR SWAB",
+          testCode: "94531-1",
+          testType:
+            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
         },
       ]);
     });
@@ -75,7 +77,9 @@ describe("src/models/healthCertV2", () => {
           swabTypeCode: "258500001",
           testResult: "Negative",
           testResultCode: "260385009",
-          testType: "REAL TIME RT-PCR SWAB",
+          testCode: "94531-1",
+          testType:
+            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
         },
       ]);
     });
@@ -113,7 +117,9 @@ describe("src/models/healthCertV2", () => {
             swabTypeCode: "697989009",
             testResult: "Negative",
             testResultCode: "260385009",
-            testType: "REAL TIME RT-PCR SWAB",
+            testCode: "94531-1",
+            testType:
+              "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
             deviceIdentifier: "1232",
           },
         ]);
@@ -150,7 +156,9 @@ describe("src/models/healthCertV2", () => {
             swabTypeCode: "258500001",
             testResult: "Negative",
             testResultCode: "260385009",
-            testType: "REAL TIME RT-PCR SWAB",
+            testCode: "94531-1",
+            testType:
+              "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
           },
         ]);
       });
@@ -364,7 +372,9 @@ describe("src/models/healthCertV2", () => {
             swabTypeCode: "258500001",
             testResult: "Negative",
             testResultCode: "260385009",
-            testType: "REAL TIME RT-PCR SWAB",
+            testCode: "94531-1",
+            testType:
+              "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
           },
           {
             lab: "MacRitchie Laboratory2",
@@ -383,7 +393,9 @@ describe("src/models/healthCertV2", () => {
             swabTypeCode: "258500001",
             testResult: "Negative",
             testResultCode: "260385009",
-            testType: "REAL TIME RT-PCR SWAB",
+            testCode: "94531-1",
+            testType:
+              "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
           },
         ]);
       });
