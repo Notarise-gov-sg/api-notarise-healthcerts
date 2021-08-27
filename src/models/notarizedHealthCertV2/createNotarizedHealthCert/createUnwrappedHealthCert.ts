@@ -38,7 +38,7 @@ export const createUnwrappedDocument = (
     url: storedUrl,
   };
   if (euHealthCertQr) {
-    notarisationMetadata.encryptedEuHealthCert = euHealthCertQr.qrData;
+    notarisationMetadata.signedEuHealthCert = euHealthCertQr.qrData;
   }
 
   const attachments = [
