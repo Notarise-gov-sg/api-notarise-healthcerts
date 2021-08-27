@@ -31,7 +31,7 @@ describe("validatePCRHealthCertData", () => {
       thrownError = `${e.title}, ${e.messageBody}`;
     }
     expect(thrownError).toEqual(
-      `Submitted HealthCert is invalid, The following required fields in fhirBundle are missing: {"observations.0.observation.organizationAlResourceUuid":["Observations 0.observation organization al resource uuid can't be blank"],"observations.0.organization.al.fullName":["Observations 0.organization al full name can't be blank"],"observations.0.organization.al.type":["Observations 0.organization al type can't be blank"],"observations.0.organization.al.url":["Observations 0.organization al url can't be blank"],"observations.0.organization.al.phone":["Observations 0.organization al phone can't be blank"],"observations.0.organization.al.address":["Observations 0.organization al address can't be blank"],"observations.0.organization.al.address.type":["Observations 0.organization al address type can't be blank"],"observations.0.organization.al.address.use":["Observations 0.organization al address use can't be blank"],"observations.0.organization.al.address.text":["Observations 0.organization al address text can't be blank"]}`
+      `Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: {"observations.0.observation.organizationAlResourceUuid":["Observations 0.observation organization al resource uuid can't be blank"],"observations.0.organization.al.fullName":["Observations 0.organization al full name can't be blank"],"observations.0.organization.al.type":["Observations 0.organization al type can't be blank"],"observations.0.organization.al.url":["Observations 0.organization al url can't be blank"],"observations.0.organization.al.phone":["Observations 0.organization al phone can't be blank"],"observations.0.organization.al.address":["Observations 0.organization al address can't be blank"],"observations.0.organization.al.address.type":["Observations 0.organization al address type can't be blank"],"observations.0.organization.al.address.use":["Observations 0.organization al address use can't be blank"],"observations.0.organization.al.address.text":["Observations 0.organization al address text can't be blank"]}`
     );
   });
 });
@@ -57,7 +57,7 @@ describe("validateARTHealthCertData", () => {
       thrownError = `${e.title}, ${e.messageBody}`;
     }
     expect(thrownError).toEqual(
-      `Submitted HealthCert is invalid, The following required fields in fhirBundle are missing: {"observations.0.device.type.system":["Observations 0.device type system can't be blank"],"observations.0.device.type.code":["Observations 0.device type code can't be blank"],"observations.0.device.type.display":["Observations 0.device type display can't be blank"]}`
+      `Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: {"observations.0.device.type.system":["Observations 0.device type system can't be blank"],"observations.0.device.type.code":["Observations 0.device type code can't be blank"],"observations.0.device.type.display":["Observations 0.device type display can't be blank"]}`
     );
   });
 });

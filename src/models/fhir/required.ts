@@ -170,14 +170,14 @@ export const hasRequiredFields = (
 
     default:
       throw new DocumentInvalidError(
-        `Unable to check for required fields of unknown type: ${type}`
+        `unable to check for required fields of unknown type: ${type}`
       );
   }
 
   const errors = validate(bundle, constraints);
   if (errors) {
     throw new DocumentInvalidError(
-      `The following required fields in fhirBundle are missing: ${JSON.stringify(
+      `the following required fields in fhirBundle are missing: ${JSON.stringify(
         errors
       )}`
     );
