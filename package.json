@@ -25,10 +25,10 @@
   "dependencies": {
     "@ahryman40k/ts-fhir-types": "^4.0.36",
     "@govtechsg/oa-did-sign": "^2.2.0",
-    "@govtechsg/oa-schemata": "^1.11.2",
+    "@govtechsg/oa-schemata": "^1.12.1",
     "@govtechsg/oa-verify": "^7.4.4",
     "@govtechsg/open-attestation": "^5.4.0",
-    "@middy/core": "^2.4.3",
+    "@middy/core": "^2.5.1",
     "@middy/http-error-handler": "^2.4.3",
     "@middy/http-json-body-parser": "^2.4.3",
     "@notarise-gov-sg/sns-notify-recipients": "^1.0.9",
