@@ -117,9 +117,9 @@ describe("src/models/healthCertV2", () => {
             swabTypeCode: "697989009",
             testResult: "Negative",
             testResultCode: "260385009",
-            testCode: "94531-1",
+            testCode: "97097-0",
             testType:
-              "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
+              "SARS-CoV-2 (COVID-19) Ag [Presence] in Upper respiratory specimen by Rapid immunoassay",
             deviceIdentifier: "1232",
           },
         ]);
