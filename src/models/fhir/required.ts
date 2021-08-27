@@ -1,4 +1,5 @@
 import validate from "validate.js";
+import { DocumentInvalidError } from "../../common/error";
 import { Bundle } from "./types";
 
 const presenceValidator = { presence: { allowEmpty: false } };
@@ -168,15 +169,15 @@ export const hasRequiredFields = (
       break;
 
     default:
-      throw new Error(
-        `Unable to check for required fields of unknown type: ${type}`
+      throw new DocumentInvalidError(
+        `unable to check for required fields of unknown type: ${type}`
       );
   }
 
   const errors = validate(bundle, constraints);
   if (errors) {
-    throw new Error(
-      `The following required fields in fhirBundle are missing: ${JSON.stringify(
+    throw new DocumentInvalidError(
+      `the following required fields in fhirBundle are missing: ${JSON.stringify(
         errors
       )}`
     );
