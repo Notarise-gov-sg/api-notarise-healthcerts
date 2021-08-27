@@ -46,7 +46,7 @@
     "lodash": "^4.17.21",
     "middy-middleware-json-error-handler": "^2.0.6",
     "moment-timezone": "^0.5.33",
-    "runtypes": "^6.3.1",
+    "runtypes": "^6.3.2",
     "serverless": "^2.52.1",
     "serverless-http": "^2.7.0",
     "serverless-offline-ses": "https://github.com/rjchow/serverless-offline-ses/tarball/release/1",
