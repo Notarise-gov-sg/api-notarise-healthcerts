@@ -98,8 +98,8 @@
             "coding": [
               {
                 "system": "http://loinc.org",
-                "code": "94531-1",
-                "display": "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
+                "code": "97097-0",
+                "display": "SARS-CoV-2 (COVID-19) Ag [Presence] in Upper respiratory specimen by Rapid immunoassay"
               }
             ]
           },
