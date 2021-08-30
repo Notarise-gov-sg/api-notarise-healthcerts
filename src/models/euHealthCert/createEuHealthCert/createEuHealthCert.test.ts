@@ -61,7 +61,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {
             tc: "MacRitchie Medical Clinic",
             co: "SG",
             is: "Ministry of Health (Singapore)",
-            ci: "REF:V1:SG:ABC-CDE-CDE",
+            ci: "URN:UVCI:01:SG:ABC-CDE-CDE",
           },
         ],
         meta: {
@@ -135,7 +135,7 @@ describe("createEuTestCert for ART Anterior Nares Swab", () => {
             tc: "MacRitchie Medical Clinic",
             co: "SG",
             is: "Ministry of Health (Singapore)",
-            ci: "REF:V1:SG:ABC-CDE-CDE",
+            ci: "URN:UVCI:01:SG:ABC-CDE-CDE",
           },
         ],
         meta: {
@@ -230,7 +230,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
             tc: "MacRitchie Medical Clinic",
             co: "SG",
             is: "Ministry of Health (Singapore)",
-            ci: "REF:V1:SG:ABC-CDE-CDE",
+            ci: "URN:UVCI:01:SG:ABC-CDE-CDE",
           },
         ],
         meta: {
@@ -257,7 +257,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
             tc: "MacRitchie Medical Clinic",
             co: "SG",
             is: "Ministry of Health (Singapore)",
-            ci: "REF:V1:SG:ABC-CDE-CDE",
+            ci: "URN:UVCI:01:SG:ABC-CDE-CDE",
           },
         ],
         meta: {
