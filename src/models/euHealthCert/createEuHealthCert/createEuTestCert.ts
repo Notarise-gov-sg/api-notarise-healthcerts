@@ -16,8 +16,8 @@ export const createEuTestCert = (
   storedUrl: string
 ): EuHealthCert[] => {
   const fhirVersion = "1.3.0";
-  // Set Unique Cert Id with version + country + unique ref
-  const UniqueCertificateId = `REF:V1:SG:${reference.toUpperCase()}`;
+  // Set Unique Cert Id with prefix + version + country + unique ref
+  const UniqueCertificateId = `URN:UVCI:01:SG:${reference.toUpperCase()}`;
   const dateString = new Date().toISOString();
 
   const testHealthCerts: EuHealthCert[] = [];
