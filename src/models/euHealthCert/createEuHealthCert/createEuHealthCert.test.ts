@@ -47,8 +47,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
-          gnt: "TESTING",
+          fnt: "TESTING"
         },
         dob: "2021-01-01",
         t: [
@@ -121,8 +120,7 @@ describe("createEuTestCert for ART Anterior Nares Swab", () => {
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
-          gnt: "TESTING",
+          fnt: "TESTING"
         },
         dob: "2021-01-01",
         t: [
@@ -216,8 +214,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
-          gnt: "TESTING",
+          fnt: "TESTING"
         },
         dob: "2021-01-01",
         t: [
@@ -243,8 +240,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
-          gnt: "TESTING",
+          fnt: "TESTING"
         },
         dob: "2021-01-01",
         t: [
