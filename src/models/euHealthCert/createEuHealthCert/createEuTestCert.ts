@@ -24,7 +24,6 @@ export const createEuTestCert = (
   testData.forEach((item) => {
     const euName: EuNameParams = {
       fnt: item.patientName.replace(/ /g, "<").toUpperCase(),
-      gnt: item.patientName.replace(/ /g, "<").toUpperCase(),
     };
     const dob = item.birthDate?.split("/")?.reverse()?.join("-");
     const meta: notarise.NotarisationMetadata = {
