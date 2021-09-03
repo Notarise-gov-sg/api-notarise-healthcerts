@@ -56,7 +56,7 @@
     "validate.js": "^0.13.1"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.14.8",
+    "@babel/preset-env": "^7.15.4",
     "@babel/preset-typescript": "^7.14.5",
     "@govtechsg/serverless-selective-functions": "^0.1.1",
     "@types/aws-lambda": "^8.10.81",
