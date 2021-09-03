@@ -9,12 +9,7 @@ export const createEuSignedTestQr = async (euHealthCerts: EuHealthCert[]) => {
   await Promise.all(
     euHealthCerts.map(async (euHealthCert) => {
       const qrData = await signAndPack(
-        await makeCWT(
-          euHealthCert,
-          euSigner.validityInMonths,
-          euSigner.name,
-          "SG"
-        ),
+        await makeCWT(euHealthCert, null, euSigner.name),
         euSigner.publicKey,
         euSigner.privateKey
       );
