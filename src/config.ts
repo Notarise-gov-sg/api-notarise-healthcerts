@@ -47,10 +47,6 @@ const getEuSigner = () => ({
     process.env.SIGNING_EU_QR_NAME,
     sampleSigningDidName
   ),
-  validityInMonths: parseInt(
-    getDefaultIfUndefined(process.env.SIGNING_EU_QR_VALIDITY_IN_MONTHS, "1"),
-    10
-  ),
   publicKey: getDefaultIfUndefined(
     process.env.SIGNING_EU_QR_PUBLIC_KEY?.replace(/\\n/g, "\n"),
     ""
