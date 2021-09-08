@@ -1,4 +1,4 @@
-import { pdtHealthcert as healthcert } from "@govtechsg/oa-schemata";
+import { pdtHealthCertV2 as healthcert } from "@govtechsg/oa-schemata";
 import moment from "moment-timezone";
 import { TestData } from "src/types";
 import { getNationality } from "../common/nationality";

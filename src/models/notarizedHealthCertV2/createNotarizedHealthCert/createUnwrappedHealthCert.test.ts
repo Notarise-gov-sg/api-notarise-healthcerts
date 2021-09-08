@@ -1,5 +1,5 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
-import { EuHealthCertQr } from "src/types";
+import { notarise } from "@govtechsg/oa-schemata";
 import fhirHelper from "../../fhir";
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
 import exampleHealthcertWrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
@@ -10,9 +10,12 @@ const sampleDocument = exampleHealthcertWrapped as any;
 const sampleDocumentUnWrapped = exampleHealthcertUnWrapped as any;
 const uuid = "e35f5d2a-4198-4f8f-96dc-d1afe0b67119";
 const storedUrl = "https://example.com";
-const sampleEuHealthCertQr: EuHealthCertQr = {
-  qrData: "HC1:abcde",
-};
+const sampleSignedEuHealthCerts: notarise.SignedEuHealthCert[] = [
+  {
+    type: "PCR",
+    qr: "HC1:abcde",
+  },
+];
 
 beforeAll(mockDate);
 afterAll(unmockDate);
@@ -374,7 +377,7 @@ it("should create the unwrapped v2 document from input data with signedEuHealthC
     parseFhirBundle,
     uuid,
     storedUrl,
-    sampleEuHealthCertQr
+    sampleSignedEuHealthCerts
   );
   expect(createdDocument).toMatchInlineSnapshot(`
 Object {
@@ -705,7 +708,12 @@ Object {
     "notarisedOn": "1970-01-01T00:00:01.000Z",
     "passportNumber": "E7831177G",
     "reference": "e35f5d2a-4198-4f8f-96dc-d1afe0b67119",
-    "signedEuHealthCert": "HC1:abcde",
+    "signedEuHealthCerts": Array [
+      Object {
+        "qr": "HC1:abcde",
+        "type": "PCR",
+      },
+    ],
     "url": "https://example.com",
   },
   "type": "PCR",

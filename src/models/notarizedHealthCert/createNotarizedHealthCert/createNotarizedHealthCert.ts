@@ -3,8 +3,8 @@ import {
   signDocument,
   SUPPORTED_SIGNING_ALGORITHM,
 } from "@govtechsg/oa-did-sign";
+import { notarise } from "@govtechsg/oa-schemata";
 import {
-  EuHealthCertQr,
   HealthCertDocument,
   NotarizedHealthCert,
   SignedNotarizedHealthCert,
@@ -30,13 +30,13 @@ export const createNotarizedHealthCert = async (
   certificate: WrappedDocument<HealthCertDocument>,
   reference: string,
   storedUrl: string,
-  euHealthCertQr?: EuHealthCertQr
+  signedEuHealthCerts?: notarise.SignedEuHealthCert[]
 ) => {
   const unwrappedNotarisedDocument = createUnwrappedDocument(
     certificate,
     reference,
     storedUrl,
-    euHealthCertQr
+    signedEuHealthCerts
   );
   const wrappedNotarisedDocument = wrapDocument(unwrappedNotarisedDocument);
   const traceWithRef = trace.extend(`reference: $[reference}`);

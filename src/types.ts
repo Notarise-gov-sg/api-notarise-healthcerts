@@ -1,6 +1,6 @@
 import { v2, SignedWrappedDocument } from "@govtechsg/open-attestation";
 import { Record, String, Static } from "runtypes";
-import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
+import { notarise } from "@govtechsg/oa-schemata";
 import { R4 } from "@ahryman40k/ts-fhir-types";
 
 /* eslint-disable */
@@ -104,7 +104,7 @@ export interface HealthCertDocument extends v2.OpenAttestationDocument {
 }
 
 export interface NotarizedHealthCert extends HealthCertDocument {
-  notarisationMetadata: NotarisationMetadata;
+  notarisationMetadata: notarise.NotarisationMetadata;
 }
 
 const UserDetailsT = Record({
@@ -179,9 +179,10 @@ export interface EuHealthCertDocument {
   t: EuTestParams[];
 }
 export interface EuHealthCert extends EuHealthCertDocument {
-  meta: NotarisationMetadata;
+  meta: notarise.NotarisationMetadata;
 } 
 
 export interface EuHealthCertQr {
-  qrData?: string;
+  type: string;
+  qrData: string;
 }

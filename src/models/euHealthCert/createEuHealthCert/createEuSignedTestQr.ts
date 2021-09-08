@@ -13,8 +13,14 @@ export const createEuSignedTestQr = async (euHealthCerts: EuHealthCert[]) => {
         euSigner.publicKey,
         euSigner.privateKey
       );
-      testHealthCertsQr.push({ qrData });
+      const testType =
+        euHealthCert.t[0].tt === "LP6464-4"
+          ? "PCR"
+          : euHealthCert.t[0].tt === "LP217198-3"
+          ? "ART"
+          : "";
+      testHealthCertsQr.push({ type: testType, qrData });
     })
   );
-  return testHealthCertsQr[0];
+  return testHealthCertsQr;
 };

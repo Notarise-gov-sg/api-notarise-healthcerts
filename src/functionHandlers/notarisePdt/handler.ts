@@ -2,6 +2,7 @@ import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
+import { notarise } from "@govtechsg/oa-schemata";
 import {
   getTestDataFromHealthCert,
   getParticularsFromHealthCert,
@@ -42,31 +43,40 @@ export const notarisePdt = async (
 
   const storedUrl = buildStoredUrl(id, key);
 
-  let euHealthCertQr: EuHealthCertQr | undefined = {};
+  let euHealthCertsInfo: EuHealthCertQr[] = [];
   if (config.isOfflineQrEnabled) {
     try {
       const data = getData(certificate);
       const testData = getTestDataFromHealthCert(data);
 
       traceWithRef("EU test cert...");
-      const euTestCert = await createEuTestCert(testData, reference, storedUrl);
-      traceWithRef(euTestCert);
+      const euTestCerts = await createEuTestCert(
+        testData,
+        reference,
+        storedUrl
+      );
+      traceWithRef(euTestCerts);
 
       traceWithRef("Generating EU test cert qr...");
-      euHealthCertQr = await createEuSignedTestQr(euTestCert);
-      if (euHealthCertQr?.qrData) {
-        traceWithRef(`EU test cert qr : ${euHealthCertQr?.qrData}`);
+      euHealthCertsInfo = await createEuSignedTestQr(euTestCerts);
+      if (!euHealthCertsInfo.length) {
+        throw new Error("Invalid EU vacc cert generated");
       }
     } catch (e) {
       errorWithRef(`Offline Qr error: ${e.message}`);
     }
   }
 
+  const signedEuHealthCerts: notarise.SignedEuHealthCert[] =
+    euHealthCertsInfo.map((euHealthCertInfo: EuHealthCertQr) => ({
+      type: euHealthCertInfo.type,
+      qr: euHealthCertInfo.qrData,
+    }));
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
     reference,
     storedUrl,
-    euHealthCertQr
+    signedEuHealthCerts
   );
   const { ttl } = await uploadDocument(notarisedDocument, id, reference);
   traceWithRef("Document successfully notarised");
