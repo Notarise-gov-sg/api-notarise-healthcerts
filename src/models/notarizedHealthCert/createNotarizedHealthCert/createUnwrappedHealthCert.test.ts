@@ -1,8 +1,7 @@
-import { EuHealthCertQr } from "src/types";
+import { notarise } from "@govtechsg/oa-schemata";
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
 import exampleHealthcertWrapped from "../../../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import { mockDate, unmockDate } from "../../../../test/utils";
-import { notarise } from "@govtechsg/oa-schemata";
 
 const sampleDocument = exampleHealthcertWrapped as any;
 const uuid = "e35f5d2a-4198-4f8f-96dc-d1afe0b67119";
