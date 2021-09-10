@@ -1,12 +1,8 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
-import { NotarisationMetadata } from "@govtechsg/oa-schemata/dist/types/__generated__/sg/gov/tech/notarise/1.0/schema";
+import { notarise } from "@govtechsg/oa-schemata";
 import { Bundle } from "../../fhir/types";
 import { config } from "../../../config";
-import {
-  EuHealthCertQr,
-  HealthCertDocument,
-  NotarizedHealthCert,
-} from "../../../types";
+import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
 
 const { didSigner } = config;
 
@@ -15,7 +11,7 @@ export const createUnwrappedDocument = (
   parseFhirBundle: Bundle,
   reference: string,
   storedUrl: string,
-  euHealthCertQr?: EuHealthCertQr
+  signedEuHealthCerts?: notarise.SignedEuHealthCert[]
 ): NotarizedHealthCert => {
   const certificateData =
     getData<WrappedDocument<HealthCertDocument>>(certificate);
@@ -31,14 +27,14 @@ export const createUnwrappedDocument = (
     url: "https://healthcert.renderer.moh.gov.sg/",
   };
 
-  const notarisationMetadata: NotarisationMetadata = {
+  const notarisationMetadata: notarise.NotarisationMetadata = {
     reference,
     notarisedOn: dateString,
     passportNumber: passportNumber || "",
     url: storedUrl,
   };
-  if (euHealthCertQr) {
-    notarisationMetadata.signedEuHealthCert = euHealthCertQr.qrData;
+  if (signedEuHealthCerts && signedEuHealthCerts.length > 0) {
+    notarisationMetadata.signedEuHealthCerts = signedEuHealthCerts;
   }
 
   const attachments = [

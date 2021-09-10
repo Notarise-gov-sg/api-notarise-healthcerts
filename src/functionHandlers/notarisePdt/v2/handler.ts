@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
 import { R4 } from "@ahryman40k/ts-fhir-types";
+import { notarise } from "@govtechsg/oa-schemata";
 import fhirHelper from "../../../models/fhir";
 import { Bundle } from "../../../models/fhir/types";
 import { getTestDataFromParseFhirBundle } from "../../../models/healthCertV2";
@@ -13,7 +14,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../../services/transientStorage";
-import { EuHealthCertQr, HealthCertDocument, TestData } from "../../../types";
+import { HealthCertDocument, TestData } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
 import { config } from "../../../config";
@@ -46,17 +47,21 @@ export const notarisePdt = async (
 
   const storedUrl = buildStoredUrl(id, key);
 
-  let euHealthCertQr: EuHealthCertQr | undefined = {};
+  let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
   if (config.isOfflineQrEnabled) {
     try {
       traceWithRef("EU test cert...");
-      const euTestCert = await createEuTestCert(testData, reference, storedUrl);
-      traceWithRef(euTestCert);
+      const euTestCerts = await createEuTestCert(
+        testData,
+        reference,
+        storedUrl
+      );
+      traceWithRef(euTestCerts);
 
       traceWithRef("Generating EU test cert qr...");
-      euHealthCertQr = await createEuSignedTestQr(euTestCert);
-      if (euHealthCertQr?.qrData) {
-        traceWithRef(`EU test cert qr : ${euHealthCertQr?.qrData}`);
+      signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
+      if (!signedEuHealthCerts.length) {
+        throw new Error("Invalid EU vacc cert generated");
       }
     } catch (e) {
       errorWithRef(`Offline Qr error: ${e.message}`);
@@ -68,7 +73,7 @@ export const notarisePdt = async (
     parseFhirBundle,
     reference,
     storedUrl,
-    euHealthCertQr
+    signedEuHealthCerts
   );
   const { ttl } = await uploadDocument(notarisedDocument, id, reference);
   traceWithRef("Document successfully notarised");

@@ -16,11 +16,10 @@ export const createEuTestCert = (
   storedUrl: string
 ): EuHealthCert[] => {
   const fhirVersion = "1.3.0";
-  // Set Unique Cert Id with prefix + version + country + unique ref
-  const UniqueCertificateId = `URN:UVCI:01:SG:${reference.toUpperCase()}`;
   const dateString = new Date().toISOString();
 
   const testHealthCerts: EuHealthCert[] = [];
+  let incrementTestNumber = 1;
   testData.forEach((item) => {
     const euName: EuNameParams = {
       fnt: item.patientName.replace(/ /g, "<").toUpperCase(),
@@ -32,6 +31,10 @@ export const createEuTestCert = (
       passportNumber: item.passportNumber,
       url: storedUrl,
     };
+    // Set increment dose number + reference
+    const uniqueRef = `${incrementTestNumber}${reference.toUpperCase()}`;
+    // Set Unique Cert Id with prefix + version + country + unique ref
+    const UniqueCertificateId = `URN:UVCI:01:SG:${uniqueRef}`;
     const testGroup: EuTestParams = {
       tg: "840539006",
       tt: "LP6464-4", // need to confirm with MOH for for Serology, it can either be [Nucleic acid amplification with probe detection] or [Rapid immunoassay]
@@ -63,6 +66,7 @@ export const createEuTestCert = (
         t: [testGroup],
         meta,
       });
+      incrementTestNumber += 1;
     }
   });
 
