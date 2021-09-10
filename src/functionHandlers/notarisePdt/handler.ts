@@ -14,7 +14,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../services/transientStorage";
-import { EuHealthCertQr, HealthCertDocument } from "../../types";
+import { HealthCertDocument } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
 import { config } from "../../config";
@@ -43,7 +43,7 @@ export const notarisePdt = async (
 
   const storedUrl = buildStoredUrl(id, key);
 
-  let euHealthCertsInfo: EuHealthCertQr[] = [];
+  let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
   if (config.isOfflineQrEnabled) {
     try {
       const data = getData(certificate);
@@ -58,8 +58,8 @@ export const notarisePdt = async (
       traceWithRef(euTestCerts);
 
       traceWithRef("Generating EU test cert qr...");
-      euHealthCertsInfo = await createEuSignedTestQr(euTestCerts);
-      if (!euHealthCertsInfo.length) {
+      signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
+      if (!signedEuHealthCerts.length) {
         throw new Error("Invalid EU vacc cert generated");
       }
     } catch (e) {
@@ -67,11 +67,6 @@ export const notarisePdt = async (
     }
   }
 
-  const signedEuHealthCerts: notarise.SignedEuHealthCert[] =
-    euHealthCertsInfo.map((euHealthCertInfo: EuHealthCertQr) => ({
-      type: euHealthCertInfo.type,
-      qr: euHealthCertInfo.qrData,
-    }));
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
     reference,

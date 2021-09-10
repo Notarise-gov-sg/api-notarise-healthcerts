@@ -181,8 +181,3 @@ export interface EuHealthCertDocument {
 export interface EuHealthCert extends EuHealthCertDocument {
   meta: notarise.NotarisationMetadata;
 } 
-
-export interface EuHealthCertQr {
-  type: string;
-  qrData: string;
-}

@@ -1,11 +1,12 @@
 import { signAndPack, makeCWT } from "@pathcheck/dcc-sdk";
-import { EuHealthCert, EuHealthCertQr } from "../../../types";
+import { notarise } from "@govtechsg/oa-schemata";
+import { EuHealthCert } from "../../../types";
 import { config } from "../../../config";
 
 const { euSigner } = config;
 
 export const createEuSignedTestQr = async (euHealthCerts: EuHealthCert[]) => {
-  const testHealthCertsQr: EuHealthCertQr[] = [];
+  const testHealthCertsQr: notarise.SignedEuHealthCert[] = [];
   await Promise.all(
     euHealthCerts.map(async (euHealthCert) => {
       const qrData = await signAndPack(
@@ -19,7 +20,7 @@ export const createEuSignedTestQr = async (euHealthCerts: EuHealthCert[]) => {
           : euHealthCert.t[0].tt === "LP217198-3"
           ? "ART"
           : "";
-      testHealthCertsQr.push({ type: testType, qrData });
+      testHealthCertsQr.push({ type: testType, qr: qrData });
     })
   );
   return testHealthCertsQr;

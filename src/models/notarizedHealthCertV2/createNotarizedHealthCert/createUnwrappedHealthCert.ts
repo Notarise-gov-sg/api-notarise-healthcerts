@@ -33,7 +33,7 @@ export const createUnwrappedDocument = (
     passportNumber: passportNumber || "",
     url: storedUrl,
   };
-  if (signedEuHealthCerts) {
+  if (signedEuHealthCerts && signedEuHealthCerts.length > 0) {
     notarisationMetadata.signedEuHealthCerts = signedEuHealthCerts;
   }
 
