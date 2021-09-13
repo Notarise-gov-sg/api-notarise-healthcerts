@@ -1,4 +1,5 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
+import { DetailedCodedError } from "../../common/error";
 import fhirHelper from "./index";
 import exampleHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 import exampleArtHealthCertWithNric from "../../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
@@ -28,7 +29,9 @@ describe("validatePCRHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields("PCR", parseFhirBundle);
     } catch (e) {
-      thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof DetailedCodedError) {
+        thrownError = `${e.title}, ${e.messageBody}`;
+      }
     }
     expect(thrownError).toEqual(
       `Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: {"observations.0.observation.organizationAlResourceUuid":["Observations 0.observation organization al resource uuid can't be blank"],"observations.0.organization.al.fullName":["Observations 0.organization al full name can't be blank"],"observations.0.organization.al.type":["Observations 0.organization al type can't be blank"],"observations.0.organization.al.url":["Observations 0.organization al url can't be blank"],"observations.0.organization.al.phone":["Observations 0.organization al phone can't be blank"],"observations.0.organization.al.address":["Observations 0.organization al address can't be blank"],"observations.0.organization.al.address.type":["Observations 0.organization al address type can't be blank"],"observations.0.organization.al.address.use":["Observations 0.organization al address use can't be blank"],"observations.0.organization.al.address.text":["Observations 0.organization al address text can't be blank"]}`
@@ -54,7 +57,9 @@ describe("validateARTHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields("ART", parseFhirBundle);
     } catch (e) {
-      thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof DetailedCodedError) {
+        thrownError = `${e.title}, ${e.messageBody}`;
+      }
     }
     expect(thrownError).toEqual(
       `Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: {"observations.0.device.type.system":["Observations 0.device type system can't be blank"],"observations.0.device.type.code":["Observations 0.device type code can't be blank"],"observations.0.device.type.display":["Observations 0.device type display can't be blank"]}`

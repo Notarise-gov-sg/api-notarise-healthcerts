@@ -8,6 +8,7 @@ import fhirHelper from "../../../models/fhir";
 import { Bundle } from "../../../models/fhir/types";
 import { getTestDataFromParseFhirBundle } from "../../../models/healthCertV2";
 import { getLogger } from "../../../common/logger";
+import { DetailedCodedError } from "../../../common/error";
 import { createNotarizedHealthCert } from "../../../models/notarizedHealthCertV2";
 import {
   buildStoredUrl,
@@ -64,7 +65,9 @@ export const notarisePdt = async (
         throw new Error("Invalid EU vacc cert generated");
       }
     } catch (e) {
-      errorWithRef(`Offline Qr error: ${e.message}`);
+      if (e instanceof Error) {
+        errorWithRef(`Offline Qr error: ${e.message}`);
+      }
     }
   }
 
@@ -92,9 +95,9 @@ export const main: Handler = async (
   const certificate = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
 
-  let parseFhirBundle: Bundle;
-  let data: HealthCertDocument;
-  let testData: TestData[];
+  let parseFhirBundle: Bundle | undefined;
+  let data: HealthCertDocument | undefined;
+  let testData: TestData[] | undefined;
   try {
     await validateV2Inputs(certificate);
     data = getData(certificate);
@@ -112,50 +115,58 @@ export const main: Handler = async (
     // convert parsed Bundle to testdata[]
     testData = getTestDataFromParseFhirBundle(parseFhirBundle);
   } catch (e) {
-    errorWithRef(
-      `Error while validating certificate: ${e.title}, ${e.messageBody}`
-    );
-    return {
-      statusCode: 400,
-      headers: {
-        "x-trace-id": reference,
-      },
-      body: `${e.title}, ${e.messageBody}`,
-    };
+    if (e instanceof DetailedCodedError) {
+      errorWithRef(
+        `Error while validating certificate: ${e.title}, ${e.messageBody}`
+      );
+      return {
+        statusCode: 400,
+        headers: {
+          "x-trace-id": reference,
+        },
+        body: `${e.title}, ${e.messageBody}`,
+      };
+    }
   }
 
-  let result: NotarisationResult;
+  let result: NotarisationResult | undefined;
 
   try {
     result = await notarisePdt(
       reference,
       certificate,
-      parseFhirBundle,
-      testData
+      parseFhirBundle as Bundle,
+      testData as TestData[]
     );
   } catch (e) {
-    errorWithRef(`Unhandled error: ${e.message}`);
-    return {
-      statusCode: 500,
-      headers: {
-        "x-trace-id": reference,
-      },
-      body: "",
-    };
+    if (e instanceof Error) {
+      errorWithRef(`Unhandled error: ${e.message}`);
+      return {
+        statusCode: 500,
+        headers: {
+          "x-trace-id": reference,
+        },
+        body: "",
+      };
+    }
   }
 
   /* Notify recipient via SPM (only if enabled) */
   if (config.notification.enabled) {
     try {
-      await notifyPdt({
-        url: result.url,
-        nric: parseFhirBundle.patient?.nricFin,
-        passportNumber: parseFhirBundle.patient?.passportNumber,
-        testData,
-        validFrom: data.validFrom,
-      });
+      if (result && parseFhirBundle && testData && data) {
+        await notifyPdt({
+          url: result.url,
+          nric: parseFhirBundle.patient?.nricFin,
+          passportNumber: parseFhirBundle.patient?.passportNumber,
+          testData,
+          validFrom: data.validFrom,
+        });
+      }
     } catch (e) {
-      errorWithRef(`Notification error: ${e.message}`);
+      if (e instanceof Error) {
+        errorWithRef(`Notification error: ${e.message}`);
+      }
     }
   }
 
