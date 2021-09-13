@@ -62,7 +62,7 @@ export const notarisePdt = async (
       if (!signedEuHealthCerts.length) {
         throw new Error("Invalid EU vacc cert generated");
       }
-    } catch (e) {
+    } catch (e: any) {
       errorWithRef(`Offline Qr error: ${e.message}`);
     }
   }
@@ -97,7 +97,7 @@ export const main: Handler = async (
 
     // ensure that all the required parameters can be read
     getTestDataFromHealthCert(data);
-  } catch (e) {
+  } catch (e: any) {
     errorWithRef(
       `Error while validating certificate: ${e.title}, ${e.messageBody}`
     );
@@ -114,7 +114,7 @@ export const main: Handler = async (
 
   try {
     result = await notarisePdt(reference, certificate);
-  } catch (e) {
+  } catch (e: any) {
     errorWithRef(`Unhandled error: ${e.message}`);
     return {
       statusCode: 500,
@@ -138,7 +138,7 @@ export const main: Handler = async (
         testData,
         validFrom: data.validFrom,
       });
-    } catch (e) {
+    } catch (e: any) {
       errorWithRef(`Notification error: ${e.message}`);
     }
   }

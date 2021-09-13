@@ -27,7 +27,7 @@ describe("validatePCRHealthCertData", () => {
     );
     try {
       fhirHelper.hasRequiredFields("PCR", parseFhirBundle);
-    } catch (e) {
+    } catch (e: any) {
       thrownError = `${e.title}, ${e.messageBody}`;
     }
     expect(thrownError).toEqual(
@@ -53,7 +53,7 @@ describe("validateARTHealthCertData", () => {
     );
     try {
       fhirHelper.hasRequiredFields("ART", parseFhirBundle);
-    } catch (e) {
+    } catch (e: any) {
       thrownError = `${e.title}, ${e.messageBody}`;
     }
     expect(thrownError).toEqual(
