@@ -8,6 +8,7 @@ import {
   getParticularsFromHealthCert,
 } from "../../models/healthCert";
 import { getLogger } from "../../common/logger";
+import { DetailedCodedError } from "../../common/error";
 import { createNotarizedHealthCert } from "../../models/notarizedHealthCert";
 import {
   buildStoredUrl,
@@ -62,8 +63,10 @@ export const notarisePdt = async (
       if (!signedEuHealthCerts.length) {
         throw new Error("Invalid EU vacc cert generated");
       }
-    } catch (e: any) {
-      errorWithRef(`Offline Qr error: ${e.message}`);
+    } catch (e) {
+      if (e instanceof Error) {
+        errorWithRef(`Offline Qr error: ${e.message}`);
+      }
     }
   }
 
@@ -97,32 +100,36 @@ export const main: Handler = async (
 
     // ensure that all the required parameters can be read
     getTestDataFromHealthCert(data);
-  } catch (e: any) {
-    errorWithRef(
-      `Error while validating certificate: ${e.title}, ${e.messageBody}`
-    );
-    return {
-      statusCode: 400,
-      headers: {
-        "x-trace-id": reference,
-      },
-      body: `${e.title}, ${e.messageBody}`,
-    };
+  } catch (e) {
+    if (e instanceof DetailedCodedError) {
+      errorWithRef(
+        `Error while validating certificate: ${e.title}, ${e.messageBody}`
+      );
+      return {
+        statusCode: 400,
+        headers: {
+          "x-trace-id": reference,
+        },
+        body: `${e.title}, ${e.messageBody}`,
+      };
+    }
   }
 
-  let result: NotarisationResult;
+  let result: NotarisationResult | undefined;
 
   try {
     result = await notarisePdt(reference, certificate);
-  } catch (e: any) {
-    errorWithRef(`Unhandled error: ${e.message}`);
-    return {
-      statusCode: 500,
-      headers: {
-        "x-trace-id": reference,
-      },
-      body: "",
-    };
+  } catch (e) {
+    if (e instanceof Error) {
+      errorWithRef(`Unhandled error: ${e.message}`);
+      return {
+        statusCode: 500,
+        headers: {
+          "x-trace-id": reference,
+        },
+        body: "",
+      };
+    }
   }
 
   /* Notify recipient via SPM (only if enabled) */
@@ -131,15 +138,19 @@ export const main: Handler = async (
       const data = getData(certificate);
       const { nric, fin } = getParticularsFromHealthCert(data);
       const testData = getTestDataFromHealthCert(data);
-      await notifyPdt({
-        url: result.url,
-        nric: nric || fin,
-        passportNumber: testData[0].passportNumber,
-        testData,
-        validFrom: data.validFrom,
-      });
-    } catch (e: any) {
-      errorWithRef(`Notification error: ${e.message}`);
+      if (result) {
+        await notifyPdt({
+          url: result.url,
+          nric: nric || fin,
+          passportNumber: testData[0].passportNumber,
+          testData,
+          validFrom: data.validFrom,
+        });
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        errorWithRef(`Notification error: ${e.message}`);
+      }
     }
   }
 
