@@ -1,7 +1,10 @@
 import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
-import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
+import {
+  notifyPdt,
+  notifyHealthCert,
+} from "@notarise-gov-sg/sns-notify-recipients";
 import { notarise } from "@govtechsg/oa-schemata";
 import {
   getTestDataFromHealthCert,
@@ -13,9 +16,10 @@ import { createNotarizedHealthCert } from "../../models/notarizedHealthCert";
 import {
   buildStoredUrl,
   getQueueNumber,
+  buildStoredDirectUrl,
   uploadDocument,
 } from "../../services/transientStorage";
-import { HealthCertDocument } from "../../types";
+import { HealthCertDocument, NotarisationResult } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
 import { config } from "../../config";
@@ -25,12 +29,6 @@ import {
 } from "../../models/euHealthCert";
 
 const { trace, error } = getLogger("src/functionHandlers/notarisePdt/handler");
-
-export interface NotarisationResult {
-  notarisedDocument: WrappedDocument<HealthCertDocument>;
-  ttl: number;
-  url: string;
-}
 
 export const notarisePdt = async (
   reference: string,
@@ -42,6 +40,7 @@ export const notarisePdt = async (
   const { id, key } = await getQueueNumber(reference);
   traceWithRef(`placeholder document id: $id}`);
 
+  const directUrl = buildStoredDirectUrl(id, key);
   const storedUrl = buildStoredUrl(id, key);
 
   let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
@@ -82,6 +81,7 @@ export const notarisePdt = async (
     notarisedDocument,
     ttl,
     url: storedUrl,
+    directUrl,
   };
 };
 
@@ -139,13 +139,28 @@ export const main: Handler = async (
       const { nric, fin } = getParticularsFromHealthCert(data);
       const testData = getTestDataFromHealthCert(data);
       if (result) {
-        await notifyPdt({
-          url: result.url,
-          nric: nric || fin,
-          passportNumber: testData[0].passportNumber,
-          testData,
-          validFrom: data.validFrom,
-        });
+        const testType =
+          testData[0].swabTypeCode === config.swabTestTypes.PCR
+            ? "PCR"
+            : testData[0].swabTypeCode === config.swabTestTypes.ART
+            ? "ART"
+            : null;
+        if (config.healthCertNotification.enabled && testType) {
+          await notifyHealthCert({
+            version: "1.0",
+            type: testType,
+            url: result.directUrl,
+            expiry: result.ttl,
+          });
+        } else {
+          await notifyPdt({
+            url: result.url,
+            nric: nric || fin,
+            passportNumber: testData[0].passportNumber,
+            testData,
+            validFrom: data.validFrom,
+          });
+        }
       }
     } catch (e) {
       if (e instanceof Error) {

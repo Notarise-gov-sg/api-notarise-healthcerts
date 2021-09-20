@@ -31,7 +31,7 @@
     "@middy/core": "^2.5.1",
     "@middy/http-error-handler": "^2.5.1",
     "@middy/http-json-body-parser": "^2.5.1",
-    "@notarise-gov-sg/sns-notify-recipients": "^1.0.10",
+    "@notarise-gov-sg/sns-notify-recipients": "^1.2.0",
     "@pathcheck/dcc-sdk": "0.0.17",
     "@types/url-join": "^4.0.1",
     "aws-sdk": "^2.987.0",

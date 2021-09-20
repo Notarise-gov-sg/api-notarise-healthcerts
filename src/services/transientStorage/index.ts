@@ -49,6 +49,23 @@ export const buildStoredUrl = (id: string, key: string) => {
   return universalUrl(url, key);
 };
 
+const universalDirectUrl = (url: string, key: string) => {
+  const query = stringifyAndEncode({
+    type: "DOCUMENT",
+    payload: {
+      uri: url,
+      permittedActions: ["VIEW", "STORE"],
+    },
+  });
+  const anchor = key ? `#${stringifyAndEncode({ key })}` : ``;
+  return `https://www.verify.gov.sg/verify?q=${query}${anchor}`;
+};
+
+export const buildStoredDirectUrl = (id: string, key: string) => {
+  const url = `${endpoint}/${id}`;
+  return universalDirectUrl(url, key);
+};
+
 export const getQueueNumber = async (reference: string) => {
   const traceWithRef = trace.extend(`reference:${reference}`);
   traceWithRef("get queue number");

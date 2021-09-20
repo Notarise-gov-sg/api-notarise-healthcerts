@@ -1,7 +1,10 @@
 import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
-import { notifyPdt } from "@notarise-gov-sg/sns-notify-recipients";
+import {
+  notifyHealthCert,
+  notifyPdt,
+} from "@notarise-gov-sg/sns-notify-recipients";
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { notarise } from "@govtechsg/oa-schemata";
 import fhirHelper from "../../../models/fhir";
@@ -11,11 +14,16 @@ import { getLogger } from "../../../common/logger";
 import { DetailedCodedError } from "../../../common/error";
 import { createNotarizedHealthCert } from "../../../models/notarizedHealthCertV2";
 import {
+  buildStoredDirectUrl,
   buildStoredUrl,
   getQueueNumber,
   uploadDocument,
 } from "../../../services/transientStorage";
-import { HealthCertDocument, TestData } from "../../../types";
+import {
+  HealthCertDocument,
+  NotarisationResult,
+  TestData,
+} from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
 import { config } from "../../../config";
@@ -27,12 +35,6 @@ import {
 const { trace, error } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
 );
-
-export interface NotarisationResult {
-  notarisedDocument: WrappedDocument<HealthCertDocument>;
-  ttl: number;
-  url: string;
-}
 
 export const notarisePdt = async (
   reference: string,
@@ -46,6 +48,7 @@ export const notarisePdt = async (
   const { id, key } = await getQueueNumber(reference);
   traceWithRef(`placeholder document id: $id}`);
 
+  const directUrl = buildStoredDirectUrl(id, key);
   const storedUrl = buildStoredUrl(id, key);
 
   let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
@@ -84,6 +87,7 @@ export const notarisePdt = async (
     notarisedDocument,
     ttl,
     url: storedUrl,
+    directUrl,
   };
 };
 
@@ -155,13 +159,28 @@ export const main: Handler = async (
   if (config.notification.enabled) {
     try {
       if (result && parseFhirBundle && testData && data) {
-        await notifyPdt({
-          url: result.url,
-          nric: parseFhirBundle.patient?.nricFin,
-          passportNumber: parseFhirBundle.patient?.passportNumber,
-          testData,
-          validFrom: data.validFrom,
-        });
+        const testType =
+          testData[0].swabTypeCode === config.swabTestTypes.PCR
+            ? "PCR"
+            : testData[0].swabTypeCode === config.swabTestTypes.ART
+            ? "ART"
+            : null;
+        if (config.healthCertNotification.enabled && testType) {
+          await notifyHealthCert({
+            version: "2.0",
+            type: testType,
+            url: result.directUrl,
+            expiry: result.ttl,
+          });
+        } else {
+          await notifyPdt({
+            url: result.url,
+            nric: parseFhirBundle.patient?.nricFin,
+            passportNumber: parseFhirBundle.patient?.passportNumber,
+            testData,
+            validFrom: data.validFrom,
+          });
+        }
       }
     } catch (e) {
       if (e instanceof Error) {
