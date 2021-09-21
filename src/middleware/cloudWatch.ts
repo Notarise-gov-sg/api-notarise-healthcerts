@@ -20,20 +20,21 @@ export type Request = Pick<middy.Request, "event" | "response">;
 export class CloudWatchMiddleware
   implements Pick<MiddlewareObj, "before" | "after">
 {
-  private provider = "";
+  provider = "";
 
   // split "abc.riverr.io" into "riverr.io"
-  private extractSubDomain(provider: string): string {
+  extractSubDomain(provider: string): string {
     return /\w+\.\w+$/.exec(provider)?.toString() ?? "";
   }
 
   // split "abc.riverr.io" into "abc"
-  private extractClinicName(provider: string): string {
+  extractClinicName(provider: string): string {
     let clinic = "";
     const subDomain = this.extractSubDomain(provider);
     if (provider.split(".").length >= 2) {
-      const clinicStartIndex = provider.indexOf(subDomain);
-      clinic = provider.slice(0, clinicStartIndex-1);
+      const clinicEndIndex = provider.indexOf(subDomain);
+      console.log({ clinicEndIndex });
+      clinic = provider.slice(0, clinicEndIndex - 1);
     }
     return clinic;
   }
@@ -45,7 +46,9 @@ export class CloudWatchMiddleware
     this.provider = data.issuers[0].identityProof?.location ?? "UNKNOWN";
     const subDomain = this.extractSubDomain(this.provider);
     const clinic = this.extractClinicName(this.provider);
-    const description = `${clinic} ${subDomain}`.trim();
+    const description = `${clinic} ${subDomain}`;
+    console.log({ subDomain, clinic });
+    console.log({ description });
     trace(`provider ${description} attempting to notarise pdt...`);
   };
 
@@ -75,9 +78,9 @@ export class CloudWatchMiddleware
       const description = `${clinic} ${subDomain}`.trim();
 
       if (/art/i.test(testName)) {
-        trace(`provider ${description} successfully notarised pdt of type art`);
+        trace(`${description} successfully notarised pdt of type art`);
       } else if (/pcr/i.test(testName)) {
-        trace(`provider ${description} successfully notarised pdt of type pcr`);
+        trace(`${description} successfully notarised pdt of type pcr`);
       }
     } catch (error) {
       logError(

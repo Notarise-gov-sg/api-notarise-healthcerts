@@ -5,7 +5,7 @@ import { CloudWatchMiddleware, Request } from "./cloudWatch";
 import * as log from "./trace";
 
 describe("test cloudwatch middleware for v1", () => {
-  it("middlware should log provider from request", async () => {
+  it.only("middlware should log provider from request", async () => {
     jest.spyOn(log, "trace");
     const request: Request = {
       event: {
@@ -19,7 +19,7 @@ describe("test cloudwatch middleware for v1", () => {
     await cloudWatchMiddleware.before(request);
 
     expect(log.trace).toHaveBeenCalledWith(
-      "provider donotverify.testing.verify.gov.sg attempting to notarise pdt..."
+      "provider donotverify.testing.verify gov.sg attempting to notarise pdt..."
     );
   });
 
@@ -87,11 +87,14 @@ describe("test cloudwatch middleware for v2", () => {
     };
     const cloudWatchMiddleware: CloudWatchMiddleware =
       new CloudWatchMiddleware();
-    const provider = "SAMPLE CLINIC";
+    const provider = "sample_clinic.river.ai";
     cloudWatchMiddleware.provider = provider;
     await cloudWatchMiddleware.after(request);
+    const subDomain = cloudWatchMiddleware.extractSubDomain(provider);
+    const clinic = cloudWatchMiddleware.extractClinicName(provider);
+    const description = `${clinic} ${subDomain}`.trim();
     expect(log.trace).toHaveBeenCalledWith(
-      `${provider} successfully notarised pdt of type pcr`
+      `${description} successfully notarised pdt of type pcr`
     );
   });
 });

@@ -18,7 +18,9 @@
       }
     ],
     "func-names": ["error", "as-needed"],
-    "prettier/prettier": "warn",
+    "prettier/prettier": ["warn",{
+      "endOfLine": "auto"}
+    ],
     "import/no-extraneous-dependencies": [
       "error",
       {
@@ -36,6 +38,7 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/ban-ts-ignore": "off",
-    "@typescript-eslint/ban-ts-comment": "off"
+    "@typescript-eslint/ban-ts-comment": "off",
+    "class-methods-use-this": "off"
   }
 }
