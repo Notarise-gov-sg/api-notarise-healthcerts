@@ -31,7 +31,6 @@ describe("test cloudwatch middleware for v1", () => {
       notarisedDocument: wrappedDocument as any,
       ttl: 0,
       url: "",
-      directUrl: "",
     };
 
     const request: Request = {
@@ -78,7 +77,6 @@ describe("test cloudwatch middleware for v2", () => {
       notarisedDocument: wrappedDocumentV2 as any,
       ttl: 0,
       url: "",
-      directUrl: "",
     };
 
     const request: Request = {

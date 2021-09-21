@@ -82,8 +82,6 @@ functions:
       SIGNING_EU_QR_NAME: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_NAME}
       SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
       SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
-      HEALTH_CERT_NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_ENABLED}
-      HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_TOPIC_ARN}
     handler: src/functionHandlers/notarisePdt/handler.handler
     events:
       - http:

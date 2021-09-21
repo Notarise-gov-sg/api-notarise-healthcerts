@@ -165,7 +165,11 @@ export const main: Handler = async (
             : testData[0].swabTypeCode === config.swabTestTypes.ART
             ? "ART"
             : null;
-        if (config.healthCertNotification.enabled && testType) {
+        if (
+          config.healthCertNotification.enabled &&
+          testType &&
+          result.directUrl
+        ) {
           await notifyHealthCert({
             version: "2.0",
             type: testType,
