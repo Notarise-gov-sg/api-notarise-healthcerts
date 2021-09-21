@@ -33,7 +33,6 @@ export class CloudWatchMiddleware
     const subDomain = this.extractSubDomain(provider);
     if (provider.split(".").length >= 2) {
       const clinicEndIndex = provider.indexOf(subDomain);
-      console.log({ clinicEndIndex });
       clinic = provider.slice(0, clinicEndIndex - 1);
     }
     return clinic;
@@ -47,8 +46,6 @@ export class CloudWatchMiddleware
     const subDomain = this.extractSubDomain(this.provider);
     const clinic = this.extractClinicName(this.provider);
     const description = `${clinic} ${subDomain}`;
-    console.log({ subDomain, clinic });
-    console.log({ description });
     trace(`provider ${description} attempting to notarise pdt...`);
   };
 
