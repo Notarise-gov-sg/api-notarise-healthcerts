@@ -117,6 +117,8 @@ functions:
       SIGNING_EU_QR_NAME: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_NAME}
       SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
       SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
+      HEALTH_CERT_NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_ENABLED}
+      HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_TOPIC_ARN}
     handler: src/functionHandlers/notarisePdt/v2/handler.handler
     events:
       - http:
@@ -178,6 +180,8 @@ custom:
     SIGNING_EU_QR_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_NAME, ""}
     SIGNING_EU_QR_PUBLIC_KEY: ${ssm:/serverless/SIGNING_EU_QR_PUBLIC_KEY, ""}
     SIGNING_EU_QR_PRIVATE_KEY: ${ssm:/serverless/SIGNING_EU_QR_PRIVATE_KEY~true, ""}
+    HEALTH_CERT_NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_ENABLED, ""}
+    HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
   dotenv:
     INFURA_API_KEY: ${env:INFURA_API_KEY, ""}
     SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
@@ -200,6 +204,8 @@ custom:
     SIGNING_EU_QR_NAME: ${env:SIGNING_EU_QR_NAME, ""}
     SIGNING_EU_QR_PUBLIC_KEY: ${env:SIGNING_EU_QR_PUBLIC_KEY, ""}
     SIGNING_EU_QR_PRIVATE_KEY: ${env:SIGNING_EU_QR_PRIVATE_KEY, ""}
+    HEALTH_CERT_NOTIFICATION_ENABLED: ${env:HEALTH_CERT_NOTIFICATION_ENABLED, ""}
+    HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${env:HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:

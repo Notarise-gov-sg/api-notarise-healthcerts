@@ -3,8 +3,7 @@
 
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import middy, { MiddlewareObj } from "@middy/core";
-import { NotarisationResult } from "src/functionHandlers/notarisePdt/handler";
-import { HealthCertDocument, Observation } from "src/types";
+import { HealthCertDocument, NotarisationResult, Observation } from "../types";
 import { Observation as ObservationV2 } from "../models/fhir/types";
 import { parsers } from "../models/fhir/parse";
 import { logError, trace } from "./trace";

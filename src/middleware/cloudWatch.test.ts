@@ -1,4 +1,4 @@
-import { NotarisationResult } from "src/functionHandlers/notarisePdt/handler";
+import { NotarisationResult } from "../types";
 import wrappedDocument from "../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import wrappedDocumentV2 from "../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
 import { CloudWatchMiddleware, Request } from "./cloudWatch";
