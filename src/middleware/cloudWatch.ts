@@ -23,6 +23,7 @@ export class CloudWatchMiddleware
   private provider = "";
 
   // split "abc.riverr.io" into "riverr.io"
+  // searches for final "."
   extractSubDomain(provider: string): string {
     return /\w+\.\w+$/.exec(provider)?.toString() ?? "";
   }
@@ -59,7 +60,7 @@ export class CloudWatchMiddleware
         ) as Observation;
         testName = observation.code.coding[0].display;
       }
-      const provider = this.provider;
+      const { provider } = this;
 
       if (/art/i.test(testName)) {
         trace(`${provider} successfully notarised pdt of type art`);

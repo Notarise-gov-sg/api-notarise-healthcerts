@@ -5,10 +5,13 @@ import { CloudWatchMiddleware, Request } from "./cloudWatch";
 import * as log from "./trace";
 
 it("test regex of extractSubDomain", () => {
-  const cloudWatchMiddleware: CloudWatchMiddleware =
-      new CloudWatchMiddleware();
-  expect(cloudWatchMiddleware.extractSubDomain("abc@river.ai")).toBe("river.ai");
-  expect(cloudWatchMiddleware.extractSubDomain("donotverify.testing.verify.gov.sg")).toBe("gov.sg");
+  const cloudWatchMiddleware: CloudWatchMiddleware = new CloudWatchMiddleware();
+  expect(cloudWatchMiddleware.extractSubDomain("abc@river.ai")).toBe(
+    "river.ai"
+  );
+  expect(
+    cloudWatchMiddleware.extractSubDomain("donotverify.testing.verify.gov.sg")
+  ).toBe("gov.sg");
 });
 
 describe("test cloudwatch middleware for v1", () => {
