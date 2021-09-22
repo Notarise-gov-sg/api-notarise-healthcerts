@@ -4,6 +4,13 @@ import wrappedDocumentV2 from "../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.
 import { CloudWatchMiddleware, Request } from "./cloudWatch";
 import * as log from "./trace";
 
+it("test regex of extractSubDomain", () => {
+  const cloudWatchMiddleware: CloudWatchMiddleware =
+      new CloudWatchMiddleware();
+  expect(cloudWatchMiddleware.extractSubDomain("abc@river.ai")).toBe("river.ai");
+  expect(cloudWatchMiddleware.extractSubDomain("donotverify.testing.verify.gov.sg")).toBe("gov.sg");
+});
+
 describe("test cloudwatch middleware for v1", () => {
   it("middlware should log clinic and subdomain from request", async () => {
     jest.spyOn(log, "trace");
@@ -19,7 +26,10 @@ describe("test cloudwatch middleware for v1", () => {
     await cloudWatchMiddleware.before(request);
 
     expect(log.trace).toHaveBeenCalledWith(
-      "provider donotverify.testing.verify gov.sg attempting to notarise pdt..."
+      "provider donotverify.testing.verify.gov.sg attempting to notarise pdt..."
+    );
+    expect(log.trace).toHaveBeenCalledWith(
+      "subDomain gov.sg attempting to notarise pdt..."
     );
   });
 
@@ -34,18 +44,19 @@ describe("test cloudwatch middleware for v1", () => {
     };
 
     const request: Request = {
-      event: null,
+      event: {
+        body: wrappedDocumentV2,
+      },
       response: {
         body: JSON.stringify(notarisationResult),
       },
     };
     const cloudWatchMiddleware: CloudWatchMiddleware =
       new CloudWatchMiddleware();
-    const provider = "donotverify.testing.verify.gov.sg";
-    cloudWatchMiddleware.provider = provider;
+    await cloudWatchMiddleware.before(request);
     await cloudWatchMiddleware.after(request);
     expect(log.trace).toHaveBeenCalledWith(
-      `donotverify.testing.verify gov.sg successfully notarised pdt of type pcr`
+      `donotverify.testing.verify.gov.sg successfully notarised pdt of type pcr`
     );
   });
 });
@@ -65,7 +76,7 @@ describe("test cloudwatch middleware for v2", () => {
     await cloudWatchMiddleware.before(request);
 
     expect(log.trace).toHaveBeenCalledWith(
-      "provider donotverify.testing.verify gov.sg attempting to notarise pdt..."
+      "provider donotverify.testing.verify.gov.sg attempting to notarise pdt..."
     );
   });
 
@@ -80,17 +91,19 @@ describe("test cloudwatch middleware for v2", () => {
     };
 
     const request: Request = {
-      event: null,
+      event: {
+        body: wrappedDocumentV2,
+      },
       response: {
         body: JSON.stringify(notarisationResult),
       },
     };
     const cloudWatchMiddleware: CloudWatchMiddleware =
       new CloudWatchMiddleware();
-    cloudWatchMiddleware.provider = "donotverify.testing.verify.gov.sg";
+    await cloudWatchMiddleware.before(request);
     await cloudWatchMiddleware.after(request);
     expect(log.trace).toHaveBeenCalledWith(
-      `donotverify.testing.verify gov.sg successfully notarised pdt of type pcr`
+      `donotverify.testing.verify.gov.sg successfully notarised pdt of type pcr`
     );
   });
 });

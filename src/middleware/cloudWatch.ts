@@ -20,33 +20,22 @@ export type Request = Pick<middy.Request, "event" | "response">;
 export class CloudWatchMiddleware
   implements Pick<MiddlewareObj, "before" | "after">
 {
-  provider = "";
+  private provider = "";
 
   // split "abc.riverr.io" into "riverr.io"
   extractSubDomain(provider: string): string {
     return /\w+\.\w+$/.exec(provider)?.toString() ?? "";
   }
 
-  // split "abc.riverr.io" into "abc"
-  extractClinicName(provider: string): string {
-    let clinic = "";
-    const subDomain = this.extractSubDomain(provider);
-    if (provider.split(".").length >= 2) {
-      const clinicEndIndex = provider.indexOf(subDomain);
-      clinic = provider.slice(0, clinicEndIndex - 1);
-    }
-    return clinic;
-  }
-
   before = async (req: Request): Promise<void> => {
     const wrappedDocument = req.event
       .body as WrappedDocument<HealthCertDocument>;
     const data = getData(wrappedDocument);
-    this.provider = data.issuers[0].identityProof?.location ?? "UNKNOWN";
-    const subDomain = this.extractSubDomain(this.provider);
-    const clinic = this.extractClinicName(this.provider);
-    const description = `${clinic} ${subDomain}`;
-    trace(`provider ${description} attempting to notarise pdt...`);
+    const provider = data.issuers[0].identityProof?.location ?? "UNKNOWN";
+    this.provider = provider;
+    const subDomain = this.extractSubDomain(provider);
+    trace(`provider ${provider} attempting to notarise pdt...`);
+    trace(`subDomain ${subDomain} attempting to notarise pdt...`);
   };
 
   after = async (req: Request): Promise<void> => {
@@ -70,14 +59,12 @@ export class CloudWatchMiddleware
         ) as Observation;
         testName = observation.code.coding[0].display;
       }
-      const subDomain = this.extractSubDomain(this.provider);
-      const clinic = this.extractClinicName(this.provider);
-      const description = `${clinic} ${subDomain}`.trim();
+      const provider = this.provider;
 
       if (/art/i.test(testName)) {
-        trace(`${description} successfully notarised pdt of type art`);
+        trace(`${provider} successfully notarised pdt of type art`);
       } else if (/pcr/i.test(testName)) {
-        trace(`${description} successfully notarised pdt of type pcr`);
+        trace(`${provider} successfully notarised pdt of type pcr`);
       }
     } catch (error) {
       logError(
