@@ -28,6 +28,9 @@ provider:
     - Effect: Allow
       Action: ["sns:Publish"]
       Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:healthcert"
+    - Effect: Allow
+      Action: ["sns:Publish"]
+      Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:api-spm-${self:provider.stage}-spm-healthcert-topic"
   deploymentBucket:
     name: notarise-serverless-deployment
   apiKeys:
