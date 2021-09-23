@@ -19,16 +19,23 @@ export type Request = Pick<middy.Request, "event" | "response">;
 export class CloudWatchMiddleware
   implements Pick<MiddlewareObj, "before" | "after">
 {
-  provider = "";
+  private provider = "";
+
+  // split "abc.riverr.io" into "riverr.io"
+  // searches for final "."
+  extractSubDomain(provider: string): string {
+    return /\w+\.\w+$/.exec(provider)?.toString() ?? "";
+  }
 
   before = async (req: Request): Promise<void> => {
     const wrappedDocument = req.event
       .body as WrappedDocument<HealthCertDocument>;
     const data = getData(wrappedDocument);
-    const provider: string =
-      data.issuers[0].identityProof?.location ?? "UNKNOWN";
+    const provider = data.issuers[0].identityProof?.location ?? "UNKNOWN";
     this.provider = provider;
+    const subDomain = this.extractSubDomain(provider);
     trace(`provider ${provider} attempting to notarise pdt...`);
+    trace(`subDomain ${subDomain} attempting to notarise pdt...`);
   };
 
   after = async (req: Request): Promise<void> => {
@@ -53,6 +60,7 @@ export class CloudWatchMiddleware
         testName = observation.code.coding[0].display;
       }
       const { provider } = this;
+
       if (/art/i.test(testName)) {
         trace(`${provider} successfully notarised pdt of type art`);
       } else if (/pcr/i.test(testName)) {
