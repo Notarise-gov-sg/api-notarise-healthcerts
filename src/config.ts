@@ -76,6 +76,9 @@ const generateConfig = () => ({
   notification: {
     enabled: isTruthy(process.env.NOTIFICATION_ENABLED),
   },
+  healthCertNotification: {
+    enabled: isTruthy(process.env.HEALTH_CERT_NOTIFICATION_ENABLED),
+  },
   isOfflineQrEnabled: !!process.env.OFFLINE_QR_ENABLED,
   swabTestTypes: {
     ART: "697989009",

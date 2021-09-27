@@ -15,7 +15,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../services/transientStorage";
-import { HealthCertDocument } from "../../types";
+import { HealthCertDocument, NotarisationResult } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
 import { config } from "../../config";
@@ -25,12 +25,6 @@ import {
 } from "../../models/euHealthCert";
 
 const { trace, error } = getLogger("src/functionHandlers/notarisePdt/handler");
-
-export interface NotarisationResult {
-  notarisedDocument: WrappedDocument<HealthCertDocument>;
-  ttl: number;
-  url: string;
-}
 
 export const notarisePdt = async (
   reference: string,

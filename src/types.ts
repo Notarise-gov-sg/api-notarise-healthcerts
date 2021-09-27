@@ -1,4 +1,8 @@
-import { v2, SignedWrappedDocument } from "@govtechsg/open-attestation";
+import {
+  v2,
+  SignedWrappedDocument,
+  WrappedDocument,
+} from "@govtechsg/open-attestation";
 import { Record, String, Static } from "runtypes";
 import { notarise } from "@govtechsg/oa-schemata";
 import { R4 } from "@ahryman40k/ts-fhir-types";
@@ -181,3 +185,10 @@ export interface EuHealthCertDocument {
 export interface EuHealthCert extends EuHealthCertDocument {
   meta: notarise.NotarisationMetadata;
 } 
+
+export interface NotarisationResult {
+  notarisedDocument: WrappedDocument<HealthCertDocument>;
+  ttl: number;
+  url: string;
+  directUrl?: string;
+}
