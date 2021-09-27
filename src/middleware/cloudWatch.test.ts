@@ -6,11 +6,11 @@ import * as log from "./trace";
 
 it("test regex of extractSubDomain", () => {
   const cloudWatchMiddleware: CloudWatchMiddleware = new CloudWatchMiddleware();
-  expect(cloudWatchMiddleware.extractSubDomain("abc@river.ai")).toBe(
+  expect(cloudWatchMiddleware.extractProvider("abc@river.ai")).toBe(
     "river.ai"
   );
   expect(
-    cloudWatchMiddleware.extractSubDomain("donotverify.testing.verify.gov.sg")
+    cloudWatchMiddleware.extractProvider("donotverify.testing.verify.gov.sg")
   ).toBe("gov.sg");
 });
 
@@ -29,10 +29,10 @@ describe("test cloudwatch middleware for v1", () => {
     await cloudWatchMiddleware.before(request);
 
     expect(log.trace).toHaveBeenCalledWith(
-      "provider donotverify.testing.verify.gov.sg attempting to notarise pdt..."
+      "subDomain donotverify.testing.verify.gov.sg attempting to notarise pdt..."
     );
     expect(log.trace).toHaveBeenCalledWith(
-      "subDomain gov.sg attempting to notarise pdt..."
+      "provider *.gov.sg attempting to notarise pdt..."
     );
   });
 
@@ -79,7 +79,7 @@ describe("test cloudwatch middleware for v2", () => {
     await cloudWatchMiddleware.before(request);
 
     expect(log.trace).toHaveBeenCalledWith(
-      "provider donotverify.testing.verify.gov.sg attempting to notarise pdt..."
+      "subDomain donotverify.testing.verify.gov.sg attempting to notarise pdt..."
     );
   });
 
