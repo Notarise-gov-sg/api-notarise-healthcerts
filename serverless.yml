@@ -62,6 +62,7 @@ provider:
 functions:
   notarisePdt:
     environment:
+      STAGE: ${self:provider.stage}
       DEBUG: "*,-follow-redirects"
       INFURA_API_KEY: ${self:custom.${self:custom.envSource}.INFURA_API_KEY}
       SIGNING_DID_NAME: ${self:custom.${self:custom.envSource}.SIGNING_DID_NAME}
@@ -97,6 +98,7 @@ functions:
           private: true 
   notarisePdtV2:
     environment:
+      STAGE: ${self:provider.stage}
       DEBUG: "*,-follow-redirects"
       INFURA_API_KEY: ${self:custom.${self:custom.envSource}.INFURA_API_KEY}
       SIGNING_DID_NAME: ${self:custom.${self:custom.envSource}.SIGNING_DID_NAME}
