@@ -171,6 +171,7 @@ export const main: Handler = async (
           result.directUrl
         ) {
           await notifyHealthCert({
+            uin: parseFhirBundle.patient?.nricFin || "",
             version: "2.0",
             type: testType,
             url: result.directUrl,
