@@ -32,12 +32,13 @@ const stringifyAndEncode = (obj: any): string =>
   encodeURIComponent(JSON.stringify(obj));
 
 const universalUrl = (url: string, key: string) => {
+  const subDomain = process.env.STAGE === "production" ? "www" : "dev";
   const query = stringifyAndEncode({
     type: "DOCUMENT",
     payload: {
       uri: url,
       permittedActions: ["VIEW", "STORE"],
-      redirect: "https://www.verify.gov.sg/verify",
+      redirect: `https://${subDomain}.verify.gov.sg/verify`,
     },
   });
   const anchor = key ? `#${stringifyAndEncode({ key })}` : ``;
