@@ -1,69 +1,114 @@
 # api-notarise-healthcerts
 
-This repository contains the implementation of the healthcert notarisation API.
+This repository implements the API endpoint for the endorsement of HealthCerts on Notarise.gov.sg.
 
-## Handlers
+## Prerequisites
 
-### notarisePdt
+To get onboarded as a HealthCerts Issuer, please refer to the [Notarise FAQ (point 36)](https://www.notarise.gov.sg/faq#medfac) or the [onboarding form](https://go.gov.sg/whitelist-healthcerts-clinics).
 
-This handler implements a REST endpoint to notarise a wrapped healthcert for a pre-departure test.
+## Getting Started
+
+To start endorsing your **Pre-departure Test (PDT) HealthCerts** on Notarise.gov.sg, please take note of the respective endpoints for each version/environment:
+
+| **Environment** | **PDT Schema v1.0**\*      | **PDT Schema v2.0**           |
+| --------------- | -------------------------- | ----------------------------- |
+| Staging         | `/stg/notarise/pdt`        | `/stg/v2/notarise/pdt`        |
+| Production      | `/production/notarise/pdt` | `/production/v2/notarise/pdt` |
+
+> **Deprecation notice**: v1.0 endpoint is scheduled to be deprecated on 31 October 2021. Please refer to [this guide](https://github.com/Open-Attestation/schemata/pull/38) to migrate to PDT Schema v2.0.<br/><br/>Please be reminded that endorsement of documents utilising the new PDT HealthCert Schema v2.0 is only available in the new v2 Notarise endpoint: `/stg/v2/notarise/pdt` or `/production/v2/notarise/pdt`.
+
+**Request Format**:
 
 ```sh
+curl -i -X POST \
+  -H 'content-type: application/json' \
+  -H 'x-api-key: <api key>' \
+  -d '@wrapped_healthcert.oa' \
+  'https://<domain>/production/v2/notarise/pdt'
+```
+
+**Response Format**:
+
+```json
+{
+  "notarisedDocument": {...},
+  "ttl": 1636629304073,
+  "url": "https://action.openattestation.com/?q=xxx",
+  "gpayCovidCardUrl": "https://pay.google.com/gp/v/save/xxx"
+}
+```
+
+> **Note**: A response would typically take about 15 seconds.
+
+## Schemas/Samples
+
+- **Clinic/Provider Issued Sample**: Sample HealthCert issued by a clinic/provider that utilises the new PDT Schema v2.0 [here](https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/clinic-provider-wrapped.json).
+
+- **Notarise Issued Sample**: Sample HealthCert after endorsement by Notarise.gov.sg that utilises the new PDT Schema v2.0 [here](https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/endorsed-wrapped.json).
+
+- **All Schemas/Samples**: For all documented schemas/samples, refer to the `PDT-HEALTHCERT v2.0` section [here](https://schemata.openattestation.com>).
+
+- **GUI Toolkit**: For ease of development with the Open Attestation library, use this [toolkit](https://toolkit.openattestation.com) for wrapping/unwrapping, diagnosing, verifying etc.
+
+---
+
+## Developers/Contributors
+
+### Prerequisites
+
+- Copy `.env` from a co-worker or insert own credentials to get started. A copy of the .env file is available at `.env.example`.
+- When running locally, a local API key is required. Obtain it from the console when starting the serverless framework.
+
+### Getting Started
+
+To start local environment:
+
+```sh
+npm install
 npm run dev
+```
+
+To endorse a HealthCert in local environment, run one of the commands in a separate terminal:
+
+```sh
 curl -i -X POST \
   -H 'content-type: application/json' \
   -H 'x-api-key: <api key>' \
   -d '@example_notarized_healthcert_wrapped.oa' \
-  http://localhost:3000/notarise/pdt
+  'http://localhost:4000/dev/v2/notarise/pdt'
+
+# OR
+
+npm run invoke-local:notarisePdt
 ```
 
-When running locally, the required API key will be printed to the console on starting the serverless framework.
+To run tests:
 
-A response should be returned within 15 seconds.
-
-#### Alternatively:
-`npm run dev` on one terminal  
-`npm run invoke-local:notarisePdt` on another terminal. This will run the script to the curl command above
-
----
-
-# Configuration
-
-See .example.env for configurable parameters.
-
-# Development
-
-Copy `.env` from a co-worker or insert own credentials to get started. A copy of the .env file is available at `.env.example`
-
-```
-npm run dev
+```sh
+npm run test
 ```
 
-To run local tests against dynamodb-local, run commands
+### Generating a sample wrapped cert
 
-`npm run dev` to start the local environment
-`npm run test` to run the tests
+1. Edit `test/fixtures/v2/example_healthcert_unwrapped.json` to include your particulars.
 
-## Development process
+2. ```sh
+   npm run gen:input
+   ```
 
-- copy .env.example into .env and replace the values needed. For instance
-  - TRANSIENT_STORAGE_URL: to your local or staging storage API
-  - SIGNING_DID: check with ops
-  - SIGNING_DID_KEY: check wth ops. For ethereum DID, it's equal to `SIGNING_DID` prepended with `#controller`
-  - SIGNING_DID_PRIVATE_KEY: check with ops
-  - OFFLINE_QR_ENABLED: Feature toggle for Offline Qr certification
-  - SIGNING_EU_QR_NAME: Display name of the certification issuer
-  - SIGNING_EU_QR_PUBLIC_KEY: Public key of signing offline QR with single line string and include `\n` for newline
-  - SIGNING_EU_QR_PRIVATE_KEY: Private key of signing offline QR with single line string and include `\n` for newline
-- start the local environment: `npm run dev`
+### Environment Variables
 
-## Generating a wrapped cert
-- Edit `test/fixtures/example_healthcert_unwrapped.json` to include your particulars
-- Run
-```
-yarn gen:input
-```
+Copy .env.example into .env and replace the values needed:
+
+- TRANSIENT_STORAGE_URL: to your local or staging storage API
+- SIGNING_DID: check with ops
+- SIGNING_DID_KEY: check wth ops. For ethereum DID, it's equal to `SIGNING_DID` prepended with `#controller`
+- SIGNING_DID_PRIVATE_KEY: check with ops
+- OFFLINE_QR_ENABLED: Feature toggle for Offline Qr certification
+- SIGNING_EU_QR_NAME: Display name of the certification issuer
+- SIGNING_EU_QR_PUBLIC_KEY: Public key of signing offline QR with single line string and include `\n` for newline
+- SIGNING_EU_QR_PRIVATE_KEY: Private key of signing offline QR with single line string and include `\n` for newline
 
 ## Change port
 
-- use the `port` option from serverless offline: `npm run dev -- --port 3001`
+- Use the `port` option from serverless offline: `npm run dev -- --port 3001`
