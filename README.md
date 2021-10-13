@@ -48,7 +48,7 @@ curl -i -X POST \
 
 - **All Schemas/Samples**: For all documented schemas/samples, refer to the `PDT-HEALTHCERT v2.0` section [here](https://schemata.openattestation.com>).
 
-- **GUI Toolkit**: For ease of development with the Open Attestation library, use this [toolkit](https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/endorsed-wrapped.json) for wrapping/unwrapping, diagnosing, verifying etc.
+- **GUI Toolkit**: For ease of development with the Open Attestation library, use this [toolkit](https://toolkit.openattestation.com) for wrapping/unwrapping, diagnosing, verifying etc.
 
 ---
 
