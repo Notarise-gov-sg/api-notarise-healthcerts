@@ -44,7 +44,7 @@ curl -i -X POST \
 
 - **Clinic/Provider Issued Sample**: Sample HealthCert issued by a clinic/provider that utilises the new PDT Schema v2.0 [here](https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/clinic-provider-wrapped.json).
 
-- **Notarise Issued Sample**: Sample HealthCert endorsed and issued by Notarise.gov.sg that utilises the new PDT Schema v2.0 [here](https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/endorsed-wrapped.json).
+- **Notarise Issued Sample**: Sample HealthCert after endorsement by Notarise.gov.sg that utilises the new PDT Schema v2.0 [here](https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/endorsed-wrapped.json).
 
 - **All Schemas/Samples**: For all documented schemas/samples, refer to the `PDT-HEALTHCERT v2.0` section [here](https://schemata.openattestation.com>).
 
