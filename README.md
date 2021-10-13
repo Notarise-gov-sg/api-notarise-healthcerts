@@ -75,7 +75,7 @@ curl -i -X POST \
   -H 'content-type: application/json' \
   -H 'x-api-key: <api key>' \
   -d '@example_notarized_healthcert_wrapped.oa' \
-  'https://<domain>/production/v2/notarise/pdt'
+  'http://localhost:4000/dev/v2/notarise/pdt'
 
 # OR
 
