@@ -177,7 +177,6 @@ export const main: Handler = async (
             url: result.directUrl,
             expiry: result.ttl,
           });
-          delete result.directUrl;
         } else {
           await notifyPdt({
             url: result.url,
@@ -194,6 +193,8 @@ export const main: Handler = async (
       }
     }
   }
+
+  delete result?.directUrl;
 
   return {
     statusCode: 200,
