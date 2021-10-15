@@ -189,6 +189,18 @@ export const main: Handler = async (
     }
   }
 
+  /* Generate Google Pay COVID Card URL (Only if enabled) */
+  if (config.isGPayCovidCardEnabled) {
+    try {
+      // TODO: Placeholder value. To add actual implementation once KMS is setup.
+      result.gpayCovidCardUrl = `https://pay.google.com/gp/v/save/xxx`;
+    } catch (e) {
+      errorWithRef(
+        `GPay COVID Card error: ${e instanceof Error ? e.message : e}`
+      );
+    }
+  }
+
   return {
     statusCode: 200,
     headers: {

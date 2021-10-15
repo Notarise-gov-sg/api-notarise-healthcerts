@@ -190,4 +190,5 @@ export interface NotarisationResult {
   notarisedDocument: WrappedDocument<HealthCertDocument>;
   ttl: number;
   url: string;
+  gpayCovidCardUrl?: string;
 }

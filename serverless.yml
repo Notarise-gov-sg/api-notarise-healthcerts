@@ -83,6 +83,7 @@ functions:
       AUTHORIZED_ISSUERS_API_URL: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_URL}
       AUTHORIZED_ISSUERS_API_KEY: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_KEY}
       OFFLINE_QR_ENABLED: ${self:custom.${self:custom.envSource}.OFFLINE_QR_ENABLED}
+      GPAY_COVID_CARD_ENABLED: ${self:custom.${self:custom.envSource}.GPAY_COVID_CARD_ENABLED}
       SIGNING_EU_QR_NAME: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_NAME}
       SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
       SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
@@ -95,7 +96,7 @@ functions:
       - http:
           path: /v1/notarise/pdt
           method: post
-          private: true 
+          private: true
   notarisePdtV2:
     environment:
       STAGE: ${self:provider.stage}
@@ -119,6 +120,7 @@ functions:
       AUTHORIZED_ISSUERS_API_URL: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_URL}
       AUTHORIZED_ISSUERS_API_KEY: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_KEY}
       OFFLINE_QR_ENABLED: ${self:custom.${self:custom.envSource}.OFFLINE_QR_ENABLED}
+      GPAY_COVID_CARD_ENABLED: ${self:custom.${self:custom.envSource}.GPAY_COVID_CARD_ENABLED}
       SIGNING_EU_QR_NAME: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_NAME}
       SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
       SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
@@ -145,11 +147,11 @@ custom:
   # ideally you can just nest one inside. But no!
   # ssm failure returns "undefined" while env failure returns ""
   vpcDiscovery:
-    vpcName: '${env:VPC_NAME}'
+    vpcName: "${env:VPC_NAME}"
     subnetNames: # optional if securityGroupNames are specified
-        - 'notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*'
+      - "notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*"
     securityGroupNames:
-        - 'default'
+      - "default"
   subnetEnvName:
     stg: "stg"
     production: "prd"
@@ -182,6 +184,7 @@ custom:
     AUTHORIZED_ISSUERS_API_URL: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_URL, ""}
     AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY~true, ""}
     OFFLINE_QR_ENABLED: ${ssm:/serverless/OFFLINE_QR_ENABLED, ""}
+    GPAY_COVID_CARD_ENABLED: ${ssm:/serverless/GPAY_COVID_CARD_ENABLED, ""}
     SIGNING_EU_QR_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_NAME, ""}
     SIGNING_EU_QR_PUBLIC_KEY: ${ssm:/serverless/SIGNING_EU_QR_PUBLIC_KEY, ""}
     SIGNING_EU_QR_PRIVATE_KEY: ${ssm:/serverless/SIGNING_EU_QR_PRIVATE_KEY~true, ""}
@@ -206,6 +209,7 @@ custom:
     AUTHORIZED_ISSUERS_API_URL: ${env:AUTHORIZED_ISSUERS_API_URL, ""}
     AUTHORIZED_ISSUERS_API_KEY: ${env:AUTHORIZED_ISSUERS_API_KEY, ""}
     OFFLINE_QR_ENABLED: ${env:OFFLINE_QR_ENABLED, ""}
+    GPAY_COVID_CARD_ENABLED: ${env:GPAY_COVID_CARD_ENABLED, ""}
     SIGNING_EU_QR_NAME: ${env:SIGNING_EU_QR_NAME, ""}
     SIGNING_EU_QR_PUBLIC_KEY: ${env:SIGNING_EU_QR_PUBLIC_KEY, ""}
     SIGNING_EU_QR_PRIVATE_KEY: ${env:SIGNING_EU_QR_PRIVATE_KEY, ""}
