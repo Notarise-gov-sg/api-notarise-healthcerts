@@ -121,8 +121,9 @@ export const main: Handler = async (
     testData = getTestDataFromParseFhirBundle(parseFhirBundle);
   } catch (e) {
     errorWithRef(
-      `Error while validating certificate: ` +
-        (e instanceof DetailedCodedError ? `${e.title}, ${e.messageBody}` : e)
+      `Error while validating certificate: ${
+        e instanceof DetailedCodedError ? `${e.title}, ${e.messageBody}` : e
+      }`
     );
     return {
       statusCode: 400,
