@@ -228,6 +228,8 @@ custom:
         threshold: 30
         evaluationPeriods: 5
     dashboards: true
+    stages:
+      - production
     topics:
       alarm:
         topic: arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier
