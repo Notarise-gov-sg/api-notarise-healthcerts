@@ -41,7 +41,7 @@ export const notarisePdt = async (
   certificate: WrappedDocument<HealthCertDocument>,
   parseFhirBundle: Bundle,
   testData: TestData[]
-): Promise<{ result: NotarisationResult; directUrl: string }> => {
+): Promise<NotarisationResult> => {
   const errorWithRef = trace.extend(`reference:${reference}`);
   const traceWithRef = trace.extend(`reference:${reference}`);
 
@@ -84,11 +84,9 @@ export const notarisePdt = async (
   const { ttl } = await uploadDocument(notarisedDocument, id, reference);
   traceWithRef("Document successfully notarised");
   return {
-    result: {
-      notarisedDocument,
-      ttl,
-      url: storedUrl,
-    },
+    notarisedDocument,
+    ttl,
+    url: storedUrl,
     directUrl,
   };
 };
@@ -101,11 +99,9 @@ export const main: Handler = async (
   const certificate = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
 
-  /* 1. Validation */
-  let parseFhirBundle: Bundle;
-  let data: HealthCertDocument;
-  let testData: TestData[];
-  let documentType: string;
+  let parseFhirBundle: Bundle | undefined;
+  let data: HealthCertDocument | undefined;
+  let testData: TestData[] | undefined;
   try {
     await validateV2Inputs(certificate);
     data = getData(certificate);
@@ -114,91 +110,88 @@ export const main: Handler = async (
     parseFhirBundle = fhirHelper.parse(data.fhirBundle as R4.IBundle);
 
     // validate parsed FhirBundle data with specific healthcert type constraints
-    documentType = (data?.type ?? "").toUpperCase();
-    fhirHelper.hasRequiredFields(documentType, parseFhirBundle);
+    const documentType = (data?.type ?? "").toUpperCase();
+    fhirHelper.hasRequiredFields(
+      <"ART" | "PCR" | "SER">documentType,
+      parseFhirBundle
+    );
 
     // convert parsed Bundle to testdata[]
     testData = getTestDataFromParseFhirBundle(parseFhirBundle);
   } catch (e) {
-    errorWithRef(
-      `Error while validating certificate: ${
-        e instanceof DetailedCodedError ? `${e.title}, ${e.messageBody}` : e
-      }`
-    );
-    return {
-      statusCode: 400,
-      headers: {
-        "x-trace-id": reference,
-      },
-      body:
-        e instanceof DetailedCodedError
-          ? `${e.title}, ${e.messageBody}`
-          : String(e),
-    };
+    if (e instanceof DetailedCodedError) {
+      errorWithRef(
+        `Error while validating certificate: ${e.title}, ${e.messageBody}`
+      );
+      return {
+        statusCode: 400,
+        headers: {
+          "x-trace-id": reference,
+        },
+        body: `${e.title}, ${e.messageBody}`,
+      };
+    }
   }
 
-  /* 2. Endorsement */
-  let result: NotarisationResult;
-  let directUrl: string;
+  let result: NotarisationResult | undefined;
+
   try {
-    ({ result, directUrl } = await notarisePdt(
+    result = await notarisePdt(
       reference,
       certificate,
       parseFhirBundle as Bundle,
       testData as TestData[]
-    ));
+    );
   } catch (e) {
-    errorWithRef(`Unhandled error: ${e instanceof Error ? e.message : e}`);
-    return {
-      statusCode: 500,
-      headers: {
-        "x-trace-id": reference,
-      },
-      body: "",
-    };
+    if (e instanceof Error) {
+      errorWithRef(`Unhandled error: ${e.message}`);
+      return {
+        statusCode: 500,
+        headers: {
+          "x-trace-id": reference,
+        },
+        body: "",
+      };
+    }
   }
 
-  /* Send SPM notification to recipient (Only if enabled) */
+  /* Notify recipient via SPM (only if enabled) */
   if (config.notification.enabled) {
     try {
-      await notifyPdt({
-        url: result.url,
-        nric: parseFhirBundle.patient?.nricFin,
-        passportNumber: parseFhirBundle.patient?.passportNumber,
-        testData,
-        validFrom: data.validFrom,
-      });
+      if (result && parseFhirBundle && testData && data) {
+        const testType =
+          testData[0].swabTypeCode === config.swabTestTypes.PCR
+            ? "PCR"
+            : testData[0].swabTypeCode === config.swabTestTypes.ART
+            ? "ART"
+            : null;
+        if (
+          config.healthCertNotification.enabled &&
+          testType &&
+          result.directUrl
+        ) {
+          await notifyHealthCert({
+            uin: parseFhirBundle.patient?.nricFin || "",
+            version: "2.0",
+            type: testType,
+            url: result.directUrl,
+            expiry: result.ttl,
+          });
+          delete result.directUrl;
+        } else {
+          await notifyPdt({
+            url: result.url,
+            nric: parseFhirBundle.patient?.nricFin,
+            passportNumber: parseFhirBundle.patient?.passportNumber,
+            testData,
+            validFrom: data.validFrom,
+          });
+        }
+      }
     } catch (e) {
-      errorWithRef(
-        `SPM notification error: ${e instanceof Error ? e.message : e}`
-      );
-    }
-  }
-
-  /* [NEW] Send HealthCert to SPM wallet (Only if enabled) */
-  if (config.healthCertNotification.enabled) {
-    try {
-      await notifyHealthCert({
-        uin: parseFhirBundle.patient?.nricFin || "",
-        version: "2.0",
-        type: documentType,
-        url: directUrl,
-        expiry: result.ttl,
-      });
-    } catch (e) {
-      errorWithRef(`SPM wallet error: ${e instanceof Error ? e.message : e}`);
-    }
-  }
-
-  /* Generate Google Pay COVID Card URL (Only if enabled) */
-  if (config.isGPayCovidCardEnabled) {
-    try {
-      // TODO: Placeholder value. To add actual implementation once KMS is setup.
-      result.gpayCovidCardUrl = `https://pay.google.com/gp/v/save/xxx`;
-    } catch (e) {
-      errorWithRef(
-        `GPay COVID Card error: ${e instanceof Error ? e.message : e}`
-      );
+      if (e instanceof Error) {
+        errorWithRef(`Notification error: ${e.message}`);
+      }
     }
   }
 
