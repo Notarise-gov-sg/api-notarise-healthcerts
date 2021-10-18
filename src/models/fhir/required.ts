@@ -147,7 +147,7 @@ const getPcrConstraints = (observationCount: number) => {
 };
 
 export const hasRequiredFields = (
-  type: "ART" | "PCR" | "SER",
+  type: "ART" | "PCR" | "SER" | string,
   bundle: Bundle
 ) => {
   let constraints = getCommonConstraints(bundle.observations.length);

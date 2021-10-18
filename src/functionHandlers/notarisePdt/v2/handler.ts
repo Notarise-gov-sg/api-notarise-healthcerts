@@ -41,7 +41,7 @@ export const notarisePdt = async (
   certificate: WrappedDocument<HealthCertDocument>,
   parseFhirBundle: Bundle,
   testData: TestData[]
-): Promise<NotarisationResult> => {
+): Promise<{ result: NotarisationResult; directUrl: string }> => {
   const errorWithRef = trace.extend(`reference:${reference}`);
   const traceWithRef = trace.extend(`reference:${reference}`);
 
@@ -84,9 +84,11 @@ export const notarisePdt = async (
   const { ttl } = await uploadDocument(notarisedDocument, id, reference);
   traceWithRef("Document successfully notarised");
   return {
-    notarisedDocument,
-    ttl,
-    url: storedUrl,
+    result: {
+      notarisedDocument,
+      ttl,
+      url: storedUrl,
+    },
     directUrl,
   };
 };
@@ -99,9 +101,11 @@ export const main: Handler = async (
   const certificate = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
 
-  let parseFhirBundle: Bundle | undefined;
-  let data: HealthCertDocument | undefined;
-  let testData: TestData[] | undefined;
+  /* 1. Validation */
+  let parseFhirBundle: Bundle;
+  let data: HealthCertDocument;
+  let testData: TestData[];
+  let documentType: string;
   try {
     await validateV2Inputs(certificate);
     data = getData(certificate);
@@ -110,88 +114,79 @@ export const main: Handler = async (
     parseFhirBundle = fhirHelper.parse(data.fhirBundle as R4.IBundle);
 
     // validate parsed FhirBundle data with specific healthcert type constraints
-    const documentType = (data?.type ?? "").toUpperCase();
-    fhirHelper.hasRequiredFields(
-      <"ART" | "PCR" | "SER">documentType,
-      parseFhirBundle
-    );
+    documentType = (data?.type ?? "").toUpperCase();
+    fhirHelper.hasRequiredFields(documentType, parseFhirBundle);
 
     // convert parsed Bundle to testdata[]
     testData = getTestDataFromParseFhirBundle(parseFhirBundle);
   } catch (e) {
-    if (e instanceof DetailedCodedError) {
-      errorWithRef(
-        `Error while validating certificate: ${e.title}, ${e.messageBody}`
-      );
-      return {
-        statusCode: 400,
-        headers: {
-          "x-trace-id": reference,
-        },
-        body: `${e.title}, ${e.messageBody}`,
-      };
-    }
+    errorWithRef(
+      `Error while validating certificate: ${
+        e instanceof DetailedCodedError ? `${e.title}, ${e.messageBody}` : e
+      }`
+    );
+    return {
+      statusCode: 400,
+      headers: {
+        "x-trace-id": reference,
+      },
+      body:
+        e instanceof DetailedCodedError
+          ? `${e.title}, ${e.messageBody}`
+          : String(e),
+    };
   }
 
-  let result: NotarisationResult | undefined;
-
+  /* 2. Endorsement */
+  let result: NotarisationResult;
+  let directUrl: string;
   try {
-    result = await notarisePdt(
+    ({ result, directUrl } = await notarisePdt(
       reference,
       certificate,
       parseFhirBundle as Bundle,
       testData as TestData[]
-    );
+    ));
   } catch (e) {
-    if (e instanceof Error) {
-      errorWithRef(`Unhandled error: ${e.message}`);
-      return {
-        statusCode: 500,
-        headers: {
-          "x-trace-id": reference,
-        },
-        body: "",
-      };
+    errorWithRef(`Unhandled error: ${e instanceof Error ? e.message : e}`);
+    return {
+      statusCode: 500,
+      headers: {
+        "x-trace-id": reference,
+      },
+      body: "",
+    };
+  }
+
+  /* Send SPM notification to recipient (Only if enabled) */
+  if (config.notification.enabled) {
+    try {
+      await notifyPdt({
+        url: result.url,
+        nric: parseFhirBundle.patient?.nricFin,
+        passportNumber: parseFhirBundle.patient?.passportNumber,
+        testData,
+        validFrom: data.validFrom,
+      });
+    } catch (e) {
+      errorWithRef(
+        `SPM notification error: ${e instanceof Error ? e.message : e}`
+      );
     }
   }
 
-  /* Notify recipient via SPM (only if enabled) */
-  if (config.notification.enabled) {
+  /* [NEW] Send HealthCert to SPM wallet (Only if enabled) */
+  if (config.healthCertNotification.enabled) {
     try {
-      if (result && parseFhirBundle && testData && data) {
-        const testType =
-          testData[0].swabTypeCode === config.swabTestTypes.PCR
-            ? "PCR"
-            : testData[0].swabTypeCode === config.swabTestTypes.ART
-            ? "ART"
-            : null;
-        if (
-          config.healthCertNotification.enabled &&
-          testType &&
-          result.directUrl
-        ) {
-          await notifyHealthCert({
-            uin: parseFhirBundle.patient?.nricFin || "",
-            version: "2.0",
-            type: testType,
-            url: result.directUrl,
-            expiry: result.ttl,
-          });
-          delete result.directUrl;
-        } else {
-          await notifyPdt({
-            url: result.url,
-            nric: parseFhirBundle.patient?.nricFin,
-            passportNumber: parseFhirBundle.patient?.passportNumber,
-            testData,
-            validFrom: data.validFrom,
-          });
-        }
-      }
+      await notifyHealthCert({
+        uin: parseFhirBundle.patient?.nricFin || "",
+        version: "2.0",
+        type: documentType,
+        url: directUrl,
+        expiry: result.ttl,
+      });
     } catch (e) {
-      if (e instanceof Error) {
-        errorWithRef(`Notification error: ${e.message}`);
-      }
+      errorWithRef(`SPM wallet error: ${e instanceof Error ? e.message : e}`);
     }
   }
 
