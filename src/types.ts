@@ -74,9 +74,9 @@ export interface Device {
   resourceType: EntryResourceType.Device;
   type: {
     coding: [
-      { 
-        system: string; 
-        code: string; 
+      {
+        system: string;
+        code: string;
         display: string;
       }
     ];
@@ -184,11 +184,10 @@ export interface EuHealthCertDocument {
 }
 export interface EuHealthCert extends EuHealthCertDocument {
   meta: notarise.NotarisationMetadata;
-} 
+}
 
 export interface NotarisationResult {
   notarisedDocument: WrappedDocument<HealthCertDocument>;
   ttl: number;
   url: string;
-  directUrl?: string;
 }
