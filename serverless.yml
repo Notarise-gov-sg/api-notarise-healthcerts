@@ -7,10 +7,12 @@ provider:
   timeout: 30 # optional, in seconds, default is 6
   stage: ${opt:stage, "dev"}
   region: ${opt:region, "ap-southeast-1"}
+  stackName: ${self:service}-${self:provider.stage}
   environment:
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
   tracing:
     lambda: true
+    apiGateway: true
   permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
   iamRoleStatements:
     - Effect: "Allow"
@@ -215,6 +217,23 @@ custom:
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:
     includeModules: true
+  alerts:
+    nameTemplate: $[functionName]-$[metricName]
+    definitions:
+      functionErrors:
+        treatMissingData: notBreaching
+        evaluationPeriods: 5
+      functionDuration:
+        treatMissingData: notBreaching
+        threshold: 30
+        evaluationPeriods: 5
+    dashboards: true
+    topics:
+      alarm:
+        topic: arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier
+    alarms:
+      - functionErrors
+      - functionDuration
 
 # breaking update to serverless>=2.26.0 to use .env files
 # https://www.serverless.com/framework/docs/environment-variables/
@@ -226,5 +245,45 @@ plugins:
   - serverless-offline
   - serverless-offline-ses
   - serverless-attach-permission-boundary
+  - serverless-plugin-aws-alerts
   - "@govtechsg/serverless-selective-functions"
   - serverless-vpc-discovery
+
+resources:
+  Resources:
+    ApiGatewayAlarm4xx:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: "${self:provider.stackName}-apiGateway-4XX" 
+        AlarmDescription: 4xx errors detected at API Gateway
+        AlarmActions: ["arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier"]
+        Namespace: AWS/ApiGateway
+        MetricName: 4XXError
+        Statistic: Sum
+        Threshold: 0
+        ComparisonOperator: GreaterThanThreshold
+        TreatMissingData: notBreaching
+        DatapointsToAlarm: 4
+        EvaluationPeriods: 5
+        Period: 60
+        Dimensions:
+          - Name: ApiName
+            Value: "${self:provider.stackName}"  
+    ApiGatewayAlarm5xx:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: "${self:provider.stackName}-apiGateway-5XX" 
+        AlarmDescription: 5xx errors detected at API Gateway
+        AlarmActions: ["arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier"]
+        Namespace: AWS/ApiGateway
+        MetricName: 5XXError
+        Statistic: Sum
+        Threshold: 0
+        ComparisonOperator: GreaterThanThreshold
+        TreatMissingData: notBreaching
+        DatapointsToAlarm: 4
+        EvaluationPeriods: 5
+        Period: 60
+        Dimensions:
+          - Name: ApiName
+            Value: "${self:provider.stackName}"
