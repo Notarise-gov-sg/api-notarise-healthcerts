@@ -1,4 +1,5 @@
 import validate from "validate.js";
+import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { DocumentInvalidError } from "../../common/error";
 import { Bundle } from "./types";
 
@@ -147,7 +148,7 @@ const getPcrConstraints = (observationCount: number) => {
 };
 
 export const hasRequiredFields = (
-  type: "ART" | "PCR" | "SER" | string,
+  type: pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[],
   bundle: Bundle
 ) => {
   let constraints = getCommonConstraints(bundle.observations.length);
@@ -166,6 +167,10 @@ export const hasRequiredFields = (
         ...constraints,
         ...getPcrConstraints(bundle.observations.length),
       };
+      break;
+
+    case ["PCR", "SER"]:
+      // TODO: Implement validation for multi-observation
       break;
 
     default:

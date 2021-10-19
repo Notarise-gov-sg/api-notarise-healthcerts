@@ -20,7 +20,7 @@ import {
   uploadDocument,
 } from "../../../services/transientStorage";
 import {
-  HealthCertDocument,
+  PDTHealthCertV2Document,
   NotarisationResult,
   TestData,
 } from "../../../types";
@@ -38,7 +38,7 @@ const { trace, error } = getLogger(
 
 export const notarisePdt = async (
   reference: string,
-  certificate: WrappedDocument<HealthCertDocument>,
+  certificate: WrappedDocument<PDTHealthCertV2Document>,
   parseFhirBundle: Bundle,
   testData: TestData[]
 ): Promise<{ result: NotarisationResult; directUrl: string }> => {
@@ -94,28 +94,26 @@ export const notarisePdt = async (
 };
 
 export const main: Handler = async (
-  event: ValidatedAPIGatewayProxyEvent<WrappedDocument<HealthCertDocument>>
+  event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2Document>>
 ): Promise<APIGatewayProxyResult> => {
   trace("config", config);
   const reference = uuid();
-  const certificate = event.body;
+  const wrappedDocument = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
 
   /* 1. Validation */
   let parseFhirBundle: Bundle;
-  let data: HealthCertDocument;
+  let data: PDTHealthCertV2Document; // The unwrapped document
   let testData: TestData[];
-  let documentType: string;
   try {
-    await validateV2Inputs(certificate);
-    data = getData(certificate);
+    await validateV2Inputs(wrappedDocument);
+    data = getData(wrappedDocument);
 
     // validate basic FhirBundle standard and parse FhirBundle
     parseFhirBundle = fhirHelper.parse(data.fhirBundle as R4.IBundle);
 
     // validate parsed FhirBundle data with specific healthcert type constraints
-    documentType = (data?.type ?? "").toUpperCase();
-    fhirHelper.hasRequiredFields(documentType, parseFhirBundle);
+    fhirHelper.hasRequiredFields(data.type, parseFhirBundle);
 
     // convert parsed Bundle to testdata[]
     testData = getTestDataFromParseFhirBundle(parseFhirBundle);
@@ -143,7 +141,7 @@ export const main: Handler = async (
   try {
     ({ result, directUrl } = await notarisePdt(
       reference,
-      certificate,
+      wrappedDocument,
       parseFhirBundle as Bundle,
       testData as TestData[]
     ));

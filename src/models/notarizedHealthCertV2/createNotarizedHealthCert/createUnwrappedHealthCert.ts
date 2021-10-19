@@ -2,19 +2,22 @@ import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { notarise } from "@govtechsg/oa-schemata";
 import { Bundle } from "../../fhir/types";
 import { config } from "../../../config";
-import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
+import {
+  PDTHealthCertV2Document,
+  NotarisedPDTHealthCertV2Document,
+} from "../../../types";
 
 const { didSigner } = config;
 
 export const createUnwrappedDocument = (
-  certificate: WrappedDocument<HealthCertDocument>,
+  certificate: WrappedDocument<PDTHealthCertV2Document>,
   parseFhirBundle: Bundle,
   reference: string,
   storedUrl: string,
   signedEuHealthCerts?: notarise.SignedEuHealthCert[]
-): NotarizedHealthCert => {
+): NotarisedPDTHealthCertV2Document => {
   const certificateData =
-    getData<WrappedDocument<HealthCertDocument>>(certificate);
+    getData<WrappedDocument<PDTHealthCertV2Document>>(certificate);
   const passportNumber = parseFhirBundle.patient?.passportNumber;
   const b64Certificate = Buffer.from(JSON.stringify(certificate)).toString(
     "base64"
