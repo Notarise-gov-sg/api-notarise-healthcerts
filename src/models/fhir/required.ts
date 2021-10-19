@@ -1,5 +1,6 @@
 import validate from "validate.js";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
+import _ from "lodash";
 import { DocumentInvalidError } from "../../common/error";
 import { Bundle } from "./types";
 
@@ -149,30 +150,38 @@ const getPcrConstraints = (observationCount: number) => {
 
 type Type = pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[];
 export const hasRequiredFields = (type: Type, bundle: Bundle) => {
+  const { PdtTypes } = pdtHealthCertV2;
+  const supportedMultiType = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
+  const isValidMultiType = _.isEqual(
+    _.sortBy(supportedMultiType),
+    _.sortBy(type)
+  );
+
   let constraints = getCommonConstraints(bundle.observations.length);
-  switch (type) {
-    case pdtHealthCertV2.PdtTypes.Art:
-      constraints = {
-        ...constraints,
-        ...getArtConstraints(bundle.observations.length),
-      };
-      break;
 
-    // currently PCR and SER have same validation constraint for now
-    case pdtHealthCertV2.PdtTypes.Pcr:
-    case pdtHealthCertV2.PdtTypes.Ser:
-    case [pdtHealthCertV2.PdtTypes.Pcr, pdtHealthCertV2.PdtTypes.Ser]: // When document is a multi type (i.e. ["PCR", "SER"])
-    case [pdtHealthCertV2.PdtTypes.Ser, pdtHealthCertV2.PdtTypes.Pcr]: // When document is a multi type (i.e. ["PCR", "SER"])
-      constraints = {
-        ...constraints,
-        ...getPcrConstraints(bundle.observations.length),
-      };
-      break;
-
-    default:
-      throw new DocumentInvalidError(
-        `unable to check for required fields of unknown type: ${type}`
-      );
+  if (type === PdtTypes.Art) {
+    // ART HealthCert
+    constraints = {
+      ...constraints,
+      ...getArtConstraints(bundle.observations.length),
+    };
+  } else if (
+    // PCR, SER or PCR + SER HealthCert
+    // Currently PCR and SER have the same validation constraint
+    type === PdtTypes.Pcr ||
+    type === PdtTypes.Ser ||
+    isValidMultiType
+  ) {
+    constraints = {
+      ...constraints,
+      ...getPcrConstraints(bundle.observations.length),
+    };
+  } else {
+    throw new DocumentInvalidError(
+      `Notarise does not support endorsement of this HealthCert Type: ${JSON.stringify(
+        type
+      )}`
+    );
   }
 
   const errors = validate(bundle, constraints);
