@@ -225,7 +225,7 @@ custom:
         evaluationPeriods: 5
       functionDuration:
         treatMissingData: notBreaching
-        threshold: 30
+        threshold: 30000
         evaluationPeriods: 5
     dashboards: true
     stages:
