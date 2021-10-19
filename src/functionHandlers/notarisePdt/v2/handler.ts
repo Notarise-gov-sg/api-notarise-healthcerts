@@ -158,35 +158,38 @@ export const main: Handler = async (
     };
   }
 
-  /* Send SPM notification to recipient (Only if enabled) */
+  /* Send to SPM notification/wallet */
   if (config.notification.enabled) {
     try {
-      await notifyPdt({
-        url: result.url,
-        nric: parseFhirBundle.patient?.nricFin,
-        passportNumber: parseFhirBundle.patient?.passportNumber,
-        testData,
-        validFrom: data.validFrom,
-      });
+      const testType =
+        testData[0].swabTypeCode === config.swabTestTypes.PCR
+          ? "PCR"
+          : testData[0].swabTypeCode === config.swabTestTypes.ART
+          ? "ART"
+          : null;
+      if (config.healthCertNotification.enabled && testType) {
+        /* [NEW] Send HealthCert to SPM wallet for PCR | ART (Only if enabled) */
+        await notifyHealthCert({
+          uin: parseFhirBundle.patient?.nricFin || "",
+          version: "2.0",
+          type: testType,
+          url: directUrl,
+          expiry: result.ttl,
+        });
+      } else {
+        /* Send SPM notification to recipient (Only if enabled) */
+        await notifyPdt({
+          url: result.url,
+          nric: parseFhirBundle.patient?.nricFin,
+          passportNumber: parseFhirBundle.patient?.passportNumber,
+          testData,
+          validFrom: data.validFrom,
+        });
+      }
     } catch (e) {
-      errorWithRef(
-        `SPM notification error: ${e instanceof Error ? e.message : e}`
-      );
-    }
-  }
-
-  /* [NEW] Send HealthCert to SPM wallet (Only if enabled) */
-  if (config.healthCertNotification.enabled) {
-    try {
-      await notifyHealthCert({
-        uin: parseFhirBundle.patient?.nricFin || "",
-        version: "2.0",
-        type: documentType,
-        url: directUrl,
-        expiry: result.ttl,
-      });
-    } catch (e) {
-      errorWithRef(`SPM wallet error: ${e instanceof Error ? e.message : e}`);
+      if (e instanceof Error) {
+        errorWithRef(`SPM notification/wallet error: ${e.message}`);
+      }
     }
   }
 
