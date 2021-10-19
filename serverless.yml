@@ -97,7 +97,7 @@ functions:
       - http:
           path: /v1/notarise/pdt
           method: post
-          private: true 
+          private: true
   notarisePdtV2:
     environment:
       STAGE: ${self:provider.stage}
@@ -147,11 +147,11 @@ custom:
   # ideally you can just nest one inside. But no!
   # ssm failure returns "undefined" while env failure returns ""
   vpcDiscovery:
-    vpcName: '${env:VPC_NAME}'
+    vpcName: "${env:VPC_NAME}"
     subnetNames: # optional if securityGroupNames are specified
-        - 'notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*'
+      - "notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*"
     securityGroupNames:
-        - 'default'
+      - "default"
   subnetEnvName:
     stg: "stg"
     production: "prd"
