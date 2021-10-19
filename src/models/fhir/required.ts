@@ -147,13 +147,11 @@ const getPcrConstraints = (observationCount: number) => {
   return pcrConstraints;
 };
 
-export const hasRequiredFields = (
-  type: pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[],
-  bundle: Bundle
-) => {
+type Type = pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[];
+export const hasRequiredFields = (type: Type, bundle: Bundle) => {
   let constraints = getCommonConstraints(bundle.observations.length);
   switch (type) {
-    case "ART":
+    case pdtHealthCertV2.PdtTypes.Art:
       constraints = {
         ...constraints,
         ...getArtConstraints(bundle.observations.length),
@@ -161,16 +159,14 @@ export const hasRequiredFields = (
       break;
 
     // currently PCR and SER have same validation constraint for now
-    case "PCR":
-    case "SER":
+    case pdtHealthCertV2.PdtTypes.Pcr:
+    case pdtHealthCertV2.PdtTypes.Ser:
+    case [pdtHealthCertV2.PdtTypes.Pcr, pdtHealthCertV2.PdtTypes.Ser]: // When document is a multi type (i.e. ["PCR", "SER"])
+    case [pdtHealthCertV2.PdtTypes.Ser, pdtHealthCertV2.PdtTypes.Pcr]: // When document is a multi type (i.e. ["PCR", "SER"])
       constraints = {
         ...constraints,
         ...getPcrConstraints(bundle.observations.length),
       };
-      break;
-
-    case ["PCR", "SER"]:
-      // TODO: Implement validation for multi-observation
       break;
 
     default:
