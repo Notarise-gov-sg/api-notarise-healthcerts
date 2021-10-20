@@ -212,4 +212,5 @@ export interface NotarisationResult {
   >;
   ttl: number;
   url: string;
+  gpayCovidCardUrl?: string;
 }
