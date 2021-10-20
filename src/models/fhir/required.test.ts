@@ -1,8 +1,11 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
+import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { DetailedCodedError } from "../../common/error";
 import fhirHelper from "./index";
 import exampleHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 import exampleArtHealthCertWithNric from "../../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
+
+const { PdtTypes } = pdtHealthCertV2;
 
 describe("validatePCRHealthCertData", () => {
   test("should pass for valid PCR healthcert", () => {
@@ -10,7 +13,7 @@ describe("validatePCRHealthCertData", () => {
       exampleHealthCertWithNric.fhirBundle as R4.IBundle
     );
     expect(() =>
-      fhirHelper.hasRequiredFields("PCR", parseFhirBundle)
+      fhirHelper.hasRequiredFields(PdtTypes.Pcr, parseFhirBundle)
     ).not.toThrow();
   });
   test("should pass for valid SER healthcert", () => {
@@ -18,7 +21,7 @@ describe("validatePCRHealthCertData", () => {
       exampleHealthCertWithNric.fhirBundle as R4.IBundle
     );
     expect(() =>
-      fhirHelper.hasRequiredFields("SER", parseFhirBundle)
+      fhirHelper.hasRequiredFields(PdtTypes.Ser, parseFhirBundle)
     ).not.toThrow();
   });
   test("should throw error if PCR healthcert not have Accredited Laboratory", () => {
@@ -27,7 +30,7 @@ describe("validatePCRHealthCertData", () => {
       exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
     );
     try {
-      fhirHelper.hasRequiredFields("PCR", parseFhirBundle);
+      fhirHelper.hasRequiredFields(PdtTypes.Pcr, parseFhirBundle);
     } catch (e) {
       if (e instanceof DetailedCodedError) {
         thrownError = `${e.title}, ${e.messageBody}`;
@@ -44,7 +47,7 @@ describe("validateARTHealthCertData", () => {
       exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
     );
     expect(() =>
-      fhirHelper.hasRequiredFields("ART", parseFhirBundle)
+      fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle)
     ).not.toThrow();
   });
   test("should throw error if ART healthcert not have device identifier", () => {
@@ -55,7 +58,7 @@ describe("validateARTHealthCertData", () => {
       malformedHealthCert.fhirBundle as R4.IBundle
     );
     try {
-      fhirHelper.hasRequiredFields("ART", parseFhirBundle);
+      fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
       if (e instanceof DetailedCodedError) {
         thrownError = `${e.title}, ${e.messageBody}`;

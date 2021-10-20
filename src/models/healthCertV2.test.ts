@@ -1,7 +1,7 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import exampleHealthCertWithNric from "../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 import exampleHealthCertWithoutNric from "../../test/fixtures/v2/pdt_pcr_without_nric_unwrapped.json";
-import exampleMultiResultHealthCert from "../../test/fixtures/v2/pdt_ser_multi_result_unwrapped.json";
+import exampleMultiResultHealthCert from "../../test/fixtures/v2/pdt_pcr_ser_multi_result_unwrapped.json";
 import exampleArtHealthCertWithNric from "../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
 import { getTestDataFromParseFhirBundle, parseDateTime } from "./healthCertV2";
 import fhirHelper from "./fhir";
@@ -364,7 +364,7 @@ describe("src/models/healthCertV2", () => {
             patientName: "Tan Chen Chen",
             nationality: "Singaporean",
             gender: "She",
-            performerMcr: "123214",
+            performerMcr: "123456",
             performerName: "Dr Michael Lim",
             provider: "MacRitchie Medical Clinic",
             swabCollectionDate: swabCollectionDate1,
@@ -377,7 +377,7 @@ describe("src/models/healthCertV2", () => {
               "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
           },
           {
-            lab: "MacRitchie Laboratory2",
+            lab: "MacRitchie Laboratory",
             nric: "S9098989Z",
             observationDate: observationDate2,
             passportNumber: "E7831177G",
@@ -385,17 +385,17 @@ describe("src/models/healthCertV2", () => {
             patientName: "Tan Chen Chen",
             nationality: "Singaporean",
             gender: "She",
-            performerMcr: "123214",
+            performerMcr: "123456",
             performerName: "Dr Michael Lim",
-            provider: "MacRitchie Medical Clinic2",
+            provider: "MacRitchie Medical Clinic",
             swabCollectionDate: swabCollectionDate2,
-            swabType: "Nasopharyngeal swab",
-            swabTypeCode: "258500001",
+            swabType: "Venipuncture",
+            swabTypeCode: "22778000",
             testResult: "Negative",
             testResultCode: "260385009",
-            testCode: "94531-1",
+            testCode: "94661-6",
             testType:
-              "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection",
+              "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
           },
         ]);
       });

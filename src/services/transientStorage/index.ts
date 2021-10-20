@@ -1,6 +1,9 @@
 import { Record, String, Number, Runtype } from "runtypes";
 import axios from "axios";
-import { SignedNotarizedHealthCert } from "../../types";
+import {
+  SignedNotarisedPDTHealthCertV2Document,
+  SignedNotarizedHealthCert,
+} from "../../types";
 import { config } from "../../config";
 import { getLogger } from "../../common/logger";
 
@@ -84,7 +87,7 @@ export const getQueueNumber = async (reference: string) => {
 };
 
 export const uploadDocument = async (
-  document: SignedNotarizedHealthCert,
+  document: SignedNotarizedHealthCert | SignedNotarisedPDTHealthCertV2Document,
   id: string,
   reference: string
 ) => {
