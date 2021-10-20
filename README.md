@@ -108,6 +108,7 @@ Copy .env.example into .env and replace the values needed:
 - SIGNING_EU_QR_NAME: Display name of the certification issuer
 - SIGNING_EU_QR_PUBLIC_KEY: Public key of signing offline QR with single line string and include `\n` for newline
 - SIGNING_EU_QR_PRIVATE_KEY: Private key of signing offline QR with single line string and include `\n` for newline
+- GPAY_COVID_CARD_ENABLED: Feature toggle for Google Pay COVID Cards
 
 ## Change port
 
