@@ -80,6 +80,7 @@ const generateConfig = () => ({
     enabled: isTruthy(process.env.HEALTH_CERT_NOTIFICATION_ENABLED),
   },
   isOfflineQrEnabled: !!process.env.OFFLINE_QR_ENABLED,
+  isGPayCovidCardEnabled: !!process.env.GPAY_COVID_CARD_ENABLED,
   swabTestTypes: {
     ART: "697989009",
     PCR: "258500001",
