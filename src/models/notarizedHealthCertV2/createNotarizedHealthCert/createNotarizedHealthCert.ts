@@ -42,7 +42,7 @@ export const createNotarizedHealthCert = async (
     signedEuHealthCerts
   );
   const wrappedNotarisedDocument = wrapDocument(unwrappedNotarisedDocument);
-  const traceWithRef = trace.extend(`reference: $[reference}`);
+  const traceWithRef = trace.extend(`reference: ${reference}`);
   traceWithRef("Document successfully notarised");
   return signWrappedDocument(wrappedNotarisedDocument);
 };
