@@ -32,7 +32,7 @@ export const isoToDateOnlyString = (iso = ""): string =>
      * Should not respect provided timezone. Instead, should force "UTC" timezone
      * because this generated date object is always going to be ...T00:00:00.000Z
      * Explanation: https://github.com/Notarise-gov-sg/healthcert-renderer/pull/52
-     **/
+     * */
     timeZone: "UTC",
     month: "long",
     day: "numeric",

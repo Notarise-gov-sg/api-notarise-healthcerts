@@ -25,7 +25,7 @@ const genGPayCovidCardUrl = (
 
   const basicDetails: BasicDetails = {
     iss: gpaySigner.issuer,
-    uuid: uuid,
+    uuid,
     issuerId: gpaySigner.issuerId,
     title: "COVID-19 Test Result Card",
     qr: storedUrl,
@@ -40,8 +40,9 @@ const genGPayCovidCardUrl = (
       reportDateTime: isoToLocaleString(o.observation.effectiveDateTime), // I.e. Observation effective datetime
       provider: o.organization.lhp.fullName, // E.g. "MacRitchie Medical Clinic"
       contactInfo: o.organization.lhp.address.text, // E.g. "MacRitchie Hospital, Thomson Road, Singapore 123000"
-      testCode: o.observation.testType.code!, // E.g. "94531-1"
-      testDescription: o.observation.testType.display!, // E.g. "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
+      testCode: o.observation.testType.code as TestingRecord["testCode"], // E.g. "94531-1"
+      testDescription: o.observation.testType
+        .display as TestingRecord["testDescription"], // E.g. "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
       testResultCode: o.observation.result
         .code as TestingRecord["testResultCode"], // E.g. "260385009"
       testResultDescription: o.observation.result
