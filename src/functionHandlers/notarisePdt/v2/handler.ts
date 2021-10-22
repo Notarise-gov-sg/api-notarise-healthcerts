@@ -31,6 +31,7 @@ import {
   createEuSignedTestQr,
   createEuTestCert,
 } from "../../../models/euHealthCert";
+import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 
 const { trace, error } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
@@ -194,8 +195,11 @@ export const main: Handler = async (
   /* Generate Google Pay COVID Card URL (Only if enabled) */
   if (config.isGPayCovidCardEnabled) {
     try {
-      // TODO: Placeholder value. To add actual implementation once KMS is setup.
-      result.gpayCovidCardUrl = `https://pay.google.com/gp/v/save/xxx`;
+      result.gpayCovidCardUrl = genGPayCovidCardUrl(
+        parseFhirBundle,
+        reference,
+        result.url
+      );
     } catch (e) {
       errorWithRef(
         `GPay COVID Card error: ${e instanceof Error ? e.message : e}`

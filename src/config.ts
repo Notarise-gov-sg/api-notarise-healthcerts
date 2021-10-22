@@ -57,6 +57,21 @@ const getEuSigner = () => ({
   ),
 });
 
+const getGPayCovidCardSigner = () => ({
+  issuer: getDefaultIfUndefined(
+    process.env.GPAY_COVID_CARD_ISSUER,
+    "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com"
+  ),
+  issuerId: getDefaultIfUndefined(
+    process.env.GPAY_COVID_CARD_ISSUER_ID,
+    "3388000000016843803"
+  ),
+  privateKey: getDefaultIfUndefined(
+    process.env.GPAY_COVID_CARD_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    ""
+  ),
+});
+
 const generateConfig = () => ({
   documentName: "HealthCert",
   isOffline: isTruthy(process.env.IS_OFFLINE),
@@ -64,6 +79,7 @@ const generateConfig = () => ({
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
+  gpaySigner: getGPayCovidCardSigner(),
   env: process.env.NODE_ENV,
   network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "ropsten"),
   isValidationEnabled: !(
