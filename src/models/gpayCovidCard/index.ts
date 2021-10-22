@@ -27,7 +27,7 @@ const genGPayCovidCardUrl = (
     iss: gpaySigner.issuer,
     uuid,
     issuerId: gpaySigner.issuerId,
-    title: "COVID-19 Test Result Card",
+    title: "COVID-19 Test Result", // Hard-coded for api-notarise-healthcerts
     qr: storedUrl,
     patientDetails: gpay.genPatientDetails(patientDetails),
     // expiration: "2021-10-01",
