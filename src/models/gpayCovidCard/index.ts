@@ -4,7 +4,6 @@ import GPay, {
   TestingRecord,
 } from "@notarise-gov-sg/gpay-covid-cards";
 import { Bundle } from "../../models/fhir/types";
-
 import { isoToDateOnlyString, isoToLocaleString } from "../../common/datetime";
 
 const genGPayCovidCardUrl = (
