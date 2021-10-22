@@ -100,15 +100,18 @@ npm run test
 
 Copy .env.example into .env and replace the values needed:
 
-- TRANSIENT_STORAGE_URL: to your local or staging storage API
-- SIGNING_DID: check with ops
-- SIGNING_DID_KEY: check wth ops. For ethereum DID, it's equal to `SIGNING_DID` prepended with `#controller`
-- SIGNING_DID_PRIVATE_KEY: check with ops
-- OFFLINE_QR_ENABLED: Feature toggle for Offline Qr certification
-- SIGNING_EU_QR_NAME: Display name of the certification issuer
-- SIGNING_EU_QR_PUBLIC_KEY: Public key of signing offline QR with single line string and include `\n` for newline
-- SIGNING_EU_QR_PRIVATE_KEY: Private key of signing offline QR with single line string and include `\n` for newline
-- GPAY_COVID_CARD_ENABLED: Feature toggle for Google Pay COVID Cards
+- `TRANSIENT_STORAGE_URL`: to your local or staging storage API
+- `SIGNING_DID`: check with ops
+- `SIGNING_DID_KEY`: check wth ops. For ethereum DID, it's equal to `SIGNING_DID` prepended with `#controller`
+- `SIGNING_DID_PRIVATE_KEY`: check with ops
+- `OFFLINE_QR_ENABLED`: Feature toggle for Offline Qr certification
+- `SIGNING_EU_QR_NAME`: Display name of the certification issuer
+- `SIGNING_EU_QR_PUBLIC_KEY`: Public key of signing offline QR with single line string and include `\n` for newline
+- `SIGNING_EU_QR_PRIVATE_KEY`: Private key of signing offline QR with single line string and include `\n` for newline
+- `GPAY_COVID_CARD_ENABLED`: Feature toggle for Google Pay COVID Cards
+- `GPAY_COVID_CARD_ISSUER`: Issuer service account
+- `GPAY_COVID_CARD_ISSUER_ID`: Issuer ID
+- `GPAY_COVID_CARD_PRIVATE_KEY`: Private key for signing JWT
 
 ## Change port
 
