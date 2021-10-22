@@ -70,22 +70,24 @@ const getGPayCovidCardSigner = async () => {
     privKeyValue = process.env.GPAY_COVID_CARD_PRIVATE_KEY
       ? process.env.GPAY_COVID_CARD_PRIVATE_KEY.replace(/\\n/g, "\n")
       : await new Promise((resolve, reject) => {
-          const privKeyName = "GPAY_COVID_CARD_PRIVATE_KEY";
+          const ssmName =
+            "/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY";
 
-          trace(`Attempting to retrieve ${privKeyName} from SSM...`);
+          trace(`Attempting to retrieve ${ssmName} from SSM...`);
           ssm.getParameter(
             {
-              Name: privKeyName,
+              Name: ssmName,
               WithDecryption: true,
             },
             (err, data) => {
-              if (err)
-                reject(
-                  new Error(
-                    `Unable to obtain ${privKeyName} from SSM. If you are developing locally, remember to set ${privKeyName} in the local .env file.`
-                  )
+              if (err) {
+                error(
+                  `Unable to obtain ${ssmName} from SSM. If you are developing locally, remember to set ${ssmName} in the local .env file.`
                 );
-              else resolve(data.Parameter?.Value ?? "");
+                reject(err);
+              } else {
+                resolve(data.Parameter?.Value ?? "");
+              }
             }
           );
         });
