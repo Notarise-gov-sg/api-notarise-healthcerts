@@ -31,6 +31,7 @@ import {
   createEuSignedTestQr,
   createEuTestCert,
 } from "../../../models/euHealthCert";
+import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 
 const { trace, error } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
@@ -39,7 +40,7 @@ const { trace, error } = getLogger(
 export const notarisePdt = async (
   reference: string,
   certificate: WrappedDocument<PDTHealthCertV2Document>,
-  parseFhirBundle: Bundle,
+  parsedFhirBundle: Bundle,
   testData: TestData[]
 ): Promise<{ result: NotarisationResult; directUrl: string }> => {
   const errorWithRef = trace.extend(`reference:${reference}`);
@@ -76,7 +77,7 @@ export const notarisePdt = async (
 
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
-    parseFhirBundle,
+    parsedFhirBundle,
     reference,
     storedUrl,
     signedEuHealthCerts
@@ -102,7 +103,7 @@ export const main: Handler = async (
   const errorWithRef = error.extend(`reference:${reference}`);
 
   /* 1. Validation */
-  let parseFhirBundle: Bundle;
+  let parsedFhirBundle: Bundle;
   let data: PDTHealthCertV2Document; // The unwrapped document
   let testData: TestData[];
   try {
@@ -110,13 +111,13 @@ export const main: Handler = async (
     data = getData(wrappedDocument);
 
     // validate basic FhirBundle standard and parse FhirBundle
-    parseFhirBundle = fhirHelper.parse(data.fhirBundle as R4.IBundle);
+    parsedFhirBundle = fhirHelper.parse(data.fhirBundle as R4.IBundle);
 
     // validate parsed FhirBundle data with specific healthcert type constraints
-    fhirHelper.hasRequiredFields(data.type, parseFhirBundle);
+    fhirHelper.hasRequiredFields(data.type, parsedFhirBundle);
 
     // convert parsed Bundle to testdata[]
-    testData = getTestDataFromParseFhirBundle(parseFhirBundle);
+    testData = getTestDataFromParseFhirBundle(parsedFhirBundle);
   } catch (e) {
     errorWithRef(
       `Error while validating certificate: ${
@@ -142,7 +143,7 @@ export const main: Handler = async (
     ({ result, directUrl } = await notarisePdt(
       reference,
       wrappedDocument,
-      parseFhirBundle as Bundle,
+      parsedFhirBundle as Bundle,
       testData as TestData[]
     ));
   } catch (e) {
@@ -168,7 +169,7 @@ export const main: Handler = async (
       if (config.healthCertNotification.enabled && testType) {
         /* [NEW] Send HealthCert to SPM wallet for PCR | ART (Only if enabled) */
         await notifyHealthCert({
-          uin: parseFhirBundle.patient?.nricFin || "",
+          uin: parsedFhirBundle.patient?.nricFin || "",
           version: "2.0",
           type: testType,
           url: directUrl,
@@ -178,8 +179,8 @@ export const main: Handler = async (
         /* Send SPM notification to recipient (Only if enabled) */
         await notifyPdt({
           url: result.url,
-          nric: parseFhirBundle.patient?.nricFin,
-          passportNumber: parseFhirBundle.patient?.passportNumber,
+          nric: parsedFhirBundle.patient?.nricFin,
+          passportNumber: parsedFhirBundle.patient?.passportNumber,
           testData,
           validFrom: data.validFrom,
         });
@@ -194,8 +195,11 @@ export const main: Handler = async (
   /* Generate Google Pay COVID Card URL (Only if enabled) */
   if (config.isGPayCovidCardEnabled) {
     try {
-      // TODO: Placeholder value. To add actual implementation once KMS is setup.
-      result.gpayCovidCardUrl = `https://pay.google.com/gp/v/save/xxx`;
+      result.gpayCovidCardUrl = genGPayCovidCardUrl(
+        parsedFhirBundle,
+        reference,
+        result.url
+      );
     } catch (e) {
       errorWithRef(
         `GPay COVID Card error: ${e instanceof Error ? e.message : e}`
