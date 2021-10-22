@@ -82,7 +82,7 @@ const getGPayCovidCardSigner = async () => {
             (err, data) => {
               if (err) {
                 error(
-                  `Unable to obtain ${ssmName} from SSM. If you are developing locally, remember to set ${ssmName} in the local .env file.`
+                  `Unable to obtain ${ssmName} from SSM. If you are developing locally, remember to set GPAY_COVID_CARD_PRIVATE_KEY in the local .env file.`
                 );
                 reject(err);
               } else {
