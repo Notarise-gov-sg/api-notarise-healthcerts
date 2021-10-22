@@ -60,11 +60,11 @@ const getEuSigner = () => ({
 const getGPayCovidCardSigner = () => ({
   issuer: getDefaultIfUndefined(
     process.env.GPAY_COVID_CARD_ISSUER,
-    "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com"
+    "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com" // Staging Issuer
   ),
   issuerId: getDefaultIfUndefined(
     process.env.GPAY_COVID_CARD_ISSUER_ID,
-    "3388000000016843803"
+    "3388000000018787306" // Staging Issuer ID
   ),
   privateKey: getDefaultIfUndefined(
     process.env.GPAY_COVID_CARD_PRIVATE_KEY?.replace(/\\n/g, "\n"),
