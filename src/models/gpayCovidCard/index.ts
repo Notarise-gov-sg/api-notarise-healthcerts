@@ -4,17 +4,17 @@ import GPay, {
   TestingRecord,
 } from "@notarise-gov-sg/gpay-covid-cards";
 import { Bundle } from "../../models/fhir/types";
-import { config } from "../../config";
+
 import { isoToDateOnlyString, isoToLocaleString } from "../../common/datetime";
 
-const { gpaySigner } = config;
-const gpay = GPay(gpaySigner.privateKey);
-
 const genGPayCovidCardUrl = (
+  gpaySigner: { issuer: string; issuerId: string; privateKey: string },
   parsedFhirBundle: Bundle,
   uuid: string,
   storedUrl: string
 ) => {
+  const gpay = GPay(gpaySigner.privateKey);
+
   const patientDetails: PatientDetails = {
     dateOfBirth: isoToDateOnlyString(parsedFhirBundle.patient.birthDate),
     patientId: parsedFhirBundle.patient.passportNumber,

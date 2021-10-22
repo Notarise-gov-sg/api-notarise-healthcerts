@@ -1,3 +1,9 @@
+import SSM from "aws-sdk/clients/ssm";
+import { getLogger } from "./common/logger";
+
+const ssm = new SSM();
+const { trace, error } = getLogger("src/config.ts");
+
 const isTruthy = (val?: string) => val === "true" || val === "True";
 
 // this function exists because serverless gives a string of "undefined" for unpopulated values
@@ -57,20 +63,49 @@ const getEuSigner = () => ({
   ),
 });
 
-const getGPayCovidCardSigner = () => ({
-  issuer: getDefaultIfUndefined(
-    process.env.GPAY_COVID_CARD_ISSUER,
-    "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com" // Staging Issuer
-  ),
-  issuerId: getDefaultIfUndefined(
-    process.env.GPAY_COVID_CARD_ISSUER_ID,
-    "3388000000018787306" // Staging Issuer ID
-  ),
-  privateKey: getDefaultIfUndefined(
-    process.env.GPAY_COVID_CARD_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    ""
-  ),
-});
+const getGPayCovidCardSigner = async () => {
+  let privKeyValue: string;
+
+  try {
+    privKeyValue = process.env.GPAY_COVID_CARD_PRIVATE_KEY
+      ? process.env.GPAY_COVID_CARD_PRIVATE_KEY.replace(/\\n/g, "\n")
+      : await new Promise((resolve, reject) => {
+          const privKeyName = "GPAY_COVID_CARD_PRIVATE_KEY";
+
+          trace(`Attempting to retrieve ${privKeyName} from SSM...`);
+          ssm.getParameter(
+            {
+              Name: privKeyName,
+              WithDecryption: true,
+            },
+            (err, data) => {
+              if (err)
+                reject(
+                  new Error(
+                    `Unable to obtain ${privKeyName} from SSM. If you are developing locally, remember to set ${privKeyName} in the local .env file.`
+                  )
+                );
+              else resolve(data.Parameter?.Value ?? "");
+            }
+          );
+        });
+  } catch (e) {
+    error(e);
+    privKeyValue = "";
+  }
+
+  return {
+    issuer: getDefaultIfUndefined(
+      process.env.GPAY_COVID_CARD_ISSUER,
+      "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com" // Staging Issuer
+    ),
+    issuerId: getDefaultIfUndefined(
+      process.env.GPAY_COVID_CARD_ISSUER_ID,
+      "3388000000018787306" // Staging Issuer ID
+    ),
+    privateKey: privKeyValue,
+  };
+};
 
 const generateConfig = () => ({
   documentName: "HealthCert",
@@ -79,7 +114,7 @@ const generateConfig = () => ({
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
-  gpaySigner: getGPayCovidCardSigner(),
+  gpaySigner: getGPayCovidCardSigner,
   env: process.env.NODE_ENV,
   network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "ropsten"),
   isValidationEnabled: !(
