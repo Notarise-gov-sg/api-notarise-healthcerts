@@ -1,5 +1,5 @@
-import nationalities from "i18n-nationality";
-import englishNationalities from "i18n-nationality/langs/en.json";
+import nationalities from "@notarise-gov-sg/i18n-nationality";
+import englishNationalities from "@notarise-gov-sg/i18n-nationality/langs/en.json";
 
 nationalities.registerLocale(englishNationalities);
 
