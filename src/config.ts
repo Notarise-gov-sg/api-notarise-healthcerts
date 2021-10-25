@@ -64,36 +64,40 @@ const getEuSigner = () => ({
 });
 
 const getGPayCovidCardSigner = async () => {
-  let privKeyValue: string;
+  let privKeyValue = "";
 
-  try {
-    privKeyValue = process.env.GPAY_COVID_CARD_PRIVATE_KEY
-      ? process.env.GPAY_COVID_CARD_PRIVATE_KEY.replace(/\\n/g, "\n")
-      : await new Promise((resolve, reject) => {
-          const ssmName =
-            "/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY";
+  if (process.env.GPAY_COVID_CARD_PRIVATE_KEY) {
+    // Option 1: Retrieve from environment variable
+    privKeyValue = process.env.GPAY_COVID_CARD_PRIVATE_KEY.replace(
+      /\\n/g,
+      "\n"
+    );
+  } else {
+    // Option 2: Retrieve from SSM Parameter Store
+    privKeyValue = await new Promise((resolve, reject) => {
+      const ssmName =
+        "/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY";
 
-          trace(`Attempting to retrieve ${ssmName} from SSM...`);
-          ssm.getParameter(
-            {
-              Name: ssmName,
-              WithDecryption: true,
-            },
-            (err, data) => {
-              if (err) {
-                error(
-                  `Unable to obtain ${ssmName} from SSM. If you are developing locally, remember to set GPAY_COVID_CARD_PRIVATE_KEY in the local .env file.`
-                );
-                reject(err);
-              } else {
-                resolve(data.Parameter?.Value ?? "");
-              }
-            }
-          );
-        });
-  } catch (e) {
-    error(e);
-    privKeyValue = "";
+      trace(`Attempting to retrieve ${ssmName} from SSM...`);
+      ssm.getParameter(
+        {
+          Name: ssmName,
+          WithDecryption: true,
+        },
+        (err, data) => {
+          const value = data.Parameter?.Value;
+          if (err || !value) {
+            error(
+              `Unable to obtain ${ssmName} from SSM. If you are developing locally, remember to set GPAY_COVID_CARD_PRIVATE_KEY in the local .env file.`
+            );
+            reject(err);
+          } else {
+            trace(`Successfully retrieved ${ssmName} from SSM.`);
+            resolve(value.replace(/\\n/g, "\n"));
+          }
+        }
+      );
+    });
   }
 
   return {
