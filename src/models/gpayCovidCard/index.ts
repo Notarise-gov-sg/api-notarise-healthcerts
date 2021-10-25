@@ -34,7 +34,7 @@ const genGPayCovidCardUrl = (
 
   const testRecords = parsedFhirBundle.observations.map((o) =>
     gpay.genTestingRecord({
-      specimen: "", // E.g. "Nasopharyngeal swab"
+      specimen: o.specimen.swabType.display as TestingRecord["specimen"], // E.g. "Nasopharyngeal swab"
       administrationDateTime: isoToLocaleString(o.specimen.collectionDateTime), // I.e. Specimen collection datetime
       reportDateTime: isoToLocaleString(o.observation.effectiveDateTime), // I.e. Observation effective datetime
       provider: o.organization.lhp.fullName, // E.g. "MacRitchie Medical Clinic"
