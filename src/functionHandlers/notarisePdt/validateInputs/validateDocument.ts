@@ -111,13 +111,15 @@ export const validateV2Document = async (
       `Document should include a valid "version" attribute (e.g. "pdt-healthcert-v2.0")`
     );
 
-  // validate `validFrom` to be valid ISO 8601 date time (e.g. 2021-08-18T05:13:53.378Z)
+  // validate `validFrom` to be valid ISO 8601 date time (e.g. "2021-08-18T05:13:53.378Z" or "2021-10-25T00:00:00+08:00")
   if (
     !data.validFrom ||
-    !data.validFrom.match(/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z)$/)
+    !data.validFrom.match(
+      /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z)|(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+|-]\d{2}:\d{2})$/
+    )
   )
     throw new DocumentInvalidError(
-      `Document should include a valid "validFrom" attribute in ISO 8601 datetime value (e.g. "2021-08-18T05:13:53.378Z")`
+      `Document should include a valid "validFrom" attribute in ISO 8601 datetime value (e.g. "2021-08-18T05:13:53.378Z" or "2021-10-25T00:00:00+08:00")`
     );
 
   if (!data.fhirVersion || !data.fhirVersion.match(/(4.0.1)$/))
