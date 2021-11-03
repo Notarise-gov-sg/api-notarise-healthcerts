@@ -49,7 +49,7 @@ const getEuSigner = () => ({
   ),
 });
 
-const getGPayCovidCardSigner = async () => ({
+const getGPayCovidCardSigner = () => ({
   issuer: getDefaultIfUndefined(
     process.env.GPAY_COVID_CARD_ISSUER,
     "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com" // Staging Issuer
@@ -67,7 +67,7 @@ const generateConfig = () => ({
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
-  gpaySigner: getGPayCovidCardSigner,
+  gpaySigner: getGPayCovidCardSigner(),
   env: process.env.NODE_ENV,
   network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "ropsten"),
   isValidationEnabled: !(
