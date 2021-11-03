@@ -195,9 +195,8 @@ export const main: Handler = async (
   /* Generate Google Pay COVID Card URL (Only if enabled) */
   if (config.isGPayCovidCardEnabled) {
     try {
-      const gpaySigner = await config.gpaySigner();
       result.gpayCovidCardUrl = genGPayCovidCardUrl(
-        gpaySigner,
+        config.gpaySigner,
         parsedFhirBundle,
         reference,
         result.url
