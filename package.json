@@ -31,6 +31,7 @@
     "@middy/core": "^2.5.1",
     "@middy/http-error-handler": "^2.5.1",
     "@middy/http-json-body-parser": "^2.5.1",
+    "@middy/ssm": "^2.5.2",
     "@notarise-gov-sg/gpay-covid-cards": "^1.0.2",
     "@notarise-gov-sg/i18n-nationality": "^1.2.2",
     "@notarise-gov-sg/sns-notify-recipients": "^1.3.0",
