@@ -27,13 +27,9 @@ provider:
     - Effect: Allow
       Action: ["kms:GenerateDataKey"]
       Resource: "arn:aws:kms:${self:provider.region}:${self:custom.accountId}:key/${env:SNS_KMS_KEY_ID, 'PLACEHOLDER'}"
-    - Effect: "Allow"
-      Action:
-        - ssm:GetParameters
-      Resource:
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/SIGNING_EU_QR_PRIVATE_KEY"
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/SIGNING_EU_QR_PUBLIC_KEY"
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY"
+    - Effect: Allow
+      Action: ["ssm:GetParameter"]
+      Resource: "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY"
     - Effect: Allow
       Action: ["sns:Publish"]
       Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:healthcert"
@@ -199,6 +195,8 @@ custom:
     GPAY_COVID_CARD_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER, ""}
     GPAY_COVID_CARD_ISSUER_ID: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER_ID, ""}
     SIGNING_EU_QR_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_NAME, ""}
+    SIGNING_EU_QR_PUBLIC_KEY: ${ssm:/serverless/SIGNING_EU_QR_PUBLIC_KEY, ""}
+    SIGNING_EU_QR_PRIVATE_KEY: ${ssm:/serverless/SIGNING_EU_QR_PRIVATE_KEY~true, ""}
     HEALTH_CERT_NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_ENABLED, ""}
     HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
   dotenv:
