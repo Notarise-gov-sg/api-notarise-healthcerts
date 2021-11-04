@@ -1,8 +1,14 @@
+import SSM from "aws-sdk/clients/ssm";
+import { getLogger } from "./common/logger";
+
+const ssm = new SSM();
+const { trace, error } = getLogger("src/config.ts");
+
 const isTruthy = (val?: string) => val === "true" || val === "True";
 
 // this function exists because serverless gives a string of "undefined" for unpopulated values
 // https://github.com/serverless/serverless/issues/3491
-export const getDefaultIfUndefined = (
+const getDefaultIfUndefined = (
   envVar: string | undefined,
   defaultValue: string
 ) => (!envVar || envVar === "undefined" ? defaultValue : envVar);
@@ -47,18 +53,65 @@ const getEuSigner = () => ({
     process.env.SIGNING_EU_QR_NAME,
     sampleSigningDidName
   ),
+  publicKey: getDefaultIfUndefined(
+    process.env.SIGNING_EU_QR_PUBLIC_KEY?.replace(/\\n/g, "\n"),
+    ""
+  ),
+  privateKey: getDefaultIfUndefined(
+    process.env.SIGNING_EU_QR_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    ""
+  ),
 });
 
-const getGPayCovidCardSigner = () => ({
-  issuer: getDefaultIfUndefined(
-    process.env.GPAY_COVID_CARD_ISSUER,
-    "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com" // Staging Issuer
-  ),
-  issuerId: getDefaultIfUndefined(
-    process.env.GPAY_COVID_CARD_ISSUER_ID,
-    "3388000000018787306" // Staging Issuer ID
-  ),
-});
+const getGPayCovidCardSigner = async () => {
+  let privKeyValue = "";
+
+  if (process.env.GPAY_COVID_CARD_PRIVATE_KEY) {
+    // Option 1: Retrieve from environment variable
+    privKeyValue = process.env.GPAY_COVID_CARD_PRIVATE_KEY.replace(
+      /\\n/g,
+      "\n"
+    );
+  } else {
+    // Option 2: Retrieve from SSM Parameter Store
+    privKeyValue = await new Promise((resolve, reject) => {
+      const ssmName =
+        "/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY";
+
+      trace(`Attempting to retrieve ${ssmName} from SSM...`);
+      ssm.getParameter(
+        {
+          Name: ssmName,
+          WithDecryption: true,
+        },
+        (err, data) => {
+          if (err || !data || !data.Parameter || !data.Parameter.Value) {
+            error(
+              `Unable to obtain ${ssmName} from SSM. If you are developing locally, remember to set GPAY_COVID_CARD_PRIVATE_KEY in the local .env file.`
+            );
+            reject(err);
+          } else {
+            const value = data.Parameter.Value;
+            trace(`Successfully retrieved ${ssmName} from SSM.`);
+            resolve(value.replace(/\\n/g, "\n"));
+          }
+        }
+      );
+    });
+  }
+
+  return {
+    issuer: getDefaultIfUndefined(
+      process.env.GPAY_COVID_CARD_ISSUER,
+      "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com" // Staging Issuer
+    ),
+    issuerId: getDefaultIfUndefined(
+      process.env.GPAY_COVID_CARD_ISSUER_ID,
+      "3388000000018787306" // Staging Issuer ID
+    ),
+    privateKey: privKeyValue,
+  };
+};
 
 const generateConfig = () => ({
   documentName: "HealthCert",
@@ -67,7 +120,7 @@ const generateConfig = () => ({
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
-  gpaySigner: getGPayCovidCardSigner(),
+  gpaySigner: getGPayCovidCardSigner,
   env: process.env.NODE_ENV,
   network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "ropsten"),
   isValidationEnabled: !(
