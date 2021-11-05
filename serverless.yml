@@ -267,7 +267,7 @@ resources:
         Namespace: AWS/ApiGateway
         MetricName: 4XXError
         Statistic: Sum
-        Threshold: 0
+        Threshold: 1
         ComparisonOperator: GreaterThanOrEqualToThreshold
         TreatMissingData: notBreaching
         DatapointsToAlarm: 4
@@ -285,8 +285,8 @@ resources:
         Namespace: AWS/ApiGateway
         MetricName: 5XXError
         Statistic: Sum
-        Threshold: 0
-        ComparisonOperator: GreaterThanThreshold
+        Threshold: 1
+        ComparisonOperator: GreaterThanOrEqualToThreshold
         TreatMissingData: notBreaching
         DatapointsToAlarm: 4
         EvaluationPeriods: 4
