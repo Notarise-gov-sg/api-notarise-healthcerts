@@ -88,7 +88,7 @@
     "prettier": "^2.4.0",
     "raw-loader": "^4.0.2",
     "serverless-attach-permission-boundary": "^0.1.0",
-    "serverless-offline": "^8.1.0",
+    "serverless-offline": "^8.2.0",
     "serverless-s3-local": "^0.6.20",
     "serverless-webpack": "^5.5.4",
     "supertest": "^6.1.6",
