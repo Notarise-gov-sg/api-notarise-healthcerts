@@ -236,11 +236,16 @@ custom:
     definitions:
       functionErrors:
         treatMissingData: notBreaching
-        evaluationPeriods: 5
+        threshold: 1
+        datapointsToAlarm: 4
+        evaluationPeriods: 4
+        period: 900
       functionDuration:
         treatMissingData: notBreaching
-        threshold: 30
-        evaluationPeriods: 5
+        threshold: 30000
+        datapointsToAlarm: 4
+        evaluationPeriods: 4
+        period: 900
     dashboards: true
     stages:
       - production
@@ -280,11 +285,11 @@ resources:
         MetricName: 4XXError
         Statistic: Sum
         Threshold: 0
-        ComparisonOperator: GreaterThanThreshold
+        ComparisonOperator: GreaterThanOrEqualToThreshold
         TreatMissingData: notBreaching
         DatapointsToAlarm: 4
-        EvaluationPeriods: 5
-        Period: 60
+        EvaluationPeriods: 4
+        Period: 900
         Dimensions:
           - Name: ApiName
             Value: "${self:provider.stackName}"
@@ -304,8 +309,8 @@ resources:
         ComparisonOperator: GreaterThanThreshold
         TreatMissingData: notBreaching
         DatapointsToAlarm: 4
-        EvaluationPeriods: 5
-        Period: 60
+        EvaluationPeriods: 4
+        Period: 900
         Dimensions:
           - Name: ApiName
             Value: "${self:provider.stackName}"
