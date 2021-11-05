@@ -9,6 +9,10 @@ export declare type ISSMOptions = {
   setToContext?: boolean;
 };
 
+/**
+ * IMPORTANT: Remember to populate the SSM Parameter Store (in all environments) before deployment as @middy/ssm will attempt to retrieve all parameters listed here.
+ * Missing parameters will cause the endpoint to fail.
+ */
 const ssmOptions: ISSMOptions = {
   fetchData: {
     SIGNING_EU_QR_PRIVATE_KEY: "/serverless/SIGNING_EU_QR_PRIVATE_KEY",
