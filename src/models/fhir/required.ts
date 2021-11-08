@@ -2,7 +2,7 @@ import validate from "validate.js";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import _ from "lodash";
 import { DocumentInvalidError } from "../../common/error";
-import { Bundle } from "./types";
+import { ParsedBundle } from "./types";
 
 const presenceValidator = { presence: { allowEmpty: false } };
 
@@ -149,7 +149,7 @@ const getPcrConstraints = (observationCount: number) => {
 };
 
 type Type = pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[];
-export const hasRequiredFields = (type: Type, bundle: Bundle) => {
+export const hasRequiredFields = (type: Type, bundle: ParsedBundle) => {
   const { PdtTypes } = pdtHealthCertV2;
   const supportedMultiType = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
   const isValidMultiType = _.isEqual(

@@ -1,6 +1,6 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { notarise } from "@govtechsg/oa-schemata";
-import { Bundle } from "../../fhir/types";
+import { ParsedBundle } from "../../fhir/types";
 import { config } from "../../../config";
 import {
   PDTHealthCertV2Document,
@@ -11,7 +11,7 @@ const { didSigner } = config;
 
 export const createUnwrappedDocument = (
   certificate: WrappedDocument<PDTHealthCertV2Document>,
-  parseFhirBundle: Bundle,
+  parseFhirBundle: ParsedBundle,
   reference: string,
   storedUrl: string,
   signedEuHealthCerts?: notarise.SignedEuHealthCert[]

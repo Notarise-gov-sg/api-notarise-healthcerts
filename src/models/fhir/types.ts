@@ -1,6 +1,6 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 
-export interface Patient {
+export interface ParsedPatient {
   fullName: string;
   gender?: R4.PatientGenderKind;
   birthDate: string;
@@ -9,13 +9,13 @@ export interface Patient {
   nricFin?: string;
 }
 
-export interface Specimen {
+export interface ParsedSpecimen {
   deviceResourceUuid?: string;
   swabType: R4.ICoding;
   collectionDateTime: string;
 }
 
-export interface Observation {
+export interface ParsedObservation {
   specimenResourceUuid: string;
   practitionerResourceUuid: string;
   organizationLhpResourceUuid: string;
@@ -28,13 +28,13 @@ export interface Observation {
   status: R4.ObservationStatusKind;
 }
 
-export interface Practitioner {
+export interface ParsedPractitioner {
   fullName: string;
   mcr: string;
   organizationMohResourceUuid: string;
 }
 
-export interface Organization {
+export interface ParsedOrganization {
   fullName: string;
   type: R4.ICoding;
   url: string;
@@ -46,20 +46,20 @@ export interface Organization {
   };
 }
 
-export interface Device {
+export interface ParsedDevice {
   type: R4.ICoding;
 }
 
 export interface GroupedObservation {
-  observation: Observation;
-  specimen: Specimen;
-  device?: Device;
-  practitioner: Practitioner;
-  organization: { lhp: Organization; al?: Organization };
+  observation: ParsedObservation;
+  specimen: ParsedSpecimen;
+  device?: ParsedDevice;
+  practitioner: ParsedPractitioner;
+  organization: { lhp: ParsedOrganization; al?: ParsedOrganization };
 }
 
-export interface Bundle {
-  patient: Patient;
+export interface ParsedBundle {
+  patient: ParsedPatient;
   observations: GroupedObservation[];
-  organization: { moh: Organization };
+  organization: { moh: ParsedOrganization };
 }
