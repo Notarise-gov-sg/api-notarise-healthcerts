@@ -7,7 +7,7 @@ provider:
   timeout: 30 # optional, in seconds, default is 6
   stage: ${opt:stage, "dev"}
   region: ${opt:region, "ap-southeast-1"}
-  stackName: ${self:provider.stage}-${self:service}
+  stackName: ${self:service}-${self:provider.stage}
   environment:
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
   tracing:
@@ -294,7 +294,7 @@ resources:
         Period: 900
         Dimensions:
           - Name: ApiName
-            Value: "${self:provider.stackName}"
+            Value: "${self:provider.stage}-${self:service}"  
     ApiGatewayAlarm5xx:
       Type: AWS::CloudWatch::Alarm
       Properties:
@@ -315,4 +315,4 @@ resources:
         Period: 900
         Dimensions:
           - Name: ApiName
-            Value: "${self:provider.stackName}"
+            Value: "${self:provider.stage}-${self:service}"
