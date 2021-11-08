@@ -7,7 +7,7 @@ provider:
   timeout: 30 # optional, in seconds, default is 6
   stage: ${opt:stage, "dev"}
   region: ${opt:region, "ap-southeast-1"}
-  stackName: ${self:service}-${self:provider.stage}
+  stackName: ${self:provider.stage}-${self:service}
   environment:
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
   tracing:
