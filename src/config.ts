@@ -2,7 +2,7 @@ const isTruthy = (val?: string) => val === "true" || val === "True";
 
 // this function exists because serverless gives a string of "undefined" for unpopulated values
 // https://github.com/serverless/serverless/issues/3491
-const getDefaultIfUndefined = (
+export const getDefaultIfUndefined = (
   envVar: string | undefined,
   defaultValue: string
 ) => (!envVar || envVar === "undefined" ? defaultValue : envVar);
@@ -47,13 +47,16 @@ const getEuSigner = () => ({
     process.env.SIGNING_EU_QR_NAME,
     sampleSigningDidName
   ),
-  publicKey: getDefaultIfUndefined(
-    process.env.SIGNING_EU_QR_PUBLIC_KEY?.replace(/\\n/g, "\n"),
-    ""
+});
+
+const getGPayCovidCardSigner = () => ({
+  issuer: getDefaultIfUndefined(
+    process.env.GPAY_COVID_CARD_ISSUER,
+    "notarise-gpay-stg@gvt0048-gcp-233-notarise-pd.iam.gserviceaccount.com" // Staging Issuer
   ),
-  privateKey: getDefaultIfUndefined(
-    process.env.SIGNING_EU_QR_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    ""
+  issuerId: getDefaultIfUndefined(
+    process.env.GPAY_COVID_CARD_ISSUER_ID,
+    "3388000000018787306" // Staging Issuer ID
   ),
 });
 
@@ -64,6 +67,7 @@ const generateConfig = () => ({
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
+  gpaySigner: getGPayCovidCardSigner(),
   env: process.env.NODE_ENV,
   network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "ropsten"),
   isValidationEnabled: !(
@@ -79,7 +83,8 @@ const generateConfig = () => ({
   healthCertNotification: {
     enabled: isTruthy(process.env.HEALTH_CERT_NOTIFICATION_ENABLED),
   },
-  isOfflineQrEnabled: !!process.env.OFFLINE_QR_ENABLED,
+  isOfflineQrEnabled: isTruthy(process.env.OFFLINE_QR_ENABLED),
+  isGPayCovidCardEnabled: isTruthy(process.env.GPAY_COVID_CARD_ENABLED),
   swabTestTypes: {
     ART: "697989009",
     PCR: "258500001",

@@ -4,7 +4,7 @@ import {
   WrappedDocument,
 } from "@govtechsg/open-attestation";
 import { Record, String, Static } from "runtypes";
-import { notarise } from "@govtechsg/oa-schemata";
+import { notarise, pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { R4 } from "@ahryman40k/ts-fhir-types";
 
 /* eslint-disable */
@@ -74,9 +74,9 @@ export interface Device {
   resourceType: EntryResourceType.Device;
   type: {
     coding: [
-      { 
-        system: string; 
-        code: string; 
+      {
+        system: string;
+        code: string;
         display: string;
       }
     ];
@@ -97,6 +97,9 @@ export interface fhirBundleV1 {
   entry: [Patient | Observation | Specimen | Organisation | Device];
 }
 
+/**
+ * @deprecated This interface should be removed when PDT HealthCert v1.0 is deprecated.
+ */
 export interface HealthCertDocument extends v2.OpenAttestationDocument {
   version?: string;
   type?: string;
@@ -107,9 +110,23 @@ export interface HealthCertDocument extends v2.OpenAttestationDocument {
   fhirBundle: fhirBundleV1 | R4.IBundle;
 }
 
+/**
+ * @deprecated This interface should be removed when PDT HealthCert v1.0 is deprecated.
+ */
 export interface NotarizedHealthCert extends HealthCertDocument {
   notarisationMetadata: notarise.NotarisationMetadata;
 }
+
+export interface PDTHealthCertV2Document
+  extends pdtHealthCertV2.PDTHealthCertV2,
+    Omit<v2.OpenAttestationDocument, "id"> {}
+
+export interface NotarisedPDTHealthCertV2Document
+  extends PDTHealthCertV2Document,
+    notarise.Notarise {}
+
+export type SignedNotarisedPDTHealthCertV2Document =
+  SignedWrappedDocument<NotarisedPDTHealthCertV2Document>;
 
 const UserDetailsT = Record({
   name: String,
@@ -131,6 +148,9 @@ export const WorkflowContextData = WorkflowReferenceData.And(
 );
 export type WorkflowContextData = Static<typeof WorkflowContextData>;
 
+/**
+ * @deprecated This interface should be removed when PDT HealthCert v1.0 is deprecated.
+ */
 export type SignedNotarizedHealthCert =
   SignedWrappedDocument<NotarizedHealthCert>;
 
@@ -184,11 +204,13 @@ export interface EuHealthCertDocument {
 }
 export interface EuHealthCert extends EuHealthCertDocument {
   meta: notarise.NotarisationMetadata;
-} 
+}
 
 export interface NotarisationResult {
-  notarisedDocument: WrappedDocument<HealthCertDocument>;
+  notarisedDocument: WrappedDocument<
+    HealthCertDocument | NotarisedPDTHealthCertV2Document
+  >;
   ttl: number;
   url: string;
-  directUrl?: string;
+  gpayCovidCardUrl?: string;
 }

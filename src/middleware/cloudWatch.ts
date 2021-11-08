@@ -3,7 +3,12 @@
 
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import middy, { MiddlewareObj } from "@middy/core";
-import { HealthCertDocument, NotarisationResult, Observation } from "../types";
+import {
+  HealthCertDocument,
+  NotarisationResult,
+  Observation,
+  PDTHealthCertV2Document,
+} from "../types";
 import { Observation as ObservationV2 } from "../models/fhir/types";
 import { parsers } from "../models/fhir/parse";
 import { logError, trace } from "./trace";
@@ -43,7 +48,8 @@ export class CloudWatchMiddleware
     try {
       const notarisationResult: NotarisationResult = JSON.parse(body);
       const { notarisedDocument } = notarisationResult;
-      const data: HealthCertDocument = getData(notarisedDocument);
+      const data: HealthCertDocument | PDTHealthCertV2Document =
+        getData(notarisedDocument);
       let testName = "";
       if (data?.version === "pdt-healthcert-v2.0") {
         // @ts-ignore

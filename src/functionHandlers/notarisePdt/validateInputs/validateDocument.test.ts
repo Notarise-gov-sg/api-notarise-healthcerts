@@ -1,6 +1,8 @@
 import { verify, isValid } from "@govtechsg/oa-verify";
-import exampleHealthcertWrapped from "../../../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
-import exampleHealthcertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
+import _examplePcrHealthCertV1Wrapped from "../../../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
+import _examplePcrHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
+import _exampleArtHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_art_with_nric_wrapped.json";
+import _examplePcrSerHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_ser_multi_result_wrapped.json";
 import { validateDocument, validateV2Document } from "./validateDocument";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 
@@ -12,8 +14,11 @@ const mockIsValid = isValid as jest.Mock;
 jest.mock("./../authorizedIssuers");
 const mockIsAuthorizedIssuer = isAuthorizedIssuer as jest.Mock;
 
-const sampleDocument = exampleHealthcertWrapped as any;
-const sampleDocumentV2 = exampleHealthcertV2Wrapped as any;
+const examplePcrHealthCertV1Wrapped = _examplePcrHealthCertV1Wrapped as any;
+const examplePcrHealthCertV2Wrapped = _examplePcrHealthCertV2Wrapped as any;
+const exampleArtHealthCertV2Wrapped = _exampleArtHealthCertV2Wrapped as any;
+const examplePcrSerHealthCertV2Wrapped =
+  _examplePcrSerHealthCertV2Wrapped as any;
 
 const validFragments = [
   {
@@ -101,12 +106,14 @@ beforeEach(() => {
 
 it("should not throw on valid document", async () => {
   whenFragmentsAreValid();
-  await expect(validateDocument(sampleDocument)).resolves.not.toThrow();
+  await expect(
+    validateDocument(examplePcrHealthCertV1Wrapped)
+  ).resolves.not.toThrow();
 });
 
 it("should throw on document failing OA verification", async () => {
   mockIsValid.mockReturnValue(false);
-  await expect(validateDocument(sampleDocument)).rejects.toThrow(
+  await expect(validateDocument(examplePcrHealthCertV1Wrapped)).rejects.toThrow(
     /Invalid document error/
   );
 });
@@ -121,7 +128,7 @@ it("should throw on document with multiple issuer identity passing (should not h
       status: "VALID",
     },
   ]);
-  await expect(validateDocument(sampleDocument)).rejects.toThrow(
+  await expect(validateDocument(examplePcrHealthCertV1Wrapped)).rejects.toThrow(
     /Invalid document error/
   );
 });
@@ -146,7 +153,7 @@ it("should throw on document with multiple issuers", async () => {
       status: "VALID",
     },
   ]);
-  await expect(validateDocument(sampleDocument)).rejects.toThrow(
+  await expect(validateDocument(examplePcrHealthCertV1Wrapped)).rejects.toThrow(
     /Invalid document error/
   );
 });
@@ -165,7 +172,7 @@ it("should throw on document without issuer domain name (should not happen)", as
       status: "VALID",
     },
   ]);
-  await expect(validateDocument(sampleDocument)).rejects.toThrow(
+  await expect(validateDocument(examplePcrHealthCertV1Wrapped)).rejects.toThrow(
     /Invalid document error/
   );
 });
@@ -187,21 +194,37 @@ it("should throw on document with unauthorized issuer domain", async () => {
     },
   ]);
   mockIsAuthorizedIssuer.mockResolvedValue(false);
-  await expect(validateDocument(sampleDocument)).rejects.toThrow(
+  await expect(validateDocument(examplePcrHealthCertV1Wrapped)).rejects.toThrow(
     /Unrecognised clinic error/
   );
 });
 
-it("should not throw on valid v2 document", async () => {
+it("should not throw on valid PCR v2 document", async () => {
   whenFragmentsAreValid();
-  await expect(validateV2Document(sampleDocumentV2)).resolves.not.toThrow();
+  await expect(
+    validateV2Document(examplePcrHealthCertV2Wrapped)
+  ).resolves.not.toThrow();
+});
+
+it("should not throw on valid ART v2 document", async () => {
+  whenFragmentsAreValid();
+  await expect(
+    validateV2Document(exampleArtHealthCertV2Wrapped)
+  ).resolves.not.toThrow();
+});
+
+it("should not throw on valid PCR+SER v2 document", async () => {
+  whenFragmentsAreValid();
+  await expect(
+    validateV2Document(examplePcrSerHealthCertV2Wrapped)
+  ).resolves.not.toThrow();
 });
 
 it("should throw on v2 document failing when pass v1 document data", async () => {
   whenFragmentsAreValid();
-  await expect(validateV2Document(sampleDocument)).rejects.toThrow(
-    /Invalid document error/
-  );
+  await expect(
+    validateV2Document(examplePcrHealthCertV1Wrapped)
+  ).rejects.toThrow(/Invalid document error/);
 });
 
 it("should throw on v2 document failing when document data id string invalid", async () => {

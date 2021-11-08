@@ -6,9 +6,9 @@ import {
 import { notarise } from "@govtechsg/oa-schemata";
 import { Bundle } from "../../fhir/types";
 import {
-  HealthCertDocument,
-  NotarizedHealthCert,
-  SignedNotarizedHealthCert,
+  PDTHealthCertV2Document,
+  NotarisedPDTHealthCertV2Document,
+  SignedNotarisedPDTHealthCertV2Document,
 } from "../../../types";
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
 import { config } from "../../../config";
@@ -18,17 +18,17 @@ const { didSigner } = config;
 const { trace } = getLogger("api-notarise-healthcerts");
 
 const signWrappedDocument = (
-  wrappedDocument: WrappedDocument<NotarizedHealthCert>
+  wrappedDocument: WrappedDocument<NotarisedPDTHealthCertV2Document>
 ) =>
   signDocument(
     wrappedDocument,
     SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
     didSigner.key,
     didSigner.privateKey
-  ) as Promise<SignedNotarizedHealthCert>;
+  ) as Promise<SignedNotarisedPDTHealthCertV2Document>;
 
 export const createNotarizedHealthCert = async (
-  certificate: WrappedDocument<HealthCertDocument>,
+  certificate: WrappedDocument<PDTHealthCertV2Document>,
   parseFhirBundle: Bundle,
   reference: string,
   storedUrl: string,
@@ -42,7 +42,7 @@ export const createNotarizedHealthCert = async (
     signedEuHealthCerts
   );
   const wrappedNotarisedDocument = wrapDocument(unwrappedNotarisedDocument);
-  const traceWithRef = trace.extend(`reference: $[reference}`);
+  const traceWithRef = trace.extend(`reference: ${reference}`);
   traceWithRef("Document successfully notarised");
   return signWrappedDocument(wrappedNotarisedDocument);
 };

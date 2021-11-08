@@ -1,8 +1,8 @@
 {
-  "id": "76caf3f9-5591-4ef1-b756-1cb47a76dede",
+  "id": "5042c334-b049-4af9-977c-d8cfa68a681c",
   "version": "pdt-healthcert-v2.0",
-  "type": "SER",
-  "validFrom": "2021-05-18T06:43:12.152Z",
+  "type": ["PCR", "SER"],
+  "validFrom": "2021-10-19T11:50:12.152Z",
   "fhirVersion": "4.0.1",
   "fhirBundle": {
     "resourceType": "Bundle",
@@ -57,42 +57,6 @@
           ],
           "gender": "female",
           "birthDate": "1990-01-15"
-        }
-      },
-      {
-        "fullUrl": "urn:uuid:0275bfaf-48fb-44e0-80cd-9c504f80e6ae",
-        "resource": {
-          "resourceType": "Specimen",
-          "type": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "258500001",
-                "display": "Nasopharyngeal swab"
-              }
-            ]
-          },
-          "collection": {
-            "collectedDateTime": "2020-09-27T06:15:00Z"
-          }
-        }
-      },
-      {
-        "fullUrl": "urn:uuid:92e16028-227a-4457-9bd9-978dd1183da4",
-        "resource": {
-          "resourceType": "Specimen",
-          "type": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "258500001",
-                "display": "Nasopharyngeal swab"
-              }
-            ]
-          },
-          "collection": {
-            "collectedDateTime": "2020-09-27T06:15:00Z"
-          }
         }
       },
       {
@@ -163,28 +127,28 @@
               }
             ]
           },
-          "effectiveDateTime": "2020-09-28T06:15:00Z",
+          "effectiveDateTime": "2021-10-19T11:50:12.152Z",
           "status": "final"
         }
       },
       {
-        "fullUrl": "urn:uuid:7729970e-ab26-469f-b3e5-36a42ec24146",
+        "fullUrl": "urn:uuid:35f76784-6dd5-4df3-ae8c-1973f9ca6fbe",
         "resource": {
           "resourceType": "Observation",
           "specimen": {
             "type": "Specimen",
-            "reference": "urn:uuid:92e16028-227a-4457-9bd9-978dd1183da4"
+            "reference": "urn:uuid:fcb89978-2e3e-4b49-99c5-a31826056bf8"
           },
           "performer": [
             {
               "id": "LHP",
               "type": "Organization",
-              "reference": "urn:uuid:abd39a2a-a62c-4630-8217-5532b6fb7eed"
+              "reference": "urn:uuid:fa2328af-4882-4eaa-8c28-66dab46950f1"
             },
             {
               "id": "AL",
               "type": "Organization",
-              "reference": "urn:uuid:5896fc98-e1b8-40e2-bd1e-ba309e0d3d34"
+              "reference": "urn:uuid:839a7c54-6b40-41cb-b10d-9295d7e75f77"
             },
             {
               "type": "Practitioner",
@@ -221,8 +185,8 @@
             "coding": [
               {
                 "system": "http://loinc.org",
-                "code": "94531-1",
-                "display": "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
+                "code": "94661-6",
+                "display": "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma"
               }
             ]
           },
@@ -235,8 +199,40 @@
               }
             ]
           },
-          "effectiveDateTime": "2020-09-28T06:15:00Z",
+          "effectiveDateTime": "2021-10-19T11:50:12.152Z",
           "status": "final"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:0275bfaf-48fb-44e0-80cd-9c504f80e6ae",
+        "resource": {
+          "resourceType": "Specimen",
+          "type": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "258500001",
+                "display": "Nasopharyngeal swab"
+              }
+            ]
+          },
+          "collection": { "collectedDateTime": "2021-10-19T11:50:12.152Z" }
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:fcb89978-2e3e-4b49-99c5-a31826056bf8",
+        "resource": {
+          "resourceType": "Specimen",
+          "type": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "22778000",
+                "display": "Venipuncture"
+              }
+            ]
+          },
+          "collection": { "collectedDateTime": "2021-10-19T11:50:12.152Z" }
         }
       },
       {
@@ -255,12 +251,7 @@
                   }
                 ]
               },
-              "identifier": [
-                {
-                  "id": "MCR",
-                  "value": "123214"
-                }
-              ],
+              "identifier": [{ "id": "MCR", "value": "123456" }],
               "issuer": {
                 "type": "Organization",
                 "reference": "urn:uuid:bc7065ee-42aa-473a-a614-afd8a7b30b1e"
@@ -320,7 +311,10 @@
           "contact": [
             {
               "telecom": [
-                { "system": "url", "value": "https://www.macritchieclinic.com.sg" },
+                {
+                  "system": "url",
+                  "value": "https://www.macritchieclinic.com.sg"
+                },
                 { "system": "phone", "value": "+6561234567" }
               ],
               "address": {
@@ -337,73 +331,6 @@
         "resource": {
           "resourceType": "Organization",
           "name": "MacRitchie Laboratory",
-          "type": [
-            {
-              "coding": [
-                {
-                  "system": "http://terminology.hl7.org/CodeSystem/organization-type",
-                  "code": "prov",
-                  "display": "Healthcare Provider"
-                }
-              ],
-              "text": "Accredited Laboratory"
-            }
-          ],
-          "contact": [
-            {
-              "telecom": [
-                {
-                  "system": "url",
-                  "value": "https://www.macritchielaboratory.com.sg"
-                },
-                { "system": "phone", "value": "+6567654321" }
-              ],
-              "address": {
-                "type": "physical",
-                "use": "work",
-                "text": "2 Thomson Avenue 4, Singapore 098888"
-              }
-            }
-          ]
-        }
-      },
-      {
-        "fullUrl": "urn:uuid:abd39a2a-a62c-4630-8217-5532b6fb7eed",
-        "resource": {
-          "resourceType": "Organization",
-          "name": "MacRitchie Medical Clinic2",
-          "type": [
-            {
-              "coding": [
-                {
-                  "system": "http://terminology.hl7.org/CodeSystem/organization-type",
-                  "code": "prov",
-                  "display": "Healthcare Provider"
-                }
-              ],
-              "text": "Licensed Healthcare Provider"
-            }
-          ],
-          "contact": [
-            {
-              "telecom": [
-                { "system": "url", "value": "https://www.macritchieclinic.com.sg" },
-                { "system": "phone", "value": "+6561234567" }
-              ],
-              "address": {
-                "type": "physical",
-                "use": "work",
-                "text": "MacRitchie Hospital, Thomson Road, Singapore 123000"
-              }
-            }
-          ]
-        }
-      },
-      {
-        "fullUrl": "urn:uuid:5896fc98-e1b8-40e2-bd1e-ba309e0d3d34",
-        "resource": {
-          "resourceType": "Organization",
-          "name": "MacRitchie Laboratory2",
           "type": [
             {
               "coding": [
