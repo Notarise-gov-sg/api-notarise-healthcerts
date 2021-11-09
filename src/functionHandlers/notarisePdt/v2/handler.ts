@@ -8,7 +8,7 @@ import {
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { notarise } from "@govtechsg/oa-schemata";
 import fhirHelper from "../../../models/fhir";
-import { Bundle } from "../../../models/fhir/types";
+import { ParsedBundle } from "../../../models/fhir/types";
 import { getTestDataFromParseFhirBundle } from "../../../models/healthCertV2";
 import { getLogger } from "../../../common/logger";
 import { DetailedCodedError } from "../../../common/error";
@@ -40,7 +40,7 @@ const { trace, error } = getLogger(
 export const notarisePdt = async (
   reference: string,
   certificate: WrappedDocument<PDTHealthCertV2Document>,
-  parsedFhirBundle: Bundle,
+  parsedFhirBundle: ParsedBundle,
   testData: TestData[]
 ): Promise<{ result: NotarisationResult; directUrl: string }> => {
   const errorWithRef = trace.extend(`reference:${reference}`);
@@ -103,7 +103,7 @@ export const main: Handler = async (
   const errorWithRef = error.extend(`reference:${reference}`);
 
   /* 1. Validation */
-  let parsedFhirBundle: Bundle;
+  let parsedFhirBundle: ParsedBundle;
   let data: PDTHealthCertV2Document; // The unwrapped document
   let testData: TestData[];
   try {
@@ -143,7 +143,7 @@ export const main: Handler = async (
     ({ result, directUrl } = await notarisePdt(
       reference,
       wrappedDocument,
-      parsedFhirBundle as Bundle,
+      parsedFhirBundle as ParsedBundle,
       testData as TestData[]
     ));
   } catch (e) {

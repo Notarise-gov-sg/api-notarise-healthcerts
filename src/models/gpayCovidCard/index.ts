@@ -3,13 +3,13 @@ import GPay, {
   BasicDetails,
   TestingRecord,
 } from "@notarise-gov-sg/gpay-covid-cards";
-import { Bundle } from "../../models/fhir/types";
+import { ParsedBundle } from "../../models/fhir/types";
 import { isoToDateOnlyString, isoToLocaleString } from "../../common/datetime";
 import { getDefaultIfUndefined } from "../../config";
 
 const genGPayCovidCardUrl = (
   gpaySigner: { issuer: string; issuerId: string },
-  parsedFhirBundle: Bundle,
+  parsedFhirBundle: ParsedBundle,
   uuid: string,
   storedUrl: string
 ) => {

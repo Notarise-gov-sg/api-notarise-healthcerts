@@ -4,7 +4,7 @@ import {
   SUPPORTED_SIGNING_ALGORITHM,
 } from "@govtechsg/oa-did-sign";
 import { notarise } from "@govtechsg/oa-schemata";
-import { Bundle } from "../../fhir/types";
+import { ParsedBundle } from "../../fhir/types";
 import {
   PDTHealthCertV2Document,
   NotarisedPDTHealthCertV2Document,
@@ -29,7 +29,7 @@ const signWrappedDocument = (
 
 export const createNotarizedHealthCert = async (
   certificate: WrappedDocument<PDTHealthCertV2Document>,
-  parseFhirBundle: Bundle,
+  parseFhirBundle: ParsedBundle,
   reference: string,
   storedUrl: string,
   signedEuHealthCerts?: notarise.SignedEuHealthCert[]

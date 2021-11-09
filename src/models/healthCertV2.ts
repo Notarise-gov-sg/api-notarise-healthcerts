@@ -2,7 +2,7 @@ import { pdtHealthCertV2 as healthcert } from "@govtechsg/oa-schemata";
 import moment from "moment-timezone";
 import { TestData } from "src/types";
 import { getNationality } from "../common/nationality";
-import { Bundle } from "./fhir/types";
+import { ParsedBundle } from "./fhir/types";
 
 export const codesDict: Record<string, string> = {
   "260385009": "Negative",
@@ -17,7 +17,7 @@ export const parseDateTime = (dateString: string | undefined): string =>
     : "";
 
 export const getTestDataFromParseFhirBundle = (
-  parseFhirBundle: Bundle
+  parseFhirBundle: ParsedBundle
 ): TestData[] => {
   const testData: TestData[] = [];
   parseFhirBundle.observations.forEach((observationGroup) => {

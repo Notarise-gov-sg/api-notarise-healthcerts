@@ -9,7 +9,7 @@ import {
   Observation,
   PDTHealthCertV2Document,
 } from "../types";
-import { Observation as ObservationV2 } from "../models/fhir/types";
+import { ParsedObservation as ObservationV2 } from "../models/fhir/types";
 import { parsers } from "../models/fhir/parse";
 import { logError, trace } from "./trace";
 
