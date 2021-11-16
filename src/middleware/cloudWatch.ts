@@ -58,14 +58,17 @@ export class CloudWatchMiddleware
         getData(notarisedDocument);
       let testType = "";
       const validTestTypes = ["art", "pcr", "ser"];
-      if (data?.version === "pdt-healthcert-v2.0") {
+      if (data.version === "pdt-healthcert-v2.0") {
+        // version 2
         testType = (data.type as string).toLowerCase();
         if (!validTestTypes.includes(testType)) {
           logError(`test type ${testType} is not valid`);
         }
       } else {
+        // version 1
         // @ts-ignore
-        const observation = data.fhirBundle.entry?.find(
+        const observations = data.fhirBundle?.entry as Observation[];
+        const observation = observations.find(
           (entr: any) => entr.resourceType === "Observation"
         ) as Observation;
         let { display } = observation.code.coding[0]; // e.g. Reverse transcription polymerase chain reaction (rRT-PCR) test
@@ -79,7 +82,7 @@ export class CloudWatchMiddleware
         }
       }
       const { specificDomain } = this;
-      const aggregateDomain = this.toAggregateDomain(this.specificDomain);
+      const aggregateDomain = this.toAggregateDomain(specificDomain);
       trace(
         `aggregateDomain ${aggregateDomain} successfully notarised pdt of type ${testType}`
       );
