@@ -1,9 +1,9 @@
+import { cloneDeep } from "lodash";
 import { NotarisationResult } from "../types";
 import wrappedDocument from "../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import wrappedDocumentV2 from "../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
 import { CloudWatchMiddleware, Request } from "./cloudWatch";
 import * as log from "./trace";
-import { cloneDeep } from "lodash";
 
 it("test regex of extractSubDomain", () => {
   const cloudWatchMiddleware: CloudWatchMiddleware = new CloudWatchMiddleware();
