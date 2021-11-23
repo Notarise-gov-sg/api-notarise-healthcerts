@@ -56,13 +56,21 @@ export class CloudWatchMiddleware
       const { notarisedDocument } = notarisationResult;
       const data: HealthCertDocument | PDTHealthCertV2Document =
         getData(notarisedDocument);
-      let testType = "";
+      let testTypes: string[] = [];
       const validTestTypes = ["art", "pcr", "ser"];
       if (data.version === "pdt-healthcert-v2.0") {
         // version 2
-        testType = (data.type as string).toLowerCase();
-        if (!validTestTypes.includes(testType)) {
-          logError(`test type ${testType} is not valid`);
+        if (typeof data.type === "string") {
+          testTypes = [data.type];
+        } else if (Array.isArray(data.type)) {
+          testTypes = data.type;
+        }
+        testTypes.forEach((test) => test.toLowerCase());
+        const allValid: boolean = testTypes.every((test) =>
+          validTestTypes.includes(test)
+        );
+        if (!allValid) {
+          logError(`${testTypes.join(", ")} are not valid`);
         }
       } else {
         // version 1
@@ -73,25 +81,24 @@ export class CloudWatchMiddleware
         ) as Observation;
         let { display } = observation.code.coding[0]; // e.g. Reverse transcription polymerase chain reaction (rRT-PCR) test
         display = display.toLowerCase();
-        for (let i = 0; i < validTestTypes.length; i += 1) {
-          const validType = validTestTypes[i];
-          if (display.includes(validType)) {
-            testType = validType;
-            break;
-          }
-        }
+        testTypes = validTestTypes.filter((test) => display.includes(test));
       }
       const { specificDomain } = this;
       const aggregateDomain = this.toAggregateDomain(specificDomain);
+      testTypes.sort();
       trace(
-        `aggregateDomain ${aggregateDomain} successfully notarised pdt of type ${testType}`
+        `aggregateDomain ${aggregateDomain} successfully notarised pdt of type ${testTypes.join(
+          ", "
+        )}`
       );
       trace(
-        `specificDomain ${specificDomain} successfully notarised pdt of type ${testType}`
+        `specificDomain ${specificDomain} successfully notarised pdt of type ${testTypes.join(
+          ", "
+        )}`
       );
     } catch (error) {
       logError(
-        "main handler responded with an error, thus could not JSON.parse() the expected healthcert"
+        "main handler responded with an error, thus could not JSON.parse() on the expected healthcert"
       );
     }
   };
