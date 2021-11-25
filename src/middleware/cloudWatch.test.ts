@@ -1,3 +1,4 @@
+import { cloneDeep } from "lodash";
 import { NotarisationResult } from "../types";
 import wrappedDocument from "../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import wrappedDocumentV2 from "../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
@@ -6,11 +7,11 @@ import * as log from "./trace";
 
 it("test regex of extractSubDomain", () => {
   const cloudWatchMiddleware: CloudWatchMiddleware = new CloudWatchMiddleware();
-  expect(cloudWatchMiddleware.extractSubDomain("abc@river.ai")).toBe(
+  expect(cloudWatchMiddleware.toAggregateDomain("abc@river.ai")).toBe(
     "river.ai"
   );
   expect(
-    cloudWatchMiddleware.extractSubDomain("donotverify.testing.verify.gov.sg")
+    cloudWatchMiddleware.toAggregateDomain("donotverify.testing.verify.gov.sg")
   ).toBe("gov.sg");
 });
 
@@ -29,10 +30,10 @@ describe("test cloudwatch middleware for v1", () => {
     await cloudWatchMiddleware.before(request);
 
     expect(log.trace).toHaveBeenCalledWith(
-      "provider donotverify.testing.verify.gov.sg attempting to notarise pdt..."
+      "specificDomain donotverify.testing.verify.gov.sg attempting to notarise pdt..."
     );
     expect(log.trace).toHaveBeenCalledWith(
-      "subDomain gov.sg attempting to notarise pdt..."
+      "aggregateDomain gov.sg attempting to notarise pdt..."
     );
   });
 
@@ -52,6 +53,7 @@ describe("test cloudwatch middleware for v1", () => {
       },
       response: {
         body: JSON.stringify(notarisationResult),
+        statusCode: 200,
       },
     };
     const cloudWatchMiddleware: CloudWatchMiddleware =
@@ -59,12 +61,19 @@ describe("test cloudwatch middleware for v1", () => {
     await cloudWatchMiddleware.before(request);
     await cloudWatchMiddleware.after(request);
     expect(log.trace).toHaveBeenCalledWith(
-      `donotverify.testing.verify.gov.sg successfully notarised pdt of type pcr`
+      `specificDomain donotverify.testing.verify.gov.sg successfully notarised pdt of type pcr`
     );
+    // expect(log.trace).toHaveBeenCalledWith(
+    //   `aggregateDomain gov.sg successfully notarised pdt of type pcr`
+    // );
   });
 });
 
 describe("test cloudwatch middleware for v2", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("middlware should log clinic and subdomain from request", async () => {
     jest.spyOn(log, "trace");
     const request: Request = {
@@ -79,26 +88,29 @@ describe("test cloudwatch middleware for v2", () => {
     await cloudWatchMiddleware.before(request);
 
     expect(log.trace).toHaveBeenCalledWith(
-      "provider donotverify.testing.verify.gov.sg attempting to notarise pdt..."
+      "specificDomain donotverify.testing.verify.gov.sg attempting to notarise pdt..."
     );
   });
 
   it("middleware should log cert type from response", async () => {
     jest.spyOn(log, "trace");
+    const doc = cloneDeep(wrappedDocumentV2);
+    doc.data.type = ["pcr", "ser"] as any;
 
     // let's assume the wrappedDocumentV2 has been notarized
     const notarisationResult: NotarisationResult = {
-      notarisedDocument: wrappedDocumentV2 as any,
+      notarisedDocument: doc as any,
       ttl: 0,
       url: "",
     };
 
     const request: Request = {
       event: {
-        body: wrappedDocumentV2,
+        body: doc,
       },
       response: {
         body: JSON.stringify(notarisationResult),
+        statusCode: 200,
       },
     };
     const cloudWatchMiddleware: CloudWatchMiddleware =
@@ -106,7 +118,10 @@ describe("test cloudwatch middleware for v2", () => {
     await cloudWatchMiddleware.before(request);
     await cloudWatchMiddleware.after(request);
     expect(log.trace).toHaveBeenCalledWith(
-      `donotverify.testing.verify.gov.sg successfully notarised pdt of type pcr`
+      `aggregateDomain gov.sg successfully notarised pdt of type pcr, ser`
+    );
+    expect(log.trace).toHaveBeenCalledWith(
+      `specificDomain donotverify.testing.verify.gov.sg successfully notarised pdt of type pcr, ser`
     );
   });
 });

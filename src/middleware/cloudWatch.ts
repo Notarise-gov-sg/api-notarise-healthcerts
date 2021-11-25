@@ -9,11 +9,8 @@ import {
   Observation,
   PDTHealthCertV2Document,
 } from "../types";
-import { ParsedObservation as ObservationV2 } from "../models/fhir/types";
-import { parsers } from "../models/fhir/parse";
 import { logError, trace } from "./trace";
 
-// export const { trace } = getLogger("cloudWatchMiddleware");
 export type Request = Pick<middy.Request, "event" | "response">;
 
 // Custom middleware must return an obhect of { before?: fn, after?: fn, onError?: fn }
@@ -24,11 +21,11 @@ export type Request = Pick<middy.Request, "event" | "response">;
 export class CloudWatchMiddleware
   implements Pick<MiddlewareObj, "before" | "after">
 {
-  private provider = "";
+  private specificDomain = "";
 
   // split "abc.riverr.io" into "riverr.io"
   // searches for final "."
-  extractSubDomain(provider: string): string {
+  toAggregateDomain(provider: string): string {
     return /\w+\.\w+$/.exec(provider)?.toString() ?? "";
   }
 
@@ -37,44 +34,71 @@ export class CloudWatchMiddleware
       .body as WrappedDocument<HealthCertDocument>;
     const data = getData(wrappedDocument);
     const provider = data.issuers[0].identityProof?.location ?? "UNKNOWN";
-    this.provider = provider;
-    const subDomain = this.extractSubDomain(provider);
-    trace(`provider ${provider} attempting to notarise pdt...`);
-    trace(`subDomain ${subDomain} attempting to notarise pdt...`);
+    this.specificDomain = provider;
+    const aggregateDomain = this.toAggregateDomain(this.specificDomain);
+    trace(
+      `specificDomain ${this.specificDomain} attempting to notarise pdt...`
+    );
+    trace(`aggregateDomain ${aggregateDomain} attempting to notarise pdt...`);
   };
 
   after = async (req: Request): Promise<void> => {
-    const { body } = req.response;
+    const { body, statusCode } = req.response;
+    if (statusCode !== 200) {
+      logError(
+        "error encountered, logging for successful notarisation skipped"
+      );
+      return;
+    }
+
     try {
       const notarisationResult: NotarisationResult = JSON.parse(body);
       const { notarisedDocument } = notarisationResult;
       const data: HealthCertDocument | PDTHealthCertV2Document =
         getData(notarisedDocument);
-      let testName = "";
-      if (data?.version === "pdt-healthcert-v2.0") {
-        // @ts-ignore
-        const observationResource = data.fhirBundle.entry?.find(
-          (entr: any) => entr.resource.resourceType === "Observation"
-        )?.resource;
-        const observation = parsers(observationResource) as ObservationV2;
-        testName = observation.testType?.display || "";
+      let testTypes: string[] = [];
+      const validTestTypes = ["art", "pcr", "ser"];
+      if (data.version === "pdt-healthcert-v2.0") {
+        // version 2
+        if (typeof data.type === "string") {
+          testTypes = [data.type];
+        } else if (Array.isArray(data.type)) {
+          testTypes = data.type;
+        }
+        testTypes.forEach((test) => test.toLowerCase());
+        const allValid: boolean = testTypes.every((test) =>
+          validTestTypes.includes(test)
+        );
+        if (!allValid) {
+          logError(`${testTypes.join(", ")} are not valid`);
+        }
       } else {
+        // version 1
         // @ts-ignore
-        const observation = data.fhirBundle.entry?.find(
+        const observations = data.fhirBundle?.entry as Observation[];
+        const observation = observations.find(
           (entr: any) => entr.resourceType === "Observation"
         ) as Observation;
-        testName = observation.code.coding[0].display;
+        let { display } = observation.code.coding[0]; // e.g. Reverse transcription polymerase chain reaction (rRT-PCR) test
+        display = display.toLowerCase();
+        testTypes = validTestTypes.filter((test) => display.includes(test));
       }
-      const { provider } = this;
-
-      if (/art/i.test(testName)) {
-        trace(`${provider} successfully notarised pdt of type art`);
-      } else if (/pcr/i.test(testName)) {
-        trace(`${provider} successfully notarised pdt of type pcr`);
-      }
+      const { specificDomain } = this;
+      const aggregateDomain = this.toAggregateDomain(specificDomain);
+      testTypes.sort();
+      trace(
+        `aggregateDomain ${aggregateDomain} successfully notarised pdt of type ${testTypes.join(
+          ", "
+        )}`
+      );
+      trace(
+        `specificDomain ${specificDomain} successfully notarised pdt of type ${testTypes.join(
+          ", "
+        )}`
+      );
     } catch (error) {
       logError(
-        "main handler responded with an error, thus could not JSON.parse() the expected healthcert"
+        "main handler responded with an error, thus could not JSON.parse() on the expected healthcert"
       );
     }
   };
