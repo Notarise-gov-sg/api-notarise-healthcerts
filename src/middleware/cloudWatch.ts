@@ -81,7 +81,9 @@ export class CloudWatchMiddleware
         ) as Observation;
         let { display } = observation.code.coding[0]; // e.g. Reverse transcription polymerase chain reaction (rRT-PCR) test
         display = display.toLowerCase();
-        testTypes = validTestTypes.filter((test) => display.includes(test));
+        testTypes = validTestTypes
+          .filter((test) => display.includes(test))
+          .map((test) => test.toLowerCase());
       }
       const { specificDomain } = this;
       const aggregateDomain = this.toAggregateDomain(specificDomain);
