@@ -21,7 +21,7 @@ const signWrappedDocument = (
   wrappedDocument: WrappedDocument<NotarisedPDTHealthCertV2Document>
 ) =>
   signDocument(
-    wrappedDocument,
+    wrappedDocument as any,
     SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
     didSigner.key,
     didSigner.privateKey

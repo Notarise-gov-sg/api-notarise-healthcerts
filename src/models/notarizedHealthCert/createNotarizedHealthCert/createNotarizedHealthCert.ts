@@ -20,7 +20,7 @@ const signWrappedDocument = (
   wrappedDocument: WrappedDocument<NotarizedHealthCert>
 ) =>
   signDocument(
-    wrappedDocument,
+    wrappedDocument as any,
     SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
     didSigner.key,
     didSigner.privateKey
