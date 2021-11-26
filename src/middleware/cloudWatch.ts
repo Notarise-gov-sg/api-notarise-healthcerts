@@ -65,7 +65,7 @@ export class CloudWatchMiddleware
         } else if (Array.isArray(data.type)) {
           testTypes = data.type;
         }
-        testTypes.forEach((test) => test.toLowerCase());
+        testTypes = testTypes.map((test) => test.toLowerCase());
         const allValid: boolean = testTypes.every((test) =>
           validTestTypes.includes(test)
         );
