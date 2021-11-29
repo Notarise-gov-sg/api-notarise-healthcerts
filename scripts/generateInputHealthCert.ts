@@ -1,8 +1,9 @@
-import { wrapDocument, v2 } from "@govtechsg/open-attestation";
 import {
+  wrapDocument,
+  v2,
   signDocument,
   SUPPORTED_SIGNING_ALGORITHM,
-} from "@govtechsg/oa-did-sign";
+} from "@govtechsg/open-attestation";
 import { writeFileSync } from "fs";
 import { config } from "../src/config";
 import sample from "../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
@@ -15,8 +16,10 @@ const run = async () => {
   const signedDocument = await signDocument(
     wrappedHealthCert,
     SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
-    config.didSigner.key,
-    config.didSigner.privateKey
+    {
+      public: config.didSigner.key,
+      private: config.didSigner.privateKey,
+    }
   );
   writeFileSync(OUTPUT_FILE, JSON.stringify(signedDocument, null, 2));
 };

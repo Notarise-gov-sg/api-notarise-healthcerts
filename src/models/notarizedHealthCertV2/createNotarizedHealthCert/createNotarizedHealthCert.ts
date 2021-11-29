@@ -1,8 +1,9 @@
-import { wrapDocument, WrappedDocument } from "@govtechsg/open-attestation";
 import {
+  wrapDocument,
+  WrappedDocument,
   signDocument,
   SUPPORTED_SIGNING_ALGORITHM,
-} from "@govtechsg/oa-did-sign";
+} from "@govtechsg/open-attestation";
 import { notarise } from "@govtechsg/oa-schemata";
 import { ParsedBundle } from "../../fhir/types";
 import {
@@ -23,8 +24,10 @@ const signWrappedDocument = (
   signDocument(
     wrappedDocument as any,
     SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
-    didSigner.key,
-    didSigner.privateKey
+    {
+      public: didSigner.key,
+      private: didSigner.privateKey,
+    }
   ) as Promise<SignedNotarisedPDTHealthCertV2Document>;
 
 export const createNotarizedHealthCert = async (
