@@ -158,7 +158,7 @@ export const main: Handler = async (
   }
 
   /* Send to SPM notification/wallet */
-  if (config.notification.enabled) {
+  if (parsedFhirBundle.patient?.nricFin && config.notification.enabled) {
     try {
       const testType =
         testData[0].swabTypeCode === config.swabTestTypes.PCR
@@ -169,7 +169,7 @@ export const main: Handler = async (
       if (config.healthCertNotification.enabled && testType) {
         /* [NEW] Send HealthCert to SPM wallet for PCR | ART (Only if enabled) */
         await notifyHealthCert({
-          uin: parsedFhirBundle.patient?.nricFin || "",
+          uin: parsedFhirBundle.patient.nricFin,
           version: "2.0",
           type: testType,
           url: directUrl,
@@ -179,7 +179,7 @@ export const main: Handler = async (
         /* Send SPM notification to recipient (Only if enabled) */
         await notifyPdt({
           url: result.url,
-          nric: parsedFhirBundle.patient?.nricFin,
+          nric: parsedFhirBundle.patient.nricFin,
           passportNumber: parsedFhirBundle.patient?.passportNumber,
           testData,
           validFrom: data.validFrom,
