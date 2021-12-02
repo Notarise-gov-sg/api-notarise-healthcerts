@@ -46,7 +46,7 @@ export class CloudWatchMiddleware
     const { body, statusCode } = req.response;
     if (statusCode !== 200) {
       logError(
-        "error encountered, logging for successful notarisation skipped"
+        "error encountered, logging for cloudwatch skipped"
       );
       return;
     }
