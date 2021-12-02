@@ -45,9 +45,7 @@ export class CloudWatchMiddleware
   after = async (req: Request): Promise<void> => {
     const { body, statusCode } = req.response;
     if (statusCode !== 200) {
-      logError(
-        "error encountered, logging for cloudwatch skipped"
-      );
+      logError("error encountered, logging for cloudwatch skipped");
       return;
     }
 
