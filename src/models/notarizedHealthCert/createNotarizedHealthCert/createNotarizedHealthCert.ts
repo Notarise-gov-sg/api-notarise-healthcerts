@@ -1,8 +1,9 @@
-import { wrapDocument, WrappedDocument } from "@govtechsg/open-attestation";
 import {
+  wrapDocument,
+  WrappedDocument,
   signDocument,
   SUPPORTED_SIGNING_ALGORITHM,
-} from "@govtechsg/oa-did-sign";
+} from "@govtechsg/open-attestation";
 import { notarise } from "@govtechsg/oa-schemata";
 import {
   HealthCertDocument,
@@ -20,10 +21,12 @@ const signWrappedDocument = (
   wrappedDocument: WrappedDocument<NotarizedHealthCert>
 ) =>
   signDocument(
-    wrappedDocument,
+    wrappedDocument as any,
     SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018,
-    didSigner.key,
-    didSigner.privateKey
+    {
+      public: didSigner.key,
+      private: didSigner.privateKey,
+    }
   ) as Promise<SignedNotarizedHealthCert>;
 
 export const createNotarizedHealthCert = async (
