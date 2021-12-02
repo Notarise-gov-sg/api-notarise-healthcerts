@@ -47,7 +47,7 @@ export const notarisePdt = async (
   const traceWithRef = trace.extend(`reference:${reference}`);
 
   const { id, key } = await getQueueNumber(reference);
-  traceWithRef(`placeholder document id: $id}`);
+  traceWithRef(`placeholder document id: ${id}`);
 
   const directUrl = buildStoredDirectUrl(id, key);
   const storedUrl = buildStoredUrl(id, key);
