@@ -26,7 +26,7 @@ import {
 } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
-import { config, getDefaultIfUndefined } from "../../../config";
+import { config } from "../../../config";
 import {
   createEuSignedTestQr,
   createEuTestCert,
@@ -52,17 +52,8 @@ export const notarisePdt = async (
   const directUrl = buildStoredDirectUrl(id, key);
   const storedUrl = buildStoredUrl(id, key);
 
-  const whiteListNrics = getDefaultIfUndefined(process.env.WHITELIST_NRICS, "")
-    .split(",")
-    .map((nirc) => nirc.trim());
-  const patientNricFin = parsedFhirBundle.patient.nricFin ?? "";
-  traceWithRef(
-    `Is offline Qr nric/fin in whitelist : ${whiteListNrics.includes(
-      patientNricFin
-    )}`
-  );
   let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
-  if (config.isOfflineQrEnabled || whiteListNrics.includes(patientNricFin)) {
+  if (config.isOfflineQrEnabled) {
     try {
       traceWithRef("EU test cert...");
       const euTestCerts = await createEuTestCert(

@@ -34,7 +34,6 @@ provider:
         - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/SIGNING_EU_QR_PRIVATE_KEY"
         - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/SIGNING_EU_QR_PUBLIC_KEY"
         - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY"
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/WHITELIST_NRICS"
     - Effect: Allow
       Action: ["sns:Publish"]
       Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:healthcert"
@@ -96,7 +95,6 @@ functions:
       SIGNING_EU_QR_NAME: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_NAME}
       SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
       SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
-      WHITELIST_NRICS: ${self:custom.${self:custom.envSource}.WHITELIST_NRICS}
     handler: src/functionHandlers/notarisePdt/handler.handler
     events:
       - http:
@@ -139,7 +137,6 @@ functions:
       SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
       HEALTH_CERT_NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_ENABLED}
       HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_TOPIC_ARN}
-      WHITELIST_NRICS: ${self:custom.${self:custom.envSource}.WHITELIST_NRICS}
     handler: src/functionHandlers/notarisePdt/v2/handler.handler
     events:
       - http:
@@ -232,7 +229,6 @@ custom:
     SIGNING_EU_QR_PRIVATE_KEY: ${env:SIGNING_EU_QR_PRIVATE_KEY, ""}
     HEALTH_CERT_NOTIFICATION_ENABLED: ${env:HEALTH_CERT_NOTIFICATION_ENABLED, ""}
     HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${env:HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
-    WHITELIST_NRICS: ${env:WHITELIST_NRICS, ""}
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:

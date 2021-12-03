@@ -18,7 +18,7 @@ import {
 import { HealthCertDocument, NotarisationResult } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { validateInputs } from "./validateInputs";
-import { config, getDefaultIfUndefined } from "../../config";
+import { config } from "../../config";
 import {
   createEuSignedTestQr,
   createEuTestCert,
@@ -37,20 +37,11 @@ export const notarisePdt = async (
   traceWithRef(`placeholder document id: ${id}`);
 
   const storedUrl = buildStoredUrl(id, key);
-  const data = getData(certificate);
-  const { nric, fin } = getParticularsFromHealthCert(data);
-  const whiteListNrics = getDefaultIfUndefined(process.env.WHITELIST_NRICS, "")
-    .split(",")
-    .map((nirc) => nirc.trim());
-  const patientNricFin = (nric || fin) ?? "";
-  traceWithRef(
-    `Is offline Qr nric/fin in whitelist : ${whiteListNrics.includes(
-      patientNricFin
-    )}`
-  );
+
   let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
-  if (config.isOfflineQrEnabled || whiteListNrics.includes(patientNricFin)) {
+  if (config.isOfflineQrEnabled) {
     try {
+      const data = getData(certificate);
       const testData = getTestDataFromHealthCert(data);
 
       traceWithRef("EU test cert...");

@@ -19,7 +19,6 @@ const ssmOptions: ISSMOptions = {
     SIGNING_EU_QR_PUBLIC_KEY: "/serverless/SIGNING_EU_QR_PUBLIC_KEY",
     GPAY_COVID_CARD_PRIVATE_KEY:
       "/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY",
-    WHITELIST_NRICS: "/serverless/WHITELIST_NRICS",
   },
   cacheExpiry: 15 * 60 * 1000, // set 15 mins cache
   cacheKey: "ssm-cache-secrets",
