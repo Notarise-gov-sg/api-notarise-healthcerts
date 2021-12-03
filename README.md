@@ -112,6 +112,7 @@ Copy .env.example into .env and replace the values needed:
 - `GPAY_COVID_CARD_ISSUER`: Issuer service account
 - `GPAY_COVID_CARD_ISSUER_ID`: Issuer ID
 - `GPAY_COVID_CARD_PRIVATE_KEY`: Private key for signing JWT
+- `WHITELIST_NRICS`: Comma-separated values list of Nrics for roll-out some feature for limited user. Feature falgs will ignore when request `nricfin` is match in this list.
 
 ## Change port
 
