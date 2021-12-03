@@ -112,6 +112,7 @@ Copy .env.example into .env and replace the values needed:
 - `GPAY_COVID_CARD_ISSUER`: Issuer service account
 - `GPAY_COVID_CARD_ISSUER_ID`: Issuer ID
 - `GPAY_COVID_CARD_PRIVATE_KEY`: Private key for signing JWT
+- `WHITELIST_NRICS`: Comma-separated NRICs to enable features only for whitelisted users. Other feature flags will be ignored when oaDoc patient's nricfin is matched from this list.
 
 ## Change port
 
