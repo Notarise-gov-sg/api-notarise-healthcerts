@@ -91,7 +91,7 @@
     "serverless-s3-local": "^0.6.20",
     "serverless-webpack": "^5.6.0",
     "supertest": "^6.1.6",
-    "ts-jest": "^27.0.7",
+    "ts-jest": "^27.1.0",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.2",
     "webpack": "^5.64.4",
