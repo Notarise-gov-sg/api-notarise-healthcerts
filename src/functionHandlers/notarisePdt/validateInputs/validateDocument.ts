@@ -55,7 +55,7 @@ export const validateDocument = async (
   const issuerDomain: string | undefined = issuer.data[0]?.location;
   if (!issuerDomain)
     throw new DocumentInvalidError("Issuer's domain is not found");
-  const validDomain = await isAuthorizedIssuer(issuerDomain, "PCR"); // HealthCerts (in PDT Schema v1.0) are hardcoded to ONLY check against the PCR whitelist
+  const validDomain = await isAuthorizedIssuer(issuerDomain);
   if (!validDomain) throw new UnrecognisedClinicError(issuerDomain);
 };
 
@@ -93,6 +93,11 @@ export const validateV2Document = async (
   if (!issuer || issuer.data.length !== 1) {
     throw new DocumentInvalidError("Document may only have one issuer");
   }
+  const issuerDomain: string | undefined = issuer.data[0]?.location;
+  if (!issuerDomain)
+    throw new DocumentInvalidError("Issuer's domain is not found");
+  const validDomain = await isAuthorizedIssuer(issuerDomain);
+  if (!validDomain) throw new UnrecognisedClinicError(issuerDomain);
 
   /* 2. Validate against PDT Schema v2.0 */
   const data = getData(wrappedDocument);
@@ -154,13 +159,4 @@ export const validateV2Document = async (
         )}" is supported.`
       );
   }
-
-  /* 3. Check against issuer domain whitelist [api-authorized-issuers] */
-  const issuerDomain: string | undefined = issuer.data[0]?.location;
-  if (!issuerDomain)
-    throw new DocumentInvalidError("Issuer's domain is not found");
-  const testType = _.isString(data.type) ? data.type : "PCR"; // When HealthCert is a multi type, check against PCR whitelist
-
-  const validDomain = await isAuthorizedIssuer(issuerDomain, testType);
-  if (!validDomain) throw new UnrecognisedClinicError(issuerDomain);
 };
