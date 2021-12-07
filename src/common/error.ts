@@ -73,15 +73,15 @@ export class DetailedCodedError extends AbstractError {
 }
 
 export class UnrecognisedClinicError extends DetailedCodedError {
-  constructor(issuerDomain: string) {
+  constructor(issuerDomain: string, type: string) {
     errorLogger(
-      `UnrecognisedClinicError triggered by issuer domain: ${issuerDomain}`
+      `UnrecognisedClinicError triggered by issuer domain: ${issuerDomain} (${type})`
     );
     super(
       "Unrecognised clinic error",
       ErrorCodes.UNRECOGNISED_CLINIC,
       ErrorCodes[ErrorCodes.UNRECOGNISED_CLINIC],
-      `Submitted HealthCert not from recognised clinic - ${issuerDomain}`,
+      `Submitted HealthCert not a recognised/whitelisted clinic - ${issuerDomain} (${type})`,
       "The HealthCert was not issued by a clinic recognised by the Ministry of Health Singapore"
     );
   }
