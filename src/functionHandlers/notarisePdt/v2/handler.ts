@@ -66,29 +66,27 @@ export const notarisePdt = async (
     try {
       const testDataTypes = testData.map((test) => test.swabTypeCode);
       if (
-        !testDataTypes.includes(config.swabTestTypes.ART) &&
-        !testDataTypes.includes(config.swabTestTypes.PCR)
+        testDataTypes.includes(config.swabTestTypes.ART) ||
+        testDataTypes.includes(config.swabTestTypes.PCR)
       ) {
-        throw new Error(
-          `signedEuHealthCerts not generated due to invalid swab Type Codes: ${JSON.stringify(
+        traceWithRef("signedEuHealthCerts: Generating EU test cert...");
+        const euTestCerts = await createEuTestCert(
+          testData,
+          reference,
+          storedUrl
+        );
+        traceWithRef(euTestCerts);
+        signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
+        if (!signedEuHealthCerts.length) {
+          throw new Error(
+            `Generated EU Vacc Cert is invalid: signedEuHealthCerts has 0 entries`
+          );
+        }
+      } else {
+        traceWithRef(
+          `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
             testDataTypes
           )}`
-        );
-      }
-
-      traceWithRef("EU test cert...");
-      const euTestCerts = await createEuTestCert(
-        testData,
-        reference,
-        storedUrl
-      );
-      traceWithRef(euTestCerts);
-
-      traceWithRef("Generating EU test cert qr...");
-      signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
-      if (!signedEuHealthCerts.length) {
-        throw new Error(
-          `Generated EU Vacc Cert is invalid: signedEuHealthCerts has 0 entries`
         );
       }
     } catch (e) {
