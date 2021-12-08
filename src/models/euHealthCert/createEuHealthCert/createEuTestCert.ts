@@ -1,5 +1,6 @@
 import { notarise } from "@govtechsg/oa-schemata";
 import moment from "moment-timezone";
+import _ from "lodash";
 import { config } from "../../../config";
 import {
   EuHealthCert,
@@ -7,6 +8,7 @@ import {
   EuTestParams,
   TestData,
 } from "../../../types";
+import * as EUDccTestResult from "../../../static/EU-DCC-test-result.mapping.json";
 
 const { euSigner, swabTestTypes } = config;
 
@@ -35,13 +37,19 @@ export const createEuTestCert = (
     const uniqueRef = `${incrementTestNumber}${reference.toUpperCase()}`;
     // Set Unique Cert Id with prefix + version + country + unique ref
     const UniqueCertificateId = `URN:UVCI:01:SG:${uniqueRef}`;
+    const euDccTestResultCode = Object.values(EUDccTestResult).includes(
+      item.testResultCode
+    )
+      ? item.testResultCode
+      : _.get(EUDccTestResult, item.testResultCode);
+
     const testGroup: EuTestParams = {
       tg: "840539006",
       tt: "LP6464-4", // need to confirm with MOH for for Serology, it can either be [Nucleic acid amplification with probe detection] or [Rapid immunoassay]
       sc: moment
         .tz(item.swabCollectionDate, "M/D/YY h:mm:ss A", "Asia/Singapore")
         .format(),
-      tr: item.testResultCode,
+      tr: euDccTestResultCode,
       tc: item.provider,
       co: "SG",
       is: euSigner.name,
