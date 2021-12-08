@@ -37,7 +37,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {
       testType:
         "Reverse transcription polymerase chain reaction (rRT-PCR) test",
       testResult: "Positive",
-      testResultCode: "260373001",
+      testResultCode: "10828004",
     },
   ];
 
@@ -109,7 +109,7 @@ describe("createEuTestCert for ART Anterior Nares Swab", () => {
       testCode: "41112601",
       testType: "Quidel QuickVue At-Home OTC COVID-19 Test",
       testResult: "Positive",
-      testResultCode: "260373001",
+      testResultCode: "10828004",
       deviceIdentifier: "1232",
     },
   ];
@@ -183,7 +183,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
       testType:
         "Reverse transcription polymerase chain reaction (rRT-PCR) test",
       testResult: "Positive",
-      testResultCode: "260373001",
+      testResultCode: "10828004",
     },
     {
       provider: "MacRitchie Medical Clinic",
@@ -203,7 +203,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
       testCode: "41112601",
       testType: "Quidel QuickVue At-Home OTC COVID-19 Test",
       testResult: "Positive",
-      testResultCode: "260373001",
+      testResultCode: "10828004",
       deviceIdentifier: "1232",
     },
   ];
@@ -254,6 +254,220 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
             co: "SG",
             is: "Ministry of Health (Singapore)",
             ci: "URN:UVCI:01:SG:2ABC-CDE-CDE",
+          },
+        ],
+        meta: {
+          reference: "abc-cde-cde",
+          notarisedOn: "2021-06-30T00:00:00.000Z",
+          passportNumber: "ES12345",
+          url: "storedUrl",
+        },
+      },
+    ]);
+  });
+});
+
+describe("createEuTestCert for PCR Nasopharyngeal Swab with positive/negative test result code", () => {
+  let dateNowSpy: jest.SpyInstance;
+  let spy: jest.SpyInstance;
+  beforeAll(() => {
+    spy = jest.spyOn(console, "error").mockImplementation(() => {
+      // do not display errors
+    });
+    dateNowSpy = jest
+      .spyOn(Date.prototype, "toISOString")
+      .mockReturnValue("2021-06-30T00:00:00.000Z");
+  });
+  afterAll(() => {
+    spy.mockRestore();
+    dateNowSpy.mockRestore();
+  });
+
+  const testData: TestData[] = [
+    {
+      provider: "MacRitchie Medical Clinic",
+      gender: "M",
+      lab: "lab",
+      nationality: "SG",
+      nric: "123",
+      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
+      passportNumber: "ES12345",
+      patientName: "TESTING",
+      performerMcr: "123",
+      performerName: "123",
+      birthDate: "01/01/2021",
+      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
+      swabType: "Nasopharyngeal swab",
+      swabTypeCode: "258500001",
+      testCode: "94531-1",
+      testType:
+        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+      testResult: "Negative",
+      testResultCode: "260385009",
+    },
+  ];
+
+  it("create EU test cert with valid params negative test result code", async () => {
+    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    expect(result).toMatchObject([
+      {
+        ver: "1.3.0",
+        nam: {
+          fnt: "TESTING",
+        },
+        dob: "2021-01-01",
+        t: [
+          {
+            tg: "840539006",
+            tt: "LP6464-4",
+            nm: testData[0].testType,
+            sc: "2021-06-27T14:15:00+08:00",
+            tr: "260415000",
+            tc: "MacRitchie Medical Clinic",
+            co: "SG",
+            is: "Ministry of Health (Singapore)",
+            ci: "URN:UVCI:01:SG:1ABC-CDE-CDE",
+          },
+        ],
+        meta: {
+          reference: "abc-cde-cde",
+          notarisedOn: "2021-06-30T00:00:00.000Z",
+          passportNumber: "ES12345",
+          url: "storedUrl",
+        },
+      },
+    ]);
+  });
+
+  it("create EU test cert with valid params positive test result code", async () => {
+    testData[0].testResult = "Positive";
+    testData[0].testResultCode = "10828004";
+    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    expect(result).toMatchObject([
+      {
+        ver: "1.3.0",
+        nam: {
+          fnt: "TESTING",
+        },
+        dob: "2021-01-01",
+        t: [
+          {
+            tg: "840539006",
+            tt: "LP6464-4",
+            nm: testData[0].testType,
+            sc: "2021-06-27T14:15:00+08:00",
+            tr: "260373001",
+            tc: "MacRitchie Medical Clinic",
+            co: "SG",
+            is: "Ministry of Health (Singapore)",
+            ci: "URN:UVCI:01:SG:1ABC-CDE-CDE",
+          },
+        ],
+        meta: {
+          reference: "abc-cde-cde",
+          notarisedOn: "2021-06-30T00:00:00.000Z",
+          passportNumber: "ES12345",
+          url: "storedUrl",
+        },
+      },
+    ]);
+  });
+});
+
+describe("createEuTestCert for PCR Nasopharyngeal Swab with detected/not_detected test result code", () => {
+  let dateNowSpy: jest.SpyInstance;
+  let spy: jest.SpyInstance;
+  beforeAll(() => {
+    spy = jest.spyOn(console, "error").mockImplementation(() => {
+      // do not display errors
+    });
+    dateNowSpy = jest
+      .spyOn(Date.prototype, "toISOString")
+      .mockReturnValue("2021-06-30T00:00:00.000Z");
+  });
+  afterAll(() => {
+    spy.mockRestore();
+    dateNowSpy.mockRestore();
+  });
+
+  const testData: TestData[] = [
+    {
+      provider: "MacRitchie Medical Clinic",
+      gender: "M",
+      lab: "lab",
+      nationality: "SG",
+      nric: "123",
+      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
+      passportNumber: "ES12345",
+      patientName: "TESTING",
+      performerMcr: "123",
+      performerName: "123",
+      birthDate: "01/01/2021",
+      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
+      swabType: "Nasopharyngeal swab",
+      swabTypeCode: "258500001",
+      testCode: "94531-1",
+      testType:
+        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+      testResult: "Not detected",
+      testResultCode: "260415000",
+    },
+  ];
+
+  it("create EU test cert with valid params not_detected test result code", async () => {
+    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    expect(result).toMatchObject([
+      {
+        ver: "1.3.0",
+        nam: {
+          fnt: "TESTING",
+        },
+        dob: "2021-01-01",
+        t: [
+          {
+            tg: "840539006",
+            tt: "LP6464-4",
+            nm: testData[0].testType,
+            sc: "2021-06-27T14:15:00+08:00",
+            tr: "260415000",
+            tc: "MacRitchie Medical Clinic",
+            co: "SG",
+            is: "Ministry of Health (Singapore)",
+            ci: "URN:UVCI:01:SG:1ABC-CDE-CDE",
+          },
+        ],
+        meta: {
+          reference: "abc-cde-cde",
+          notarisedOn: "2021-06-30T00:00:00.000Z",
+          passportNumber: "ES12345",
+          url: "storedUrl",
+        },
+      },
+    ]);
+  });
+
+  it("create EU test cert with valid params detected test result code", async () => {
+    testData[0].testResult = "Detected";
+    testData[0].testResultCode = "260373001";
+    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    expect(result).toMatchObject([
+      {
+        ver: "1.3.0",
+        nam: {
+          fnt: "TESTING",
+        },
+        dob: "2021-01-01",
+        t: [
+          {
+            tg: "840539006",
+            tt: "LP6464-4",
+            nm: testData[0].testType,
+            sc: "2021-06-27T14:15:00+08:00",
+            tr: "260373001",
+            tc: "MacRitchie Medical Clinic",
+            co: "SG",
+            is: "Ministry of Health (Singapore)",
+            ci: "URN:UVCI:01:SG:1ABC-CDE-CDE",
           },
         ],
         meta: {
