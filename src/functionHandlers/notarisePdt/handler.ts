@@ -52,24 +52,35 @@ export const notarisePdt = async (
   if (config.isOfflineQrEnabled || whiteListNrics.includes(patientNricFin)) {
     try {
       const testData = getTestDataFromHealthCert(data);
-
-      traceWithRef("EU test cert...");
-      const euTestCerts = await createEuTestCert(
-        testData,
-        reference,
-        storedUrl
-      );
-      traceWithRef(euTestCerts);
-
-      traceWithRef("Generating EU test cert qr...");
-      signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
-      if (!signedEuHealthCerts.length) {
-        throw new Error("Invalid EU vacc cert generated");
+      const testDataTypes = testData.map((test) => test.swabTypeCode);
+      if (
+        testDataTypes.includes(config.swabTestTypes.ART) ||
+        testDataTypes.includes(config.swabTestTypes.PCR)
+      ) {
+        traceWithRef("signedEuHealthCerts: Generating EU test cert...");
+        const euTestCerts = await createEuTestCert(
+          testData,
+          reference,
+          storedUrl
+        );
+        traceWithRef(euTestCerts);
+        signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
+        if (!signedEuHealthCerts.length) {
+          throw new Error(
+            `Generated EU Vacc Cert is invalid: signedEuHealthCerts has 0 entries`
+          );
+        }
+      } else {
+        traceWithRef(
+          `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
+            testDataTypes
+          )}`
+        );
       }
     } catch (e) {
-      if (e instanceof Error) {
-        errorWithRef(`Offline Qr error: ${e.message}`);
-      }
+      errorWithRef(
+        `signedEuHealthCerts error: ${e instanceof Error ? e.message : e}`
+      );
     }
   }
 
