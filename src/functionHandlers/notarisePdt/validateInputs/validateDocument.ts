@@ -159,8 +159,13 @@ export const validateV2Document = async (
   const issuerDomain: string | undefined = issuer.data[0]?.location;
   if (!issuerDomain)
     throw new DocumentInvalidError("Issuer's domain is not found");
-  const testType = _.isString(data.type) ? data.type : "PCR"; // When HealthCert is a multi type, check against PCR whitelist
 
-  const validDomain = await isAuthorizedIssuer(issuerDomain, testType);
-  if (!validDomain) throw new UnrecognisedClinicError(issuerDomain, testType);
+  const whitelistType =
+    _.isString(data.type) && data.type === PdtTypes.Art
+      ? PdtTypes.Art // Only when HealthCert is a single type `"ART"`, check against ART whitelist
+      : PdtTypes.Pcr; // Else, default to PCR whitelist for all other types (e.g. `"PCR"`, `"SER"`, `["PCR", "SER"]`)
+
+  const validDomain = await isAuthorizedIssuer(issuerDomain, whitelistType);
+  if (!validDomain)
+    throw new UnrecognisedClinicError(issuerDomain, JSON.stringify(data.type));
 };
