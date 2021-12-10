@@ -24,7 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "@ahryman40k/ts-fhir-types": "^4.0.36",
-    "@govtechsg/oa-schemata": "^1.15.9",
+    "@govtechsg/oa-schemata": "^1.15.10",
     "@govtechsg/oa-verify": "^7.7.0",
     "@govtechsg/open-attestation": "^6.2.0",
     "@middy/core": "^2.5.3",
