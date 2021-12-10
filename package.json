@@ -82,7 +82,7 @@
     "eslint-plugin-jest": "^25.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "fork-ts-checker-webpack-plugin": "^6.4.2",
-    "jest": "^27.3.1",
+    "jest": "^27.4.4",
     "jest-raw-loader": "^1.0.1",
     "prettier": "^2.5.0",
     "raw-loader": "^4.0.2",
