@@ -11,6 +11,7 @@ const sampleSignedEuHealthCerts: notarise.SignedEuHealthCert[] = [
   {
     type: "PCR",
     qr: "HC1:abcde",
+    expiryDateTime: "2022-12-17T01:27:50.263Z",
   },
 ];
 
@@ -388,6 +389,7 @@ it("should wrap a document and sign the document with signedEuHealthCert", async
         "reference": "e35f5d2a-4198-4f8f-96dc-d1afe0b67119",
         "signedEuHealthCerts": Array [
           Object {
+            "expiryDateTime": "2022-12-17T01:27:50.263Z",
             "qr": "HC1:abcde",
             "type": "PCR",
           },
