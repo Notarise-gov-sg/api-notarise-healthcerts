@@ -1,4 +1,4 @@
-import { HealthCertDocument } from "~/types";
+import { HealthCertDocument } from "../../types";
 
 export interface NricIdentifier {
   id?: string;

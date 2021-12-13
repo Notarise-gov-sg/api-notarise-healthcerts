@@ -3,7 +3,7 @@ import { notarise } from "@govtechsg/oa-schemata";
 import { config } from "../../../config";
 import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
 import { getParticularsFromHealthCert } from "../../healthCert";
-import { getNRICIdentifierV1, maskNRIC } from "~/models/fhir";
+import { getNRICIdentifierV1, maskNRIC } from "../../fhir";
 
 const { didSigner, documentName } = config;
 
