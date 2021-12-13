@@ -6,7 +6,6 @@ import {
   notifyPdt,
 } from "@notarise-gov-sg/sns-notify-recipients";
 import { R4 } from "@ahryman40k/ts-fhir-types";
-import { notarise } from "@govtechsg/oa-schemata";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
 import { getTestDataFromParseFhirBundle } from "../../../models/healthCertV2";
@@ -22,12 +21,9 @@ import {
 import { PDTHealthCertV2, NotarisationResult, TestData } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
-import { config, getDefaultIfUndefined } from "../../../config";
-import {
-  createEuSignedTestQr,
-  createEuTestCert,
-} from "../../../models/euHealthCert";
+import { config } from "../../../config";
 import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
+import { notarisePdt } from "./notarisePdt";
 
 const { trace, error } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
