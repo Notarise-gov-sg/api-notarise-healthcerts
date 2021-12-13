@@ -9,19 +9,21 @@ describe("test maskNricFinInPlace function", () => {
     const data = getData(PDTV1 as any) as HealthCertDocument;
     const nricIdentifier = getNRICIdentifierV1(data);
 
-    expect(nricIdentifier).toBeTruthy();
-
-    nricIdentifier.value = maskNRIC(nricIdentifier.value);
-    expect(nricIdentifier.value.includes("****")).toBeTruthy();
+    expect(nricIdentifier).not.toBeNull();
+    if (nricIdentifier != null) {
+      nricIdentifier.value = maskNRIC(nricIdentifier.value);
+      expect(nricIdentifier.value.includes("****")).toBeTruthy();
+    }
   });
 
   it("nric should be masked for V2 Healthcert", () => {
     const data = getData(PDTV2 as any) as HealthCertDocument;
     const nricIdentifier = getNRICIdentifierV2(data);
 
-    expect(nricIdentifier).toBeTruthy();
-
-    nricIdentifier.value = maskNRIC(nricIdentifier.value);
-    expect(nricIdentifier.value.includes("****")).toBeTruthy();
+    expect(nricIdentifier).not.toBeNull();
+    if (nricIdentifier != null) {
+      nricIdentifier.value = maskNRIC(nricIdentifier.value);
+      expect(nricIdentifier.value.includes("****")).toBeTruthy();
+    }
   });
 });
