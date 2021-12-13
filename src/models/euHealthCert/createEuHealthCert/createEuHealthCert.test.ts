@@ -1,6 +1,59 @@
 import { TestData } from "src/types";
 import { createEuTestCert } from "./index";
 
+describe("createEuTestCert for invalid tests", () => {
+  let dateNowSpy: jest.SpyInstance;
+  let spy: jest.SpyInstance;
+  beforeAll(() => {
+    spy = jest.spyOn(console, "error").mockImplementation(() => {
+      // do not display errors
+    });
+    dateNowSpy = jest
+      .spyOn(Date.prototype, "toISOString")
+      .mockReturnValue("2021-06-30T00:00:00.000Z");
+  });
+  afterAll(() => {
+    spy.mockRestore();
+    dateNowSpy.mockRestore();
+  });
+
+  const testData: TestData[] = [
+    {
+      provider: "MacRitchie Medical Clinic",
+      gender: "M",
+      lab: "lab",
+      nationality: "SG",
+      nric: "123",
+      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
+      passportNumber: "ES12345",
+      patientName: "TESTING",
+      performerMcr: "123",
+      performerName: "123",
+      birthDate: "01/01/2021",
+      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
+      swabType: "Nasopharyngeal swab",
+      swabTypeCode: "258500001",
+      testCode: "94531-1",
+      testType:
+        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+      testResult: "Positive",
+      testResultCode: "10828004",
+    },
+  ];
+
+  it("invalid EU test cert for other test type", async () => {
+    testData[0].swabTypeCode = "123456";
+    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    expect(result).toMatchObject([]);
+  });
+
+  it("invalid EU test cert for invalid test result code", async () => {
+    testData[0].testResultCode = "123456";
+    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    expect(result).toMatchObject([]);
+  });
+});
+
 describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {
   let dateNowSpy: jest.SpyInstance;
   let spy: jest.SpyInstance;
