@@ -8,7 +8,7 @@ import { notarise } from "@govtechsg/oa-schemata";
 import { ParsedBundle } from "../../fhir/types";
 import {
   PDTHealthCertV2,
-  NotarisedPDTHealthCertV2Document,
+  EndorsedPDTHealthCertV2,
   SignedNotarisedPDTHealthCertV2Document,
 } from "../../../types";
 import { createUnwrappedDocument } from "./createUnwrappedHealthCert";
@@ -19,7 +19,7 @@ const { didSigner } = config;
 const { trace } = getLogger("api-notarise-healthcerts");
 
 const signWrappedDocument = (
-  wrappedDocument: WrappedDocument<NotarisedPDTHealthCertV2Document>
+  wrappedDocument: WrappedDocument<EndorsedPDTHealthCertV2>
 ) =>
   signDocument(
     wrappedDocument as any,
