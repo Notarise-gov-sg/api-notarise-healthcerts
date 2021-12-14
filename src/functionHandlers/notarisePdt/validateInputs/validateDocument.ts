@@ -139,19 +139,19 @@ export const validateV2Document = async (
       );
   } else {
     // When document is a multi type (i.e. ["PCR", "SER"])
-    const supportedMultiTypes = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
-    const isValidMultiType = _.isEqual(
-      _.sortBy(supportedMultiTypes),
-      _.sortBy(data.type)
+    const supportedMultiTypes = [[PdtTypes.Pcr, PdtTypes.Ser]]; // For now, only ["PCR", "SER"] is supported
+    const isValidMultiType = supportedMultiTypes.some((t) =>
+      // Sort each multi type before comparing array equality
+      _.isEqual(_.sortBy(t), _.sortBy(data.type))
     );
 
     if (!isValidMultiType)
       throw new DocumentInvalidError(
-        `Document type of "${JSON.stringify(
+        `Document type of ${JSON.stringify(
           data.type
-        )}" is invalid. Only "${JSON.stringify(
-          supportedMultiTypes
-        )}" is supported.`
+        )} is invalid. Only ${supportedMultiTypes.map((mt) =>
+          JSON.stringify(mt)
+        )} is supported.`
       );
   }
 
