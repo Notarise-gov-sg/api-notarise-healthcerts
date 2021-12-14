@@ -41,7 +41,7 @@ export const createEuTestCert = (
       item.testResultCode
     )
       ? item.testResultCode
-      : _.get(EUDccTestResult, item.testResultCode);
+      : _.get(EUDccTestResult, item.testResultCode, null);
 
     const testGroup: EuTestParams = {
       tg: "840539006",
@@ -62,10 +62,11 @@ export const createEuTestCert = (
       testGroup.tt = "LP217198-3"; // test type code for ART test [Rapid immunoassay]
       testGroup.ma = item.deviceIdentifier;
     }
-    // generate test cert only for PCR and ART
+    // generate test cert only for PCR and ART which have valid test result code
     if (
-      item.swabTypeCode === swabTestTypes.PCR ||
-      item.swabTypeCode === swabTestTypes.ART
+      euDccTestResultCode &&
+      (item.swabTypeCode === swabTestTypes.PCR ||
+        item.swabTypeCode === swabTestTypes.ART)
     ) {
       testHealthCerts.push({
         ver: fhirVersion,
