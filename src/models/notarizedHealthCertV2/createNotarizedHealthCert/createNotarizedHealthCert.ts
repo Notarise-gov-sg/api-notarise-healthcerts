@@ -7,7 +7,7 @@ import {
 import { notarise } from "@govtechsg/oa-schemata";
 import { ParsedBundle } from "../../fhir/types";
 import {
-  PDTHealthCertV2Document,
+  PDTHealthCertV2,
   NotarisedPDTHealthCertV2Document,
   SignedNotarisedPDTHealthCertV2Document,
 } from "../../../types";
@@ -31,7 +31,7 @@ const signWrappedDocument = (
   ) as Promise<SignedNotarisedPDTHealthCertV2Document>;
 
 export const createNotarizedHealthCert = async (
-  certificate: WrappedDocument<PDTHealthCertV2Document>,
+  certificate: WrappedDocument<PDTHealthCertV2>,
   parseFhirBundle: ParsedBundle,
   reference: string,
   storedUrl: string,

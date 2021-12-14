@@ -117,12 +117,15 @@ export interface NotarizedHealthCert extends HealthCertDocument {
   notarisationMetadata: notarise.NotarisationMetadata;
 }
 
-export interface PDTHealthCertV2Document
+/**
+ * HealthCert (unwrapped) in PDT Schema v2.0
+ */
+export interface PDTHealthCertV2
   extends pdtHealthCertV2.PDTHealthCertV2,
     Omit<v2.OpenAttestationDocument, "id"> {}
 
 export interface NotarisedPDTHealthCertV2Document
-  extends PDTHealthCertV2Document,
+  extends PDTHealthCertV2,
     notarise.Notarise {}
 
 export type SignedNotarisedPDTHealthCertV2Document =

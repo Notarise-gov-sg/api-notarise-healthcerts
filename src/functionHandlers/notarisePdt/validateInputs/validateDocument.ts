@@ -9,7 +9,7 @@ import { WrappedDocument, getData } from "@govtechsg/open-attestation";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import _ from "lodash";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
-import { HealthCertDocument, PDTHealthCertV2Document } from "../../../types";
+import { HealthCertDocument, PDTHealthCertV2 } from "../../../types";
 import {
   UnrecognisedClinicError,
   DocumentInvalidError,
@@ -60,7 +60,7 @@ export const validateDocument = async (
 };
 
 export const validateV2Document = async (
-  wrappedDocument: WrappedDocument<PDTHealthCertV2Document>
+  wrappedDocument: WrappedDocument<PDTHealthCertV2>
 ) => {
   /* 1. Verify and validate against Open Attestation */
   const verify =
