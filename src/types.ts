@@ -124,7 +124,7 @@ export interface NotarizedHealthCert extends HealthCertDocument {
  * x. [Type]: [Explaination] - [Function]
  *
  * 1. WrappedDocument<PDTHealthCertV2>: Received from clinic/provider
- * 2. PDTHealthCertV2: After unwrapping HealthCert - getData()
+ * 2. PDTHealthCertV2: After unwrapping HealthCert - getData<WrappedDocument<PDTHealthCertV2>>()
  * 3. EndorsedPDTHealthCertV2: After adding `notarisationMetadata` field - createUnwrappedDocument()
  * 4. WrappedDocument<EndorsedPDTHealthCertV2>: After wrapping endorsed HealthCert - wrapDocument()
  * 5. SignedWrappedDocument<EndorsedPDTHealthCertV2>: After signing wrapped endorsed HealthCert - createNotarizedHealthCert()
