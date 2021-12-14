@@ -130,18 +130,18 @@ export const validateV2Document = async (
   const { PdtTypes } = pdtHealthCertV2;
   if (_.isString(data.type)) {
     // When document is a single type (i.e. Just "PCR" | "ART" | "SER")
-    const supportedTypes = [PdtTypes.Pcr, PdtTypes.Art, PdtTypes.Ser];
-    const isValidType = supportedTypes.some((t) => t === data.type);
+    const supportedSingleTypes = [PdtTypes.Pcr, PdtTypes.Art, PdtTypes.Ser];
+    const isValidSingleType = supportedSingleTypes.some((t) => t === data.type);
 
-    if (!isValidType)
+    if (!isValidSingleType)
       throw new DocumentInvalidError(
         `Document type of "${data.type}" is invalid. Only "PCR", "ART" or "SER" is supported`
       );
   } else {
     // When document is a multi type (i.e. ["PCR", "SER"])
-    const supportedMultiType = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
+    const supportedMultiTypes = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
     const isValidMultiType = _.isEqual(
-      _.sortBy(supportedMultiType),
+      _.sortBy(supportedMultiTypes),
       _.sortBy(data.type)
     );
 
@@ -150,7 +150,7 @@ export const validateV2Document = async (
         `Document type of "${JSON.stringify(
           data.type
         )}" is invalid. Only "${JSON.stringify(
-          supportedMultiType
+          supportedMultiTypes
         )}" is supported.`
       );
   }
