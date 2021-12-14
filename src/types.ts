@@ -131,9 +131,6 @@ export interface EndorsedPDTHealthCertV2
   extends PDTHealthCertV2,
     notarise.Notarise {}
 
-export type SignedNotarisedPDTHealthCertV2Document =
-  SignedWrappedDocument<EndorsedPDTHealthCertV2>;
-
 const UserDetailsT = Record({
   name: String,
   emailAddress: String,
