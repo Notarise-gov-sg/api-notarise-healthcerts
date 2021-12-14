@@ -9,7 +9,7 @@ import { WrappedDocument, getData } from "@govtechsg/open-attestation";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import _ from "lodash";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
-import { HealthCertDocument, PDTHealthCertV2Document } from "../../../types";
+import { HealthCertDocument, PDTHealthCertV2 } from "../../../types";
 import {
   UnrecognisedClinicError,
   DocumentInvalidError,
@@ -60,7 +60,7 @@ export const validateDocument = async (
 };
 
 export const validateV2Document = async (
-  wrappedDocument: WrappedDocument<PDTHealthCertV2Document>
+  wrappedDocument: WrappedDocument<PDTHealthCertV2>
 ) => {
   /* 1. Verify and validate against Open Attestation */
   const verify =
@@ -130,28 +130,28 @@ export const validateV2Document = async (
   const { PdtTypes } = pdtHealthCertV2;
   if (_.isString(data.type)) {
     // When document is a single type (i.e. Just "PCR" | "ART" | "SER")
-    const supportedTypes = [PdtTypes.Pcr, PdtTypes.Art, PdtTypes.Ser];
-    const isValidType = supportedTypes.some((t) => t === data.type);
+    const supportedSingleTypes = [PdtTypes.Pcr, PdtTypes.Art, PdtTypes.Ser];
+    const isValidSingleType = supportedSingleTypes.some((t) => t === data.type);
 
-    if (!isValidType)
+    if (!isValidSingleType)
       throw new DocumentInvalidError(
         `Document type of "${data.type}" is invalid. Only "PCR", "ART" or "SER" is supported`
       );
   } else {
     // When document is a multi type (i.e. ["PCR", "SER"])
-    const supportedMultiType = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
-    const isValidMultiType = _.isEqual(
-      _.sortBy(supportedMultiType),
-      _.sortBy(data.type)
+    const supportedMultiTypes = [[PdtTypes.Pcr, PdtTypes.Ser]]; // For now, only ["PCR", "SER"] is supported
+    const isValidMultiType = supportedMultiTypes.some((t) =>
+      // Sort each multi type before comparing array equality
+      _.isEqual(_.sortBy(t), _.sortBy(data.type))
     );
 
     if (!isValidMultiType)
       throw new DocumentInvalidError(
-        `Document type of "${JSON.stringify(
+        `Document type of ${JSON.stringify(
           data.type
-        )}" is invalid. Only "${JSON.stringify(
-          supportedMultiType
-        )}" is supported.`
+        )} is invalid. Only ${supportedMultiTypes.map((mt) =>
+          JSON.stringify(mt)
+        )} is supported.`
       );
   }
 

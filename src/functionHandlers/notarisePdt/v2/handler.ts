@@ -19,11 +19,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../../services/transientStorage";
-import {
-  PDTHealthCertV2Document,
-  NotarisationResult,
-  TestData,
-} from "../../../types";
+import { PDTHealthCertV2, NotarisationResult, TestData } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
 import { config, getDefaultIfUndefined } from "../../../config";
@@ -39,7 +35,7 @@ const { trace, error } = getLogger(
 
 export const notarisePdt = async (
   reference: string,
-  certificate: WrappedDocument<PDTHealthCertV2Document>,
+  certificate: WrappedDocument<PDTHealthCertV2>,
   parsedFhirBundle: ParsedBundle,
   testData: TestData[]
 ): Promise<{ result: NotarisationResult; directUrl: string }> => {
@@ -116,7 +112,7 @@ export const notarisePdt = async (
 };
 
 export const main: Handler = async (
-  event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2Document>>
+  event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2>>
 ): Promise<APIGatewayProxyResult> => {
   trace("config", config);
   const reference = uuid();
@@ -125,7 +121,7 @@ export const main: Handler = async (
 
   /* 1. Validation */
   let parsedFhirBundle: ParsedBundle;
-  let data: PDTHealthCertV2Document; // The unwrapped document
+  let data: PDTHealthCertV2; // The unwrapped HealthCert
   let testData: TestData[];
   try {
     await validateV2Inputs(wrappedDocument);

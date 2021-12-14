@@ -7,7 +7,7 @@ import {
   HealthCertDocument,
   NotarisationResult,
   Observation,
-  PDTHealthCertV2Document,
+  PDTHealthCertV2,
 } from "../types";
 import { logError, trace } from "./trace";
 
@@ -52,7 +52,7 @@ export class CloudWatchMiddleware
     try {
       const notarisationResult: NotarisationResult = JSON.parse(body);
       const { notarisedDocument } = notarisationResult;
-      const data: HealthCertDocument | PDTHealthCertV2Document =
+      const data: HealthCertDocument | PDTHealthCertV2 =
         getData(notarisedDocument);
       let testTypes: string[] = [];
       const validTestTypes = ["art", "pcr", "ser"];
