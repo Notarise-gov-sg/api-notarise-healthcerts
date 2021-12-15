@@ -1,5 +1,6 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { notarise } from "@govtechsg/oa-schemata";
+import { getNricObjV1, maskNRIC } from "../../fhir";
 import { config } from "../../../config";
 import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
 import { getParticularsFromHealthCert } from "../../healthCert";
@@ -58,6 +59,11 @@ export const createUnwrappedDocument = (
       },
     },
   ];
+
+  const nricIdentifier = getNricObjV1(certificateData);
+  if (nricIdentifier != null) {
+    nricIdentifier.value = maskNRIC(nricIdentifier.value);
+  }
 
   const { fhirVersion, fhirBundle, logo } = certificateData;
 

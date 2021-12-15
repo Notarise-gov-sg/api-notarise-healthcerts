@@ -3,6 +3,7 @@ import { notarise } from "@govtechsg/oa-schemata";
 import { ParsedBundle } from "../../fhir/types";
 import { config } from "../../../config";
 import { PDTHealthCertV2, EndorsedPDTHealthCertV2 } from "../../../types";
+import { getNricObjV2, maskNRIC } from "../../fhir";
 
 const { didSigner } = config;
 
@@ -59,6 +60,13 @@ export const createUnwrappedDocument = (
       },
     },
   ];
+
+    // get a pointer to the nested nric object and mask the nric in place
+    const nricIdentifier = getNricObjV2(certificateData as any);
+    if (nricIdentifier != null) {
+      nricIdentifier.value = maskNRIC(nricIdentifier.value);
+    }
+
 
   const { version, type, fhirVersion, fhirBundle, logo } = certificateData;
 
