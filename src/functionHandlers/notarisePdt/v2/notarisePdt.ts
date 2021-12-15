@@ -9,11 +9,7 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../../services/transientStorage";
-import {
-  PDTHealthCertV2Document,
-  NotarisationResult,
-  TestData,
-} from "../../../types";
+import { PDTHealthCertV2, NotarisationResult, TestData } from "../../../types";
 import { config, getDefaultIfUndefined } from "../../../config";
 import {
   createEuSignedTestQr,
@@ -24,7 +20,7 @@ const { trace } = getLogger("src/functionHandlers/notarisePdt/v2/notarisePdt");
 
 export const notarisePdt = async (
   reference: string,
-  certificate: WrappedDocument<PDTHealthCertV2Document>,
+  certificate: WrappedDocument<PDTHealthCertV2>,
   parsedFhirBundle: ParsedBundle,
   testData: TestData[]
 ): Promise<{ result: NotarisationResult; directUrl: string }> => {

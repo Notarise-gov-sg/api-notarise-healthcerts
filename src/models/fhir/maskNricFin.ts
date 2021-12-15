@@ -1,5 +1,10 @@
 import { getLogger } from "../../common/logger";
-import { HealthCertDocument } from "../../types";
+import {
+  BundleV2,
+  fhirBundleV1,
+  HealthCertDocument,
+  PDTHealthCertV2,
+} from "../../types";
 
 export interface NricIdentifier {
   id?: string;
@@ -16,14 +21,15 @@ const { error: logError } = getLogger("maskNRIC");
 
 export const maskNRIC = (nric: string) => `${nric[0]}****${nric.slice(5)}`;
 
-export const getNRICIdentifierV1 = (
+// get a pointer to the nested nric object in v1 healthcert
+// so that can maskNRIC() in place
+export const getNricObjV1 = (
   data: HealthCertDocument
 ): NricIdentifier | null => {
   try {
-    const entry = (data.fhirBundle.entry as any[]).find(
-      (ent) => ent.resourceType === "Patient"
-    );
-    const nricIdentifier = entry?.identifier?.find((ident: any) =>
+    const bundle = data.fhirBundle as fhirBundleV1;
+    const entry = bundle.entry.find((ent) => ent.resourceType === "Patient");
+    const nricIdentifier = (entry as any).identifier?.find((ident: any) =>
       ident.type?.text?.includes("NRIC")
     );
     return nricIdentifier;
@@ -33,11 +39,12 @@ export const getNRICIdentifierV1 = (
   }
 };
 
-export const getNRICIdentifierV2 = (
-  data: HealthCertDocument
-): NricIdentifier | null => {
+// get a pointer to the nested nric object in v2 healthcert
+// so that can maskNRIC() in place
+export const getNricObjV2 = (data: PDTHealthCertV2): NricIdentifier | null => {
   try {
-    const entry = (data.fhirBundle.entry as any[]).find(
+    const bundle = data.fhirBundle as any as BundleV2;
+    const entry = bundle.entry.find(
       (ent) => ent.resource?.resourceType === "Patient"
     );
     const nricIdentifier = entry?.resource?.identifier?.find((ident: any) =>
