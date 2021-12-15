@@ -139,21 +139,6 @@ export interface PDTHealthCertV2
   extends pdtHealthCertV2.PDTHealthCertV2,
     Omit<v2.OpenAttestationDocument, "id"> {}
 
-
-/**
- * typing for the fhirBundle entries from HealthCert (unwrapped) in PDT Schema v2.0
- */
-type _BundleV2 = Pick<PDTHealthCertV2, "fhirBundle">;
-export interface BundleV2 extends _BundleV2 {
-  entry: {
-    fullUrl: string,
-    resource: {
-      resourceType: string,
-      [prop: string]: any
-    }
-  }[]
-}
-
 /**
  * Endorsed HealthCert (unwrapped) in PDT Schema v2.0
  *
