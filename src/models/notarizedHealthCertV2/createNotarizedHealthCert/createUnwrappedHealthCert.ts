@@ -1,9 +1,9 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { notarise } from "@govtechsg/oa-schemata";
+import { getNricObjV2, maskNRIC } from "../../../common/maskNricFin";
 import { ParsedBundle } from "../../fhir/types";
 import { config } from "../../../config";
 import { PDTHealthCertV2, EndorsedPDTHealthCertV2 } from "../../../types";
-import { getNricObjV2, maskNRIC } from "../../fhir";
 
 const { didSigner } = config;
 

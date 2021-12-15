@@ -1,10 +1,10 @@
-import { getLogger } from "../../common/logger";
+import { getLogger } from "./logger";
 import {
   BundleV2,
   fhirBundleV1,
   HealthCertDocument,
   PDTHealthCertV2,
-} from "../../types";
+} from "../types";
 
 export interface NricIdentifier {
   id?: string;

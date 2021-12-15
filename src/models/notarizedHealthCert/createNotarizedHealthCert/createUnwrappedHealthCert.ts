@@ -1,6 +1,6 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { notarise } from "@govtechsg/oa-schemata";
-import { getNricObjV1, maskNRIC } from "../../fhir";
+import { getNricObjV1, maskNRIC } from "../../../common/maskNricFin";
 import { config } from "../../../config";
 import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
 import { getParticularsFromHealthCert } from "../../healthCert";
