@@ -5,6 +5,8 @@ import _exampleArtHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_art
 import _examplePcrSerHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_ser_multi_result_wrapped.json";
 import { validateDocument, validateV2Document } from "./validateDocument";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
+import { DocumentInvalidError } from "../../../common/error";
+import mockImage from "./mock_image.json";
 
 jest.mock("@govtechsg/oa-verify");
 
@@ -302,4 +304,107 @@ it("should throw on v2 document failing when document data type invalid", async 
   await expect(validateV2Document(sampleDocumentV2InvalidType)).rejects.toThrow(
     /Invalid document error/
   );
+});
+
+describe("document logo validation", () => {
+  it("should not throw on valid base64 image string", async () => {
+    whenFragmentsAreValid();
+    await expect(
+      validateV2Document(examplePcrHealthCertV2Wrapped)
+    ).resolves.not.toThrow();
+  });
+
+  it("should throw on invalid base64 image string", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:foobar";
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+    });
+  });
+
+  it("should throw on https url with unknown format", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image.foo";
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+    });
+  });
+
+  it("should throw on https url with no direct link", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image";
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+    });
+  });
+
+  it("should throw on non-secure http url", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image.png";
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+    });
+  });
+
+  it("should throw on large base64 image string (>20KB)", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo = `a60dd179-4029-44c5-8b77-296b10412836:string:${mockImage["33KB"]}`;
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: `Document logo in base64 image string is too large (33.95KB). Only <=20KB is supported.`,
+    });
+  });
 });

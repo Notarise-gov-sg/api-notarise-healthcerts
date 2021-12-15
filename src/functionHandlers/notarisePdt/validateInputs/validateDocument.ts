@@ -124,7 +124,7 @@ export const validateV2Document = async (
 
   if (!data.type)
     throw new DocumentInvalidError(
-      `Document should include a valid "type" attribute (e.g. "PCR", "ART", "SER", ["PCR", "SER"]`
+      `Document should include a valid "type" attribute (e.g. "PCR", "ART", "SER" or ["PCR", "SER"])`
     );
 
   const { PdtTypes } = pdtHealthCertV2;
@@ -168,4 +168,29 @@ export const validateV2Document = async (
   const validDomain = await isAuthorizedIssuer(issuerDomain, whitelistType);
   if (!validDomain)
     throw new UnrecognisedClinicError(issuerDomain, JSON.stringify(data.type));
+
+  /* 4. Validate logo (<=20KB base64 or https:// */
+  if (data.logo) {
+    const VALID_LOGO_PATTERN =
+      // Either base64 string or https URL in .png | .jpg | .jpeg format
+      /(data:image\/(png|jpg|jpeg);base64,.*)|(https:\/\/.*(.png|.jpg.jpeg))/;
+    const MAX_LOGO_SIZE_IN_KILOBYTES = 20 * 1024; // 20KB
+
+    if (!VALID_LOGO_PATTERN.test(data.logo)) {
+      throw new DocumentInvalidError(
+        `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. ${VALID_LOGO_PATTERN})`
+      );
+    } else if (data.logo.startsWith("data:")) {
+      const byteLength = Buffer.byteLength(data.logo, "utf-8");
+      if (byteLength >= MAX_LOGO_SIZE_IN_KILOBYTES) {
+        throw new DocumentInvalidError(
+          `Document logo in base64 image string is too large (${(
+            byteLength / 1024
+          ).toFixed(2)}KB). Only <=${
+            MAX_LOGO_SIZE_IN_KILOBYTES / 1024
+          }KB is supported.`
+        );
+      }
+    }
+  }
 };
