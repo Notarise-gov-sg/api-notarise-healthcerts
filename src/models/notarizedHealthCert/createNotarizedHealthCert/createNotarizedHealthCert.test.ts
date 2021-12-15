@@ -63,7 +63,7 @@ it("should wrap a document and sign the document", async () => {
                 "type": Object {
                   "text": "NRIC",
                 },
-                "value": "S****989Z",
+                "value": "S9098989Z",
               },
             ],
             "name": Array [
@@ -255,7 +255,7 @@ it("should wrap a document and sign the document with signedEuHealthCert", async
                 "type": Object {
                   "text": "NRIC",
                 },
-                "value": "S****989Z",
+                "value": "S9098989Z",
               },
             ],
             "name": Array [
