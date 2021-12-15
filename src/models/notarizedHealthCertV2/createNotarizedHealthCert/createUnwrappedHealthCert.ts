@@ -61,12 +61,11 @@ export const createUnwrappedDocument = (
     },
   ];
 
-    // get a pointer to the nested nric object and mask the nric in place
-    const nricIdentifier = getNricObjV2(certificateData as any);
-    if (nricIdentifier != null) {
-      nricIdentifier.value = maskNRIC(nricIdentifier.value);
-    }
-
+  // get a pointer to the nested nric object and mask the nric in place
+  const nricIdentifier = getNricObjV2(certificateData as any);
+  if (nricIdentifier != null) {
+    nricIdentifier.value = maskNRIC(nricIdentifier.value);
+  }
 
   const { version, type, fhirVersion, fhirBundle, logo } = certificateData;
 
