@@ -23,8 +23,6 @@ export class CloudWatchMiddleware
 {
   private specificDomain = "";
 
-  private validTestTypes = ["art", "pcr", "ser"];
-
   // split "abc.riverr.io" into "riverr.io"
   // searches for final "."
   toAggregateDomain(provider: string): string {
@@ -87,6 +85,7 @@ export class CloudWatchMiddleware
   // version 2
   private extractTestTypesV2(data: PDTHealthCertV2): string[] {
     let testTypes: string[] = [];
+    const validTestTypes = ["art", "pcr", "ser"];
     if (typeof data.type === "string") {
       testTypes = [data.type];
     } else if (Array.isArray(data.type)) {
@@ -94,7 +93,7 @@ export class CloudWatchMiddleware
     }
     for (let i = 0; i < testTypes.length; i += 1) {
       testTypes[i] = testTypes[i].toLowerCase();
-      if (!this.validTestTypes.includes(testTypes[i])) {
+      if (!validTestTypes.includes(testTypes[i])) {
         testTypes[i] = `INVALID_TEST_TYPE: ${testTypes[i]}`;
       }
     }
@@ -103,7 +102,7 @@ export class CloudWatchMiddleware
 
   // version 1
   private extractTestTypesV1(data: HealthCertDocument): string[] {
-    let testTypes: string[] = [];
+    const testTypes: string[] = [];
     const observations = data.fhirBundle?.entry as Observation[];
     const observation = observations.find(
       (entr: any) => entr.resourceType === "Observation"
@@ -111,7 +110,19 @@ export class CloudWatchMiddleware
     let { display } = observation.code.coding[0]; // e.g. Reverse transcription polymerase chain reaction (rRT-PCR) test
     display = display.toLowerCase();
 
-    testTypes = this.validTestTypes.filter((test) => display.includes(test));
+    const validTests: Record<string, string> = {
+      rapid: "art",
+      pcr: "pcr",
+      "serum or plasma": "ser",
+    };
+
+    const tests: string[] = Object.keys(validTests);
+    for (let i = 0; i < tests.length; i += 1) {
+      const test = tests[i];
+      if (display.includes(test)) {
+        testTypes.push(validTests[test]);
+      }
+    }
 
     return testTypes.length === 0
       ? [`INVALID_TEST_TYPE: ${display}`]
