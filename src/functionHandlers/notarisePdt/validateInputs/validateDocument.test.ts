@@ -329,7 +329,7 @@ describe("document logo validation", () => {
     }
     expect(thrownError).toStrictEqual({
       title: `Submitted HealthCert is invalid`,
-      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
     });
   });
 
@@ -348,7 +348,7 @@ describe("document logo validation", () => {
     }
     expect(thrownError).toStrictEqual({
       title: `Submitted HealthCert is invalid`,
-      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
     });
   });
 
@@ -367,7 +367,7 @@ describe("document logo validation", () => {
     }
     expect(thrownError).toStrictEqual({
       title: `Submitted HealthCert is invalid`,
-      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
     });
   });
 
@@ -386,11 +386,12 @@ describe("document logo validation", () => {
     }
     expect(thrownError).toStrictEqual({
       title: `Submitted HealthCert is invalid`,
-      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
     });
   });
 
-  it("should throw on large base64 image string (>20KB)", async () => {
+  // FIXME: Temporarily disable logo size checking
+  it.skip("should throw on large base64 image string (>20KB)", async () => {
     const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
     sampleDocumentV2InvalidLogo.data.logo = `a60dd179-4029-44c5-8b77-296b10412836:string:${mockImage["33KB"]}`;
 

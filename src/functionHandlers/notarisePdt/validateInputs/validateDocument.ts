@@ -181,7 +181,7 @@ export const validateV2Document = async (
         `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. ${VALID_LOGO_PATTERN})`
       );
     }
-    // TODO: Temporarily disable logo size checking
+    // FIXME: Temporarily disable logo size checking
     // else if (data.logo.startsWith("data:")) {
     //   const byteLength = Buffer.byteLength(data.logo, "utf-8");
     //   if (byteLength >= MAX_LOGO_SIZE_IN_KILOBYTES) {
