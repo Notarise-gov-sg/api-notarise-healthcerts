@@ -97,7 +97,7 @@ functions:
       SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
       SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
       WHITELIST_NRICS: ${self:custom.${self:custom.envSource}.WHITELIST_NRICS}
-    handler: src/functionHandlers/notarisePdt/handler.handler
+    handler: src/functionHandlers/notarisePdt/v1/handler.handler
     events:
       - http:
           path: /notarise/pdt
@@ -298,7 +298,7 @@ resources:
         Period: 900
         Dimensions:
           - Name: ApiName
-            Value: "${self:provider.stage}-${self:service}"  
+            Value: "${self:provider.stage}-${self:service}"
     ApiGatewayAlarm5xx:
       Type: AWS::CloudWatch::Alarm
       Properties:
