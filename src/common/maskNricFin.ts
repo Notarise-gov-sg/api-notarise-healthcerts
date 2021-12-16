@@ -1,58 +1,45 @@
-import { getLogger } from "./logger";
-import {
-  BundleV2,
-  fhirBundleV1,
-  HealthCertDocument,
-  PDTHealthCertV2,
-} from "../types";
-
-export interface NricIdentifier {
-  id?: string;
-  value: string;
-  type?: {
-    text: string;
-  };
-}
+import { R4 } from "@ahryman40k/ts-fhir-types";
+import { fhirBundleV1, Patient, PDTHealthCertV2 } from "../types";
 
 // Get the reference to the nested nric identifier object
 // mask the value in place
 
-const { error: logError } = getLogger("maskNRIC");
+const maskNric = (nric: string) => `${nric[0]}****${nric.slice(5)}`;
 
-export const maskNRIC = (nric: string) => `${nric[0]}****${nric.slice(5)}`;
+/**
+ * @deprecated This function should be removed when PDT HealthCert v1.0 is deprecated.
+ */
+export const maskNricInFhirBundleV1 = (
+  fhirBundle: fhirBundleV1 | R4.IBundle
+) => {
+  const patient = (fhirBundle as fhirBundleV1).entry.find(
+    (entry) => entry.resourceType === "Patient"
+  );
+  const nricIdentifier = (patient as Patient).identifier.find(
+    (i) => i.type !== "PPN" && i.type.text.toUpperCase() === "NRIC"
+  );
 
-// get a pointer to the nested nric object in v1 healthcert
-// so that can maskNRIC() in place
-export const getNricObjV1 = (
-  data: HealthCertDocument
-): NricIdentifier | null => {
-  try {
-    const bundle = data.fhirBundle as fhirBundleV1;
-    const entry = bundle.entry.find((ent) => ent.resourceType === "Patient");
-    const nricIdentifier = (entry as any).identifier?.find((ident: any) =>
-      ident.type?.text?.includes("NRIC")
-    );
-    return nricIdentifier;
-  } catch (error) {
-    logError(`cannot find nested nric identity object: ${error}`);
-    return null;
-  }
+  // Mask NRIC by reference
+  if (nricIdentifier?.value)
+    nricIdentifier.value = maskNric(nricIdentifier.value);
+
+  return fhirBundle;
 };
 
-// get a pointer to the nested nric object in v2 healthcert
-// so that can maskNRIC() in place
-export const getNricObjV2 = (data: PDTHealthCertV2): NricIdentifier | null => {
-  try {
-    const bundle = data.fhirBundle as any as BundleV2;
-    const entry = bundle.entry.find(
-      (ent) => ent.resource?.resourceType === "Patient"
-    );
-    const nricIdentifier = entry?.resource?.identifier?.find((ident: any) =>
-      ident.id?.includes("NRIC")
-    );
-    return nricIdentifier;
-  } catch (error) {
-    logError(`cannot find nested nric identity object: ${error}`);
-    return null;
-  }
+export const maskNricInFhirBundle = (
+  fhirBundle: PDTHealthCertV2["fhirBundle"]
+) => {
+  // PDTHealthCertV2["fhirBundle"] and R4.IBundle can be used interchangeably
+  const patient = (fhirBundle as R4.IBundle).entry?.find(
+    (entry: any) => entry?.resource?.resourceType === "Patient"
+  )?.resource as R4.IPatient;
+  const nricIdentifier = patient.identifier?.find(
+    (i) => i.id?.toUpperCase() === "NRIC-FIN"
+  );
+
+  // Mask NRIC by reference
+  if (nricIdentifier?.value)
+    nricIdentifier.value = maskNric(nricIdentifier.value);
+
+  return fhirBundle;
 };
