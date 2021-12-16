@@ -1,5 +1,6 @@
 import { getData, v2, WrappedDocument } from "@govtechsg/open-attestation";
 import { notarise } from "@govtechsg/oa-schemata";
+import { maskNricInFhirBundleV1 } from "../../../common/maskNricFin";
 import { config } from "../../../config";
 import { HealthCertDocument, NotarizedHealthCert } from "../../../types";
 import { getParticularsFromHealthCert } from "../../healthCert";
@@ -66,7 +67,7 @@ export const createUnwrappedDocument = (
     name: documentName,
     validFrom: certificateData.validFrom,
     fhirVersion,
-    fhirBundle,
+    fhirBundle: maskNricInFhirBundleV1(fhirBundle),
     issuers,
     $template,
     notarisationMetadata,

@@ -91,7 +91,7 @@ it("should wrap a v2 document and sign the document", async () => {
                 },
                 Object {
                   "id": "NRIC-FIN",
-                  "value": "S9098989Z",
+                  "value": "S****989Z",
                 },
               ],
               "name": Array [
@@ -450,7 +450,7 @@ it("should wrap a v2 document and sign the document with signedEuHealthCert", as
                 },
                 Object {
                   "id": "NRIC-FIN",
-                  "value": "S9098989Z",
+                  "value": "S****989Z",
                 },
               ],
               "name": Array [
