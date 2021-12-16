@@ -391,6 +391,7 @@ describe("document logo validation", () => {
   });
 
   // FIXME: Temporarily disable logo size checking
+  // eslint-disable-next-line jest/no-disabled-tests
   it.skip("should throw on large base64 image string (>20KB)", async () => {
     const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
     sampleDocumentV2InvalidLogo.data.logo = `a60dd179-4029-44c5-8b77-296b10412836:string:${mockImage["33KB"]}`;
