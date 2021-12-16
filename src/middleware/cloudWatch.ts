@@ -94,10 +94,10 @@ export class CloudWatchMiddleware
     for (let i = 0; i < testTypes.length; i += 1) {
       testTypes[i] = testTypes[i].toLowerCase();
       if (!validTestTypes.includes(testTypes[i])) {
-        testTypes[i] = `INVALID_TEST_TYPE: ${testTypes[i]}`;
+        testTypes[i] = `UNRECOGNISED: ${testTypes[i]}`;
       }
     }
-    return testTypes.sort();
+    return testTypes;
   }
 
   // version 1
@@ -124,9 +124,7 @@ export class CloudWatchMiddleware
       }
     }
 
-    return testTypes.length === 0
-      ? [`INVALID_TEST_TYPE: ${display}`]
-      : testTypes.sort();
+    return testTypes.length === 0 ? [`UNRECOGNISED: ${display}`] : testTypes;
   }
 }
 
