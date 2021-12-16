@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { NotarisationResult } from "../types";
-import wrappedDocument from "../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
+import wrappedDocumentV1 from "../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import wrappedDocumentV2 from "../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
 import { CloudWatchMiddleware, Request } from "./cloudWatch";
 import * as log from "./trace";
@@ -20,7 +20,7 @@ describe("test cloudwatch middleware for v1", () => {
     jest.spyOn(log, "trace");
     const request: Request = {
       event: {
-        body: wrappedDocument,
+        body: wrappedDocumentV1,
       },
       response: null,
     };
@@ -42,7 +42,7 @@ describe("test cloudwatch middleware for v1", () => {
 
     // let's assume the wrappedDocument has been notarized
     const notarisationResult: NotarisationResult = {
-      notarisedDocument: wrappedDocument as any,
+      notarisedDocument: wrappedDocumentV1 as any,
       ttl: 0,
       url: "",
     };
