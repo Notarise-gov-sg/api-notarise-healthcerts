@@ -169,7 +169,7 @@ export const validateV2Document = async (
   if (!validDomain)
     throw new UnrecognisedClinicError(issuerDomain, JSON.stringify(data.type));
 
-  /* 4. Validate logo (<=20KB base64 or https:// */
+  /* 4. Validate logo (<=20KB base64 image string or HTTPS direct link) */
   if (data.logo) {
     const VALID_LOGO_PATTERN =
       // Either base64 string or https URL in .png | .jpg | .jpeg format
@@ -178,7 +178,7 @@ export const validateV2Document = async (
 
     if (!VALID_LOGO_PATTERN.test(data.logo)) {
       throw new DocumentInvalidError(
-        `Document should include a valid "logo" attribute in base64 image string or HTTPS URL (i.e. ${VALID_LOGO_PATTERN})`
+        `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. ${VALID_LOGO_PATTERN})`
       );
     }
     // TODO: Temporarily disable logo size checking
