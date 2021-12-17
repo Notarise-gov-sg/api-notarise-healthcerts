@@ -67,9 +67,7 @@ export class CloudWatchMiddleware
       } else {
         // version 1
         // @ts-ignore
-        testTypes = Array.from(
-          this.extractTestTypesV1(data as HealthCertDocument)
-        );
+        testTypes = this.extractTestTypesV1(data as HealthCertDocument);
       }
       const { specificDomain } = this;
       const aggregateDomain = this.toAggregateDomain(specificDomain);
