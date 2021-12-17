@@ -1,6 +1,4 @@
 import { verify, isValid } from "@govtechsg/oa-verify";
-import axios from "axios";
-import { fromStream, fromBuffer } from "file-type";
 import _examplePcrHealthCertV1Wrapped from "../../../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import _examplePcrHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
 import _exampleArtHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_art_with_nric_wrapped.json";
@@ -308,7 +306,9 @@ it("should throw on v2 document failing when document data type invalid", async 
   );
 });
 
-describe.only("document logo validation", () => {
+describe("document logo validation", () => {
+  const GENERIC_LOGO_ERROR = `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(^data:image\\/(png|jpg|jpeg);base64,.*$)|(^https:\\/\\/.*[.](png|jpg|jpeg)$)/)`;
+
   it("should not throw on valid base64 image string", async () => {
     whenFragmentsAreValid();
     await expect(
@@ -316,7 +316,18 @@ describe.only("document logo validation", () => {
     ).resolves.not.toThrow();
   });
 
-  it("should throw on invalid base64 image string", async () => {
+  it("should not throw on valid https url", async () => {
+    const sampleDocumentV2ValidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2ValidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:https://www.notarise.gov.sg/images/notarise-logo.png";
+
+    whenFragmentsAreValid();
+    await expect(
+      validateV2Document(examplePcrHealthCertV2Wrapped)
+    ).resolves.not.toThrow();
+  });
+
+  it("should throw on invalid string", async () => {
     const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
     sampleDocumentV2InvalidLogo.data.logo =
       "a60dd179-4029-44c5-8b77-296b10412836:string:foobar";
@@ -331,14 +342,14 @@ describe.only("document logo validation", () => {
     }
     expect(thrownError).toStrictEqual({
       title: `Submitted HealthCert is invalid`,
-      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+      body: GENERIC_LOGO_ERROR,
     });
   });
 
-  it("should throw on https url with unknown format", async () => {
+  it("should throw on invalid base64 image string", async () => {
     const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
     sampleDocumentV2InvalidLogo.data.logo =
-      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image.foo";
+      "a60dd179-4029-44c5-8b77-296b10412836:string:data:image/png;base64,foobar";
 
     let thrownError;
     try {
@@ -350,57 +361,8 @@ describe.only("document logo validation", () => {
     }
     expect(thrownError).toStrictEqual({
       title: `Submitted HealthCert is invalid`,
-      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
+      body: `Document "logo" should resolve to a valid base64 image string (i.e. png|jpg|jpeg)`,
     });
-  });
-
-  it("should throw on https url with no direct link", async () => {
-    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
-    sampleDocumentV2InvalidLogo.data.logo =
-      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image";
-
-    let thrownError;
-    try {
-      await validateV2Document(sampleDocumentV2InvalidLogo);
-    } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
-      }
-    }
-    expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
-    });
-  });
-
-  it("should throw on non-secure http url", async () => {
-    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
-    sampleDocumentV2InvalidLogo.data.logo =
-      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image.png";
-
-    let thrownError;
-    try {
-      await validateV2Document(sampleDocumentV2InvalidLogo);
-    } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
-      }
-    }
-    expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
-    });
-  });
-
-  it("TEMP", async () => {
-    const url = "https://i.imgur.com/HwqObPz.png";
-    const res = await axios.get(url, { responseType: "stream" });
-    const httpsFileType = await fromStream(res.data);
-    expect(httpsFileType?.mime).toStrictEqual("image/png");
-
-    const buffer = Buffer.from(mockImage["33KB"].split(",")[1], "base64");
-    const base64FileType = await fromBuffer(buffer);
-    expect(base64FileType?.mime).toStrictEqual("image/png");
   });
 
   // FIXME: Temporarily disable logo size checking
@@ -420,6 +382,82 @@ describe.only("document logo validation", () => {
     expect(thrownError).toStrictEqual({
       title: `Submitted HealthCert is invalid`,
       body: `Document logo in base64 image string is too large (33.95KB). Only <=20KB is supported.`,
+    });
+  });
+
+  it("should throw on https url with unknown format", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image.foo";
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: GENERIC_LOGO_ERROR,
+    });
+  });
+
+  it("should throw on https url with no direct link", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image";
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: GENERIC_LOGO_ERROR,
+    });
+  });
+
+  it("should throw on https url that is unresolvable", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:https://foobar.notarise/unknown.png";
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: `Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)`,
+    });
+  });
+
+  it("should throw on http url that is insecure", async () => {
+    const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
+    sampleDocumentV2InvalidLogo.data.logo =
+      "a60dd179-4029-44c5-8b77-296b10412836:string:http://example.com/image.png";
+
+    let thrownError;
+    try {
+      await validateV2Document(sampleDocumentV2InvalidLogo);
+    } catch (e) {
+      if (e instanceof DocumentInvalidError) {
+        thrownError = { title: e.title, body: e.messageBody };
+      }
+    }
+    expect(thrownError).toStrictEqual({
+      title: `Submitted HealthCert is invalid`,
+      body: GENERIC_LOGO_ERROR,
     });
   });
 });
