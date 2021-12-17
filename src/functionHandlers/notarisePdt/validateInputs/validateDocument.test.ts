@@ -1,4 +1,6 @@
 import { verify, isValid } from "@govtechsg/oa-verify";
+import axios from "axios";
+import { fromStream, fromBuffer } from "file-type";
 import _examplePcrHealthCertV1Wrapped from "../../../../test/fixtures/v1/example_healthcert_with_nric_wrapped.json";
 import _examplePcrHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
 import _exampleArtHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_art_with_nric_wrapped.json";
@@ -306,7 +308,7 @@ it("should throw on v2 document failing when document data type invalid", async 
   );
 });
 
-describe("document logo validation", () => {
+describe.only("document logo validation", () => {
   it("should not throw on valid base64 image string", async () => {
     whenFragmentsAreValid();
     await expect(
@@ -388,6 +390,17 @@ describe("document logo validation", () => {
       title: `Submitted HealthCert is invalid`,
       body: `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(data:image\\/(png|jpg|jpeg);base64,.*)|(https:\\/\\/.*(.png|.jpg.jpeg))/)`,
     });
+  });
+
+  it("TEMP", async () => {
+    const url = "https://i.imgur.com/HwqObPz.png";
+    const res = await axios.get(url, { responseType: "stream" });
+    const httpsFileType = await fromStream(res.data);
+    expect(httpsFileType?.mime).toStrictEqual("image/png");
+
+    const buffer = Buffer.from(mockImage["33KB"].split(",")[1], "base64");
+    const base64FileType = await fromBuffer(buffer);
+    expect(base64FileType?.mime).toStrictEqual("image/png");
   });
 
   // FIXME: Temporarily disable logo size checking

@@ -42,6 +42,7 @@
     "debug": "^4.3.2",
     "fhir": "^4.11.1",
     "file-loader": "^6.2.0",
+    "file-type": "16.5.3",
     "he": "1.2.0",
     "http-errors": "1.8.1",
     "lodash": "^4.17.21",
