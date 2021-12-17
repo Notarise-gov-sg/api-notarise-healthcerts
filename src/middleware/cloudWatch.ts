@@ -23,6 +23,12 @@ export class CloudWatchMiddleware
 {
   private specificDomain = "";
 
+  private validTests: Record<string, string> = {
+    "94531-1": "pcr",
+    "97097-0": "art",
+    "94661-6": "ser",
+  };
+
   // split "abc.riverr.io" into "riverr.io"
   // searches for final "."
   toAggregateDomain(provider: string): string {
@@ -61,7 +67,9 @@ export class CloudWatchMiddleware
       } else {
         // version 1
         // @ts-ignore
-        testTypes = this.extractTestTypesV1(data as HealthCertDocument);
+        testTypes = Array.from(
+          this.extractTestTypesV1(data as HealthCertDocument)
+        );
       }
       const { specificDomain } = this;
       const aggregateDomain = this.toAggregateDomain(specificDomain);
@@ -85,7 +93,7 @@ export class CloudWatchMiddleware
   // version 2
   private extractTestTypesV2(data: PDTHealthCertV2): string[] {
     let testTypes: string[] = [];
-    const validTestTypes = ["art", "pcr", "ser"];
+    const validTestTypes = Object.values(this.validTests);
     if (typeof data.type === "string") {
       testTypes = [data.type];
     } else if (Array.isArray(data.type)) {
@@ -102,29 +110,29 @@ export class CloudWatchMiddleware
 
   // version 1
   private extractTestTypesV1(data: HealthCertDocument): string[] {
-    const testTypes: string[] = [];
-    const observations = data.fhirBundle?.entry as Observation[];
-    const observation = observations.find(
-      (entr: any) => entr.resourceType === "Observation"
-    ) as Observation;
-    let { display } = observation.code.coding[0]; // e.g. Reverse transcription polymerase chain reaction (rRT-PCR) test
-    display = display.toLowerCase();
+    const testTypes = new Set<string>();
+    const entries = data.fhirBundle?.entry;
+    if (entries == null) {
+      return [];
+    }
+    const observations = (entries as Observation[]).filter(
+      (entry) => entry.resourceType === "Observation"
+    );
+    for (let i = 0; i < observations.length; i += 1) {
+      const observation = observations[i];
+      const codings = observation.code.coding;
 
-    const validTests: Record<string, string> = {
-      rapid: "art",
-      pcr: "pcr",
-      "serum or plasma": "ser",
-    };
-
-    const tests: string[] = Object.keys(validTests);
-    for (let i = 0; i < tests.length; i += 1) {
-      const test = tests[i];
-      if (display.includes(test)) {
-        testTypes.push(validTests[test]);
+      for (let j = 0; j < codings.length; j += 1) {
+        const { code } = codings[j];
+        if (code in this.validTests) {
+          testTypes.add(this.validTests[code]);
+        } else {
+          testTypes.add(`UNRECOGNISED: ${code}`);
+        }
       }
     }
 
-    return testTypes.length === 0 ? [`UNRECOGNISED: ${display}`] : testTypes;
+    return Array.from(testTypes);
   }
 }
 

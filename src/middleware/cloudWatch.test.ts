@@ -74,7 +74,7 @@ describe("test cloudwatch middleware for v1", () => {
       ent.resourceType.includes("Observation")
     ) as any;
 
-    observation.code.coding[0].display = "blah";
+    observation.code.coding[0].code = "1234";
 
     const notarisationResult: NotarisationResult = {
       notarisedDocument: newDoc as any,
@@ -96,7 +96,7 @@ describe("test cloudwatch middleware for v1", () => {
     await cloudWatchMiddleware.before(request);
     await cloudWatchMiddleware.after(request);
     expect(log.trace).toHaveBeenCalledWith(
-      `specificDomain donotverify.testing.verify.gov.sg successfully notarised pdt of type UNRECOGNISED: blah`
+      `specificDomain donotverify.testing.verify.gov.sg successfully notarised pdt of type UNRECOGNISED: 1234`
     );
   });
 });
