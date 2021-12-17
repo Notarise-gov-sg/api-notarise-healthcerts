@@ -23,6 +23,12 @@ export class CloudWatchMiddleware
 {
   private specificDomain = "";
 
+  private validTests: Record<string, string> = {
+    "94531-1": "pcr",
+    "97097-0": "art",
+    "94661-6": "ser",
+  };
+
   // split "abc.riverr.io" into "riverr.io"
   // searches for final "."
   toAggregateDomain(provider: string): string {
@@ -55,37 +61,16 @@ export class CloudWatchMiddleware
       const data: HealthCertDocument | PDTHealthCertV2 =
         getData(notarisedDocument);
       let testTypes: string[] = [];
-      const validTestTypes = ["art", "pcr", "ser"];
       if (data.version === "pdt-healthcert-v2.0") {
         // version 2
-        if (typeof data.type === "string") {
-          testTypes = [data.type];
-        } else if (Array.isArray(data.type)) {
-          testTypes = data.type;
-        }
-        testTypes = testTypes.map((test) => test.toLowerCase());
-        const allValid: boolean = testTypes.every((test) =>
-          validTestTypes.includes(test)
-        );
-        if (!allValid) {
-          logError(`${testTypes.join(", ")} are not valid`);
-        }
+        testTypes = this.extractTestTypesV2(data as PDTHealthCertV2);
       } else {
         // version 1
         // @ts-ignore
-        const observations = data.fhirBundle?.entry as Observation[];
-        const observation = observations.find(
-          (entr: any) => entr.resourceType === "Observation"
-        ) as Observation;
-        let { display } = observation.code.coding[0]; // e.g. Reverse transcription polymerase chain reaction (rRT-PCR) test
-        display = display.toLowerCase();
-        testTypes = validTestTypes
-          .filter((test) => display.includes(test))
-          .map((test) => test.toLowerCase());
+        testTypes = this.extractTestTypesV1(data as HealthCertDocument);
       }
       const { specificDomain } = this;
       const aggregateDomain = this.toAggregateDomain(specificDomain);
-      testTypes.sort();
       trace(
         `aggregateDomain ${aggregateDomain} successfully notarised pdt of type ${testTypes.join(
           ", "
@@ -102,6 +87,51 @@ export class CloudWatchMiddleware
       );
     }
   };
+
+  // version 2
+  private extractTestTypesV2(data: PDTHealthCertV2): string[] {
+    let testTypes: string[] = [];
+    const validTestTypes = Object.values(this.validTests);
+    if (typeof data.type === "string") {
+      testTypes = [data.type];
+    } else if (Array.isArray(data.type)) {
+      testTypes = data.type;
+    }
+    for (let i = 0; i < testTypes.length; i += 1) {
+      testTypes[i] = testTypes[i].toLowerCase();
+      if (!validTestTypes.includes(testTypes[i])) {
+        testTypes[i] = `UNRECOGNISED: ${testTypes[i]}`;
+      }
+    }
+    return testTypes;
+  }
+
+  // version 1
+  private extractTestTypesV1(data: HealthCertDocument): string[] {
+    const testTypes = new Set<string>();
+    const entries = data.fhirBundle?.entry;
+    if (entries == null) {
+      return [];
+    }
+    const observations = (entries as Observation[]).filter(
+      (entry) => entry.resourceType === "Observation"
+    );
+    for (let i = 0; i < observations.length; i += 1) {
+      const observation = observations[i];
+      const codings = observation.code.coding;
+
+      for (let j = 0; j < codings.length; j += 1) {
+        const { code } = codings[j];
+        if (code in this.validTests) {
+          testTypes.add(this.validTests[code]);
+        } else {
+          testTypes.add(`UNRECOGNISED: ${code}`);
+        }
+      }
+    }
+
+    return Array.from(testTypes);
+  }
 }
 
 export const cloudWatchMiddleware = (): Pick<
