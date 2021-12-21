@@ -8,6 +8,8 @@ import {
 import { WrappedDocument, getData } from "@govtechsg/open-attestation";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import _ from "lodash";
+import axios from "axios";
+import { fromStream, fromBuffer } from "file-type";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { HealthCertDocument, PDTHealthCertV2 } from "../../../types";
 import {
@@ -124,7 +126,7 @@ export const validateV2Document = async (
 
   if (!data.type)
     throw new DocumentInvalidError(
-      `Document should include a valid "type" attribute (e.g. "PCR", "ART", "SER", ["PCR", "SER"]`
+      `Document should include a valid "type" attribute (e.g. "PCR", "ART", "SER" or ["PCR", "SER"])`
     );
 
   const { PdtTypes } = pdtHealthCertV2;
@@ -168,4 +170,58 @@ export const validateV2Document = async (
   const validDomain = await isAuthorizedIssuer(issuerDomain, whitelistType);
   if (!validDomain)
     throw new UnrecognisedClinicError(issuerDomain, JSON.stringify(data.type));
+
+  /* 4. Validate logo (<=20KB base64 image string or HTTPS direct link) */
+  if (data.logo) {
+    const VALID_LOGO_PATTERN =
+      // Either base64 string or https URL in .png | .jpg | .jpeg format
+      /(^data:image\/(png|jpg|jpeg);base64,.*$)|(^https:\/\/.*[.](png|jpg|jpeg)$)/;
+    const VALID_MIME_PATTERN = /^image\/(png|jpeg)$/;
+    // const MAX_LOGO_SIZE_IN_KILOBYTES = 20 * 1024; // 20KB
+
+    if (!VALID_LOGO_PATTERN.test(data.logo)) {
+      throw new DocumentInvalidError(
+        `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. ${VALID_LOGO_PATTERN})`
+      );
+    }
+
+    if (data.logo.startsWith("https://")) {
+      try {
+        const res = await axios.get(data.logo, { responseType: "stream" });
+        const httpsFileType = await fromStream(res.data);
+        if (!VALID_MIME_PATTERN.test(httpsFileType?.mime || "")) {
+          throw new DocumentInvalidError(
+            `Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)`
+          );
+        }
+      } catch (err) {
+        throw new DocumentInvalidError(
+          `Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)`
+        );
+      }
+    } else if (data.logo.startsWith("data:image")) {
+      const buffer = Buffer.from(data.logo.split(",")[1], "base64");
+      const base64FileType = await fromBuffer(buffer);
+
+      if (!VALID_MIME_PATTERN.test(base64FileType?.mime || "")) {
+        throw new DocumentInvalidError(
+          `Document "logo" should resolve to a valid base64 image string (i.e. png|jpg|jpeg)`
+        );
+      }
+
+      // FIXME: Temporarily disable logo size checking
+      // if (data.logo.startsWith("data:")) {
+      //   const byteLength = Buffer.byteLength(data.logo, "utf-8");
+      //   if (byteLength >= MAX_LOGO_SIZE_IN_KILOBYTES) {
+      //     throw new DocumentInvalidError(
+      //       `Document logo in base64 image string is too large (${(
+      //         byteLength / 1024
+      //       ).toFixed(2)}KB). Only <=${
+      //         MAX_LOGO_SIZE_IN_KILOBYTES / 1024
+      //       }KB is supported.`
+      //     );
+      //   }
+      // }
+    }
+  }
 };
