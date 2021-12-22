@@ -33,7 +33,7 @@ curl -i -X POST \
 {
   "notarisedDocument": {...},
   "ttl": 1636629304073,
-  "url": "https://action.openattestation.com/?q=xxx",
+  "url": "https://www.verify.gov.sg/verify?q=xxx",
   "gpayCovidCardUrl": "https://pay.google.com/gp/v/save/xxx"
 }
 ```

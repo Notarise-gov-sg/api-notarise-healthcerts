@@ -37,16 +37,17 @@ const stringifyAndEncode = (obj: any): string =>
 
 const universalUrl = (url: string, key: string) => {
   const subDomain = process.env.STAGE === "production" ? "www" : "dev";
+  const fullDomainToVerifyPath = `https://${subDomain}.verify.gov.sg/verify`;
   const query = stringifyAndEncode({
     type: "DOCUMENT",
     payload: {
       uri: url,
       permittedActions: ["VIEW", "STORE"],
-      redirect: `https://${subDomain}.verify.gov.sg/verify`,
+      redirect: fullDomainToVerifyPath,
     },
   });
   const anchor = key ? `#${stringifyAndEncode({ key })}` : ``;
-  return `https://action.openattestation.com/?q=${query}${anchor}`;
+  return `${fullDomainToVerifyPath}?q=${query}${anchor}`;
 };
 
 export const buildStoredUrl = (id: string, key: string) => {
