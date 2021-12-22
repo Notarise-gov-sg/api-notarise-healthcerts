@@ -88,12 +88,14 @@ export const main: Handler = async (
   /* Send to SPM notification/wallet */
   if (parsedFhirBundle.patient?.nricFin && config.notification.enabled) {
     try {
-      const testType =
-        testData[0].swabTypeCode === config.swabTestTypes.PCR
-          ? "PCR"
-          : testData[0].swabTypeCode === config.swabTestTypes.ART
-          ? "ART"
-          : null;
+      let testType = null;
+      /* [NEW] SPM wallet notification support only for single type oa doc */
+      if (testData.length === 1) {
+        if (testData[0].swabTypeCode === config.swabTestTypes.PCR)
+          testType = "PCR";
+        else if (testData[0].swabTypeCode === config.swabTestTypes.ART)
+          testType = "ART";
+      }
       if (config.healthCertNotification.enabled && testType) {
         /* [NEW] Send HealthCert to SPM wallet for PCR | ART (Only if enabled) */
         await notifyHealthCert({
