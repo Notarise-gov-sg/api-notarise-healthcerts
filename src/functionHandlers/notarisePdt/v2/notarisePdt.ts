@@ -4,8 +4,7 @@ import { ParsedBundle } from "../../../models/fhir/types";
 import { getLogger } from "../../../common/logger";
 import { createNotarizedHealthCert } from "../../../models/notarizedHealthCertV2";
 import {
-  buildStoredDirectUrl,
-  buildStoredUrl,
+  buildUniversalUrl,
   getQueueNumber,
   uploadDocument,
 } from "../../../services/transientStorage";
@@ -23,15 +22,14 @@ export const notarisePdt = async (
   certificate: WrappedDocument<PDTHealthCertV2>,
   parsedFhirBundle: ParsedBundle,
   testData: TestData[]
-): Promise<{ result: NotarisationResult; directUrl: string }> => {
+): Promise<NotarisationResult> => {
   const errorWithRef = trace.extend(`reference:${reference}`);
   const traceWithRef = trace.extend(`reference:${reference}`);
 
   const { id, key } = await getQueueNumber(reference);
   traceWithRef(`placeholder document id: ${id}`);
 
-  const directUrl = buildStoredDirectUrl(id, key);
-  const storedUrl = buildStoredUrl(id, key);
+  const universalUrl = buildUniversalUrl(id, key);
 
   const whiteListNrics = getDefaultIfUndefined(process.env.WHITELIST_NRICS, "")
     .split(",")
@@ -54,7 +52,7 @@ export const notarisePdt = async (
         const euTestCerts = await createEuTestCert(
           testData,
           reference,
-          storedUrl
+          universalUrl
         );
         traceWithRef(euTestCerts);
         signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
@@ -81,17 +79,14 @@ export const notarisePdt = async (
     certificate,
     parsedFhirBundle,
     reference,
-    storedUrl,
+    universalUrl,
     signedEuHealthCerts
   );
   const { ttl } = await uploadDocument(notarisedDocument, id, reference);
   traceWithRef("Document successfully notarised");
   return {
-    result: {
-      notarisedDocument,
-      ttl,
-      url: storedUrl,
-    },
-    directUrl,
+    notarisedDocument,
+    ttl,
+    url: universalUrl,
   };
 };

@@ -7,7 +7,7 @@ import {
 import { getLogger } from "../../../common/logger";
 import { createNotarizedHealthCert } from "../../../models/notarizedHealthCert";
 import {
-  buildStoredUrl,
+  buildUniversalUrl,
   getQueueNumber,
   uploadDocument,
 } from "../../../services/transientStorage";
@@ -32,7 +32,7 @@ export const notarisePdt = async (
   const { id, key } = await getQueueNumber(reference);
   traceWithRef(`placeholder document id: ${id}`);
 
-  const storedUrl = buildStoredUrl(id, key);
+  const universalUrl = buildUniversalUrl(id, key);
   const data = getData(certificate);
   const testData = getTestDataFromHealthCert(data);
   const { nric, fin } = getParticularsFromHealthCert(data);
@@ -54,7 +54,7 @@ export const notarisePdt = async (
         testDataTypes.includes(config.swabTestTypes.PCR)
       ) {
         traceWithRef("signedEuHealthCerts: Generating EU test cert...");
-        const euTestCerts = createEuTestCert(testData, reference, storedUrl);
+        const euTestCerts = createEuTestCert(testData, reference, universalUrl);
         traceWithRef(euTestCerts);
         signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
         if (!signedEuHealthCerts.length) {
@@ -79,7 +79,7 @@ export const notarisePdt = async (
   const notarisedDocument = await createNotarizedHealthCert(
     certificate,
     reference,
-    storedUrl,
+    universalUrl,
     signedEuHealthCerts
   );
   const { ttl } = await uploadDocument(notarisedDocument, id, reference);
@@ -87,6 +87,6 @@ export const notarisePdt = async (
   return {
     notarisedDocument,
     ttl,
-    url: storedUrl,
+    url: universalUrl,
   };
 };
