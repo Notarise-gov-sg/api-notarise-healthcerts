@@ -4,25 +4,27 @@ import {
 } from "@notarise-gov-sg/sns-notify-recipients";
 import _ from "lodash";
 import moment from "moment-timezone";
+import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { ParsedBundle } from "../../models/fhir/types";
 import { config } from "../../config";
-import { NotarisationResult, TestData } from "../../types";
+import { NotarisationResult, TestData, PDTHealthCertV2 } from "../../types";
+
+const { PdtTypes } = pdtHealthCertV2;
 
 const isChildPatient = (parsedFhirBundle: ParsedBundle): boolean => {
   const patientDOB = parsedFhirBundle.patient.birthDate;
   return moment().diff(patientDOB, "years") < 15;
 };
 
-const isEligibleForSpmWallet = (parsedFhirBundle: ParsedBundle): boolean => {
-  const testTypeCode =
-    parsedFhirBundle.observations[0].observation.testType.code || "";
+const isEligibleForSpmWallet = (certificateData: PDTHealthCertV2): boolean => {
+  const supportedSingleTypes = [PdtTypes.Pcr, PdtTypes.Art];
   /* 
   [NEW] SPM wallet notification support only for; 
     - single type OA-Doc PCR or ART (currently, doesn't support either single-type 'SER' or multi-type ['PCR', 'SER'].)
   */
   return (
-    parsedFhirBundle.observations.length === 1 &&
-    Object.values(config.swabTestTypes).includes(testTypeCode)
+    _.isString(certificateData.type) &&
+    supportedSingleTypes.some((t) => t === certificateData.type)
   );
 };
 
@@ -30,26 +32,19 @@ export const sendNotification = async (
   result: NotarisationResult,
   parsedFhirBundle: ParsedBundle,
   testData: TestData[],
-  validFrom: string
+  certificateData: PDTHealthCertV2
 ) => {
   /* Send SPM notification using api-notify/wallet when patient is adult (15 years & above) and present NRIC-FIN in OA-Doc. */
   if (parsedFhirBundle.patient?.nricFin && !isChildPatient(parsedFhirBundle)) {
     /* [NEW] Send HealthCert to SPM wallet for PCR | ART (Only if enabled) */
     if (
       config.healthCertNotification.enabled &&
-      isEligibleForSpmWallet(parsedFhirBundle)
+      isEligibleForSpmWallet(certificateData)
     ) {
-      const testType =
-        _.findKey(
-          config.swabTestTypes,
-          (swabTestType) =>
-            swabTestType ===
-            parsedFhirBundle.observations[0].observation.testType.code
-        ) || "";
       await notifyHealthCert({
         uin: parsedFhirBundle.patient?.nricFin,
         version: "2.0",
-        type: testType,
+        type: certificateData.type as string,
         url: result.url,
         expiry: result.ttl,
       });
@@ -60,7 +55,7 @@ export const sendNotification = async (
         nric: parsedFhirBundle.patient?.nricFin,
         passportNumber: parsedFhirBundle.patient?.passportNumber,
         testData,
-        validFrom,
+        validFrom: certificateData.validFrom,
       });
     }
   }

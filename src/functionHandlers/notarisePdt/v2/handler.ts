@@ -84,12 +84,7 @@ export const main: Handler = async (
   /* Send to SPM notification/wallet (Only if enabled) */
   if (config.notification.enabled) {
     try {
-      await sendNotification(
-        result,
-        parsedFhirBundle,
-        testData,
-        data.validFrom
-      );
+      await sendNotification(result, parsedFhirBundle, testData, data);
     } catch (e) {
       if (e instanceof Error) {
         errorWithRef(`SPM notification/wallet error: ${e.message}`);

@@ -3,17 +3,18 @@ import {
   notifyPdt,
 } from "@notarise-gov-sg/sns-notify-recipients";
 import { ParsedBundle, GroupedObservation } from "../../models/fhir/types";
-import { NotarisationResult, TestData } from "../../types";
+import { NotarisationResult, TestData, PDTHealthCertV2 } from "../../types";
 import { config } from "../../config";
 import { sendNotification } from "./index";
 
 jest.mock("@notarise-gov-sg/sns-notify-recipients");
 
 describe("single type oa-doc notification", () => {
+  let certificateData: PDTHealthCertV2;
+  let resultMock: NotarisationResult;
+  let groupedObservationMock: GroupedObservation[];
   let parsedFhirBundleMock: ParsedBundle;
   let testDataMock: TestData[];
-  let groupedObservationMock: GroupedObservation[];
-  let resultMock: NotarisationResult;
   let spy: jest.SpyInstance;
   beforeAll(() => {
     spy = jest.spyOn(console, "error").mockImplementation(() => {
@@ -22,6 +23,10 @@ describe("single type oa-doc notification", () => {
     config.healthCertNotification.enabled = true;
   });
   beforeEach(() => {
+    certificateData = {
+      validFrom: "2021-08-24T04:22:36.062Z",
+      type: "PCR" as any,
+    } as any;
     resultMock = {
       notarisedDocument: "notarisedDocument" as any,
       ttl: 12345678,
@@ -111,7 +116,7 @@ describe("single type oa-doc notification", () => {
       resultMock,
       parsedFhirBundleMock,
       testDataMock,
-      "2021-08-24T04:22:36.062Z"
+      certificateData
     );
     expect(notifyHealthCert).toBeCalledTimes(0);
     expect(notifyPdt).toBeCalledTimes(0);
@@ -124,7 +129,7 @@ describe("single type oa-doc notification", () => {
       resultMock,
       parsedFhirBundleMock,
       testDataMock,
-      "2021-08-24T04:22:36.062Z"
+      certificateData
     );
     expect(notifyHealthCert).toBeCalledTimes(0);
     expect(notifyPdt).toBeCalledTimes(0);
@@ -132,6 +137,7 @@ describe("single type oa-doc notification", () => {
 
   it("trigger notifyPdt for single valid SER test cert", async () => {
     // set test type code to SER
+    certificateData.type = "SER" as any;
     parsedFhirBundleMock.observations[0].observation.testType = {
       code: "94661-6",
       display: "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
@@ -140,7 +146,7 @@ describe("single type oa-doc notification", () => {
       resultMock,
       parsedFhirBundleMock,
       testDataMock,
-      "2021-08-24T04:22:36.062Z"
+      certificateData
     );
     expect(notifyPdt).toBeCalledTimes(1);
     expect(notifyPdt).toHaveBeenCalledWith({
@@ -148,12 +154,13 @@ describe("single type oa-doc notification", () => {
       passportNumber: parsedFhirBundleMock.patient.passportNumber,
       testData: testDataMock,
       url: resultMock.url,
-      validFrom: "2021-08-24T04:22:36.062Z",
+      validFrom: certificateData.validFrom,
     });
   });
 
   it("trigger notifyHealthCert for valid ART test cert", async () => {
     // set test type code to ART
+    certificateData.type = "ART" as any;
     parsedFhirBundleMock.observations[0].observation.testType = {
       code: "697989009",
       display: "Anterior nares swab",
@@ -162,7 +169,7 @@ describe("single type oa-doc notification", () => {
       resultMock,
       parsedFhirBundleMock,
       testDataMock,
-      "2021-08-24T04:22:36.062Z"
+      certificateData
     );
 
     expect(notifyHealthCert).toBeCalledTimes(1);
@@ -180,7 +187,7 @@ describe("single type oa-doc notification", () => {
       resultMock,
       parsedFhirBundleMock,
       testDataMock,
-      "2021-08-24T04:22:36.062Z"
+      certificateData
     );
 
     expect(notifyHealthCert).toBeCalledTimes(1);
@@ -195,10 +202,11 @@ describe("single type oa-doc notification", () => {
 });
 
 describe("multi type oa-doc notification", () => {
+  let certificateData: PDTHealthCertV2;
+  let resultMock: NotarisationResult;
+  let groupedObservationMock: GroupedObservation[];
   let parsedFhirBundleMock: ParsedBundle;
   let testDataMock: TestData[];
-  let groupedObservationMock: GroupedObservation[];
-  let resultMock: NotarisationResult;
   let spy: jest.SpyInstance;
   beforeAll(() => {
     spy = jest.spyOn(console, "error").mockImplementation(() => {
@@ -207,6 +215,10 @@ describe("multi type oa-doc notification", () => {
     config.healthCertNotification.enabled = true;
   });
   beforeEach(() => {
+    certificateData = {
+      validFrom: "2021-08-24T04:22:36.062Z",
+      type: ["PCR", "SER"] as any,
+    } as any;
     resultMock = {
       notarisedDocument: "notarisedDocument" as any,
       ttl: 12345678,
@@ -345,7 +357,7 @@ describe("multi type oa-doc notification", () => {
       resultMock,
       parsedFhirBundleMock,
       testDataMock,
-      "2021-08-24T04:22:36.062Z"
+      certificateData
     );
     expect(notifyHealthCert).toBeCalledTimes(0);
     expect(notifyPdt).toBeCalledTimes(0);
@@ -358,7 +370,7 @@ describe("multi type oa-doc notification", () => {
       resultMock,
       parsedFhirBundleMock,
       testDataMock,
-      "2021-08-24T04:22:36.062Z"
+      certificateData
     );
     expect(notifyHealthCert).toBeCalledTimes(0);
     expect(notifyPdt).toBeCalledTimes(0);
@@ -369,7 +381,7 @@ describe("multi type oa-doc notification", () => {
       resultMock,
       parsedFhirBundleMock,
       testDataMock,
-      "2021-08-24T04:22:36.062Z"
+      certificateData
     );
     expect(notifyPdt).toBeCalledTimes(1);
     expect(notifyPdt).toHaveBeenCalledWith({
@@ -377,7 +389,7 @@ describe("multi type oa-doc notification", () => {
       passportNumber: parsedFhirBundleMock.patient.passportNumber,
       testData: testDataMock,
       url: resultMock.url,
-      validFrom: "2021-08-24T04:22:36.062Z",
+      validFrom: certificateData.validFrom,
     });
   });
 });
