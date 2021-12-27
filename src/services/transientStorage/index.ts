@@ -50,7 +50,7 @@ const universalUrl = (url: string, key: string) => {
   return `${fullDomainToVerifyPath}?q=${query}${anchor}`;
 };
 
-export const buildStoredUrl = (id: string, key: string) => {
+export const buildUniversalUrl = (id: string, key: string) => {
   const url = `${endpoint}/${id}`;
   return universalUrl(url, key);
 };
