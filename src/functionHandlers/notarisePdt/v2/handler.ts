@@ -1,11 +1,8 @@
 import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
-import {
-  notifyHealthCert,
-  notifyPdt,
-} from "@notarise-gov-sg/sns-notify-recipients";
 import { R4 } from "@ahryman40k/ts-fhir-types";
+import { sendNotification } from "../../../services/spmNotification";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
 import { getTestDataFromParseFhirBundle } from "../../../models/healthCertV2";
@@ -66,14 +63,13 @@ export const main: Handler = async (
 
   /* 2. Endorsement */
   let result: NotarisationResult;
-  let directUrl: string;
   try {
-    ({ result, directUrl } = await notarisePdt(
+    result = await notarisePdt(
       reference,
       wrappedDocument,
       parsedFhirBundle as ParsedBundle,
       testData as TestData[]
-    ));
+    );
   } catch (e) {
     errorWithRef(`Unhandled error: ${e instanceof Error ? e.message : e}`);
     return {
@@ -85,36 +81,15 @@ export const main: Handler = async (
     };
   }
 
-  /* Send to SPM notification/wallet */
-  if (parsedFhirBundle.patient?.nricFin && config.notification.enabled) {
+  /* Send to SPM notification/wallet (Only if enabled) */
+  if (config.notification.enabled) {
     try {
-      let testType = null;
-      /* [NEW] SPM wallet notification support only for single type oa doc */
-      if (testData.length === 1) {
-        if (testData[0].swabTypeCode === config.swabTestTypes.PCR)
-          testType = "PCR";
-        else if (testData[0].swabTypeCode === config.swabTestTypes.ART)
-          testType = "ART";
-      }
-      if (config.healthCertNotification.enabled && testType) {
-        /* [NEW] Send HealthCert to SPM wallet for PCR | ART (Only if enabled) */
-        await notifyHealthCert({
-          uin: parsedFhirBundle.patient.nricFin,
-          version: "2.0",
-          type: testType,
-          url: directUrl,
-          expiry: result.ttl,
-        });
-      } else {
-        /* Send SPM notification to recipient (Only if enabled) */
-        await notifyPdt({
-          url: result.url,
-          nric: parsedFhirBundle.patient.nricFin,
-          passportNumber: parsedFhirBundle.patient?.passportNumber,
-          testData,
-          validFrom: data.validFrom,
-        });
-      }
+      await sendNotification(
+        result,
+        parsedFhirBundle,
+        testData,
+        data.validFrom
+      );
     } catch (e) {
       if (e instanceof Error) {
         errorWithRef(`SPM notification/wallet error: ${e.message}`);

@@ -8,7 +8,7 @@ import {
 import { config } from "../../config";
 import { getLogger } from "../../common/logger";
 
-const { trace } = getLogger("api-notarise-healthcerts");
+const { trace } = getLogger("src/services/transientStorage");
 
 export const SuccessfulGetQueueNumberResponseDef = Record({
   id: String,
@@ -53,23 +53,6 @@ const universalUrl = (url: string, key: string) => {
 export const buildStoredUrl = (id: string, key: string) => {
   const url = `${endpoint}/${id}`;
   return universalUrl(url, key);
-};
-
-const universalDirectUrl = (url: string, key: string) => {
-  const query = stringifyAndEncode({
-    type: "DOCUMENT",
-    payload: {
-      uri: url,
-      permittedActions: ["VIEW", "STORE"],
-    },
-  });
-  const anchor = key ? `#${stringifyAndEncode({ key })}` : ``;
-  return `https://www.verify.gov.sg/verify?q=${query}${anchor}`;
-};
-
-export const buildStoredDirectUrl = (id: string, key: string) => {
-  const url = `${endpoint}/${id}`;
-  return universalDirectUrl(url, key);
 };
 
 export const getQueueNumber = async (reference: string) => {
