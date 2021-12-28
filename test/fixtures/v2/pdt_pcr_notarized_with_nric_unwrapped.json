@@ -21,7 +21,7 @@
                   "valueCodeableConcept": {
                     "text": "Patient Nationality",
                     "coding": [
-                      { "system": "urn:iso:std:iso:3166", "code": "SG"}
+                      { "system": "urn:iso:std:iso:3166", "code": "SG" }
                     ]
                   }
                 }
@@ -44,7 +44,7 @@
             },
             { "id": "NRIC-FIN", "value": "S****989Z" }
           ],
-          "name": [{ "text": "Tan Chen Chen"}],
+          "name": [{ "text": "Tan Chen Chen" }],
           "gender": "female",
           "birthDate": "1990-01-15"
         }
@@ -181,8 +181,8 @@
           "contact": [
             {
               "telecom": [
-                { "system": "url", "value": "https://www.moh.gov.sg"},
-                { "system": "phone", "value": "+6563259220"}
+                { "system": "url", "value": "https://www.moh.gov.sg" },
+                { "system": "phone", "value": "+6563259220" }
               ],
               "address": {
                 "type": "physical",
@@ -217,7 +217,7 @@
                   "system": "url",
                   "value": "https://www.macritchieclinic.com.sg"
                 },
-                { "system": "phone", "value": "+6561234567"}
+                { "system": "phone", "value": "+6561234567" }
               ],
               "address": {
                 "type": "physical",
