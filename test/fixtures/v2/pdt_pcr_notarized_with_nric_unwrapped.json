@@ -21,10 +21,7 @@
                   "valueCodeableConcept": {
                     "text": "Patient Nationality",
                     "coding": [
-                      {
-                        "system": "urn:iso:std:iso:3166",
-                        "code": "SG"
-                      }
+                      { "system": "urn:iso:std:iso:3166", "code": "SG"}
                     ]
                   }
                 }
@@ -45,16 +42,9 @@
               },
               "value": "E7831177G"
             },
-            {
-              "id": "NRIC-FIN",
-              "value": "S****989Z"
-            }
+            { "id": "NRIC-FIN", "value": "S****989Z" }
           ],
-          "name": [
-            {
-              "text": "Tan Chen Chen"
-            }
-          ],
+          "name": [{ "text": "Tan Chen Chen"}],
           "gender": "female",
           "birthDate": "1990-01-15"
         }
@@ -144,20 +134,14 @@
               }
             ]
           },
-          "collection": {
-            "collectedDateTime": "2020-09-27T06:15:00Z"
-          }
+          "collection": { "collectedDateTime": "2020-09-27T06:15:00Z" }
         }
       },
       {
         "fullUrl": "urn:uuid:3dbff0de-d4a4-4e1d-98bf-af7428b8a04b",
         "resource": {
           "resourceType": "Practitioner",
-          "name": [
-            {
-              "text": "Dr Michael Lim"
-            }
-          ],
+          "name": [{ "text": "Dr Michael Lim" }],
           "qualification": [
             {
               "code": {
@@ -169,12 +153,7 @@
                   }
                 ]
               },
-              "identifier": [
-                {
-                  "id": "MCR",
-                  "value": "123456"
-                }
-              ],
+              "identifier": [{ "id": "MCR", "value": "123456" }],
               "issuer": {
                 "type": "Organization",
                 "reference": "urn:uuid:bc7065ee-42aa-473a-a614-afd8a7b30b1e"
@@ -202,14 +181,8 @@
           "contact": [
             {
               "telecom": [
-                {
-                  "system": "url",
-                  "value": "https://www.moh.gov.sg"
-                },
-                {
-                  "system": "phone",
-                  "value": "+6563259220"
-                }
+                { "system": "url", "value": "https://www.moh.gov.sg"},
+                { "system": "phone", "value": "+6563259220"}
               ],
               "address": {
                 "type": "physical",
@@ -244,10 +217,7 @@
                   "system": "url",
                   "value": "https://www.macritchieclinic.com.sg"
                 },
-                {
-                  "system": "phone",
-                  "value": "+6561234567"
-                }
+                { "system": "phone", "value": "+6561234567"}
               ],
               "address": {
                 "type": "physical",
@@ -282,10 +252,7 @@
                   "system": "url",
                   "value": "https://www.macritchielaboratory.com.sg"
                 },
-                {
-                  "system": "phone",
-                  "value": "+6567654321"
-                }
+                { "system": "phone", "value": "+6567654321" }
               ],
               "address": {
                 "type": "physical",
@@ -302,9 +269,7 @@
     {
       "name": "SAMPLE ISSUER (DO NOT VERIFY)",
       "id": "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830",
-      "revocation": {
-        "type": "NONE"
-      },
+      "revocation": { "type": "NONE" },
       "identityProof": {
         "type": "DNS-DID",
         "location": "donotverify.testing.verify.gov.sg",
