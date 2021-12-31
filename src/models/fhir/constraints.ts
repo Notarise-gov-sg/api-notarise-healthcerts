@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { DocumentInvalidError } from "../../common/error";
+import euDccTestResultMapping from "../../static/EU-DCC-test-result.mapping.json";
 
 /**
  * Common constraints required by all types of HealthCerts:
@@ -248,4 +249,30 @@ export const getRequiredConstraints = (
       )}`
     );
   }
+};
+
+export const getRecognisedConstraints = (
+  _type: Type,
+  observationCount: number
+) => {
+  const constraints: Record<string, any> = {};
+
+  /* Inclusion validation: Limit to 2 sets of Test Result Codes */
+  const recognisedTestResultCodes = [
+    ...Object.keys(euDccTestResultMapping),
+    ...Object.values(euDccTestResultMapping),
+  ];
+  for (let i = 0; i < observationCount; i += 1) {
+    const k = `observations._.observation.result.code`;
+    const parsedKey = k.replace("_", i.toString());
+    const fhirKey = commonGroupedFhirKeys[k].replace("_", i.toString());
+    constraints[parsedKey] = {
+      inclusion: {
+        within: recognisedTestResultCodes,
+        message: `'${fhirKey}' is an unrecognised code - please use of the following codes: ${recognisedTestResultCodes}`,
+      },
+    };
+  }
+
+  return constraints;
 };

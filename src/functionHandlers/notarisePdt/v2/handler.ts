@@ -40,6 +40,7 @@ export const main: Handler = async (
 
     // validate parsed FhirBundle data with specific healthcert type constraints
     fhirHelper.hasRequiredFields(data.type, parsedFhirBundle);
+    fhirHelper.hasRecognisedFields(data.type, parsedFhirBundle);
 
     // convert parsed Bundle to testdata[]
     testData = getTestDataFromParseFhirBundle(parsedFhirBundle);
