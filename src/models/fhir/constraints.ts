@@ -269,7 +269,7 @@ export const getRecognisedConstraints = (
     constraints[parsedKey] = {
       inclusion: {
         within: recognisedTestResultCodes,
-        message: `'${fhirKey}' is an unrecognised code - please use of the following codes: ${recognisedTestResultCodes}`,
+        message: `'${fhirKey}' is an unrecognised code - please use one of the following codes: ${recognisedTestResultCodes}`,
       },
     };
   }
