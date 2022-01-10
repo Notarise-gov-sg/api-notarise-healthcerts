@@ -177,7 +177,7 @@ export const validateV2Document = async (
       // Either base64 string or https URL in .png | .jpg | .jpeg format
       /(^data:image\/(png|jpg|jpeg);base64,.*$)|(^https:\/\/.*[.](png|jpg|jpeg)$)/;
     const VALID_MIME_PATTERN = /^image\/(png|jpeg)$/;
-    const MAX_LOGO_SIZE_IN_KILOBYTES = 20 * 1024; // 20KB
+    const MAX_LOGO_SIZE_IN_KILOBYTES = 21 * 1024; // 20KB (21KB) for some leeway
 
     if (!VALID_LOGO_PATTERN.test(data.logo)) {
       throw new DocumentInvalidError(
