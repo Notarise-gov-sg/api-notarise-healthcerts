@@ -1,10 +1,10 @@
 import validate from "validate.js";
 import { DocumentInvalidError } from "../../common/error";
 import { ParsedBundle } from "./types";
-import { getRequiredConstraints, Type } from "./constraints";
+import { getRecognisedConstraints, Type } from "./constraints";
 
-export const hasRequiredFields = (type: Type, parsedBundle: ParsedBundle) => {
-  const constraints = getRequiredConstraints(
+export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
+  const constraints = getRecognisedConstraints(
     type,
     parsedBundle.observations.length
   );
@@ -16,7 +16,7 @@ export const hasRequiredFields = (type: Type, parsedBundle: ParsedBundle) => {
 
   if (errors) {
     throw new DocumentInvalidError(
-      `the following required fields in fhirBundle are missing: ${JSON.stringify(
+      `the following fields in fhirBundle are not recognised: ${JSON.stringify(
         errors
       )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
     );

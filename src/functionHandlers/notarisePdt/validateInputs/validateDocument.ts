@@ -177,7 +177,7 @@ export const validateV2Document = async (
       // Either base64 string or https URL in .png | .jpg | .jpeg format
       /(^data:image\/(png|jpg|jpeg);base64,.*$)|(^https:\/\/.*[.](png|jpg|jpeg)$)/;
     const VALID_MIME_PATTERN = /^image\/(png|jpeg)$/;
-    // const MAX_LOGO_SIZE_IN_KILOBYTES = 20 * 1024; // 20KB
+    const MAX_LOGO_SIZE_IN_KILOBYTES = 20 * 1024; // 20KB
 
     if (!VALID_LOGO_PATTERN.test(data.logo)) {
       throw new DocumentInvalidError(
@@ -209,19 +209,18 @@ export const validateV2Document = async (
         );
       }
 
-      // FIXME: Temporarily disable logo size checking
-      // if (data.logo.startsWith("data:")) {
-      //   const byteLength = Buffer.byteLength(data.logo, "utf-8");
-      //   if (byteLength >= MAX_LOGO_SIZE_IN_KILOBYTES) {
-      //     throw new DocumentInvalidError(
-      //       `Document logo in base64 image string is too large (${(
-      //         byteLength / 1024
-      //       ).toFixed(2)}KB). Only <=${
-      //         MAX_LOGO_SIZE_IN_KILOBYTES / 1024
-      //       }KB is supported.`
-      //     );
-      //   }
-      // }
+      if (data.logo.startsWith("data:")) {
+        const byteLength = Buffer.byteLength(data.logo, "utf-8");
+        if (byteLength >= MAX_LOGO_SIZE_IN_KILOBYTES) {
+          throw new DocumentInvalidError(
+            `Document "logo" in base64 image string is too large (${(
+              byteLength / 1024
+            ).toFixed(2)}KB). Only <=${
+              MAX_LOGO_SIZE_IN_KILOBYTES / 1024
+            }KB is supported.`
+          );
+        }
+      }
     }
   }
 };

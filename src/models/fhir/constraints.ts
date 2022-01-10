@@ -1,12 +1,13 @@
 import _ from "lodash";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { DocumentInvalidError } from "../../common/error";
+import euDccTestResultMapping from "../../static/EU-DCC-test-result.mapping.json";
 
 /**
  * Common constraints required by all types of HealthCerts:
  * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
  */
-const commonConstraints = {
+const commonFhirKeys = {
   // Patient
   "patient.fullName": "Patient.name[0].text",
   "patient.birthDate": "Patient.birthDate",
@@ -39,7 +40,7 @@ const commonConstraints = {
  * Common grouped constraints required by all types of HealthCerts:
  * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
  */
-const commonGroupedConstraints = {
+const commonGroupedFhirKeys = {
   // Observation(s)
   "observations._.observation.specimenResourceUuid":
     "_.Observation.specimen.{ type=Specimen, reference }",
@@ -118,7 +119,7 @@ const commonGroupedConstraints = {
  * ART constraints:
  * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
  */
-const artGroupedConstraints = {
+const artGroupedFhirKeys = {
   // Specimen(s)
   "observations._.specimen.deviceResourceUuid":
     "_.Specimen.subject.{ type=Device, reference }",
@@ -133,7 +134,7 @@ const artGroupedConstraints = {
  * PCR constraints:
  * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
  */
-const pcrGroupedConstraints = {
+const pcrGroupedFhirKeys = {
   // Observation(s)
   "observations._.observation.organizationAlResourceUuid":
     "Observation.performer[2].{ id=AL, type=Organization, reference }",
@@ -161,14 +162,14 @@ const pcrGroupedConstraints = {
     "_.Organization.contact[0].address.text",
 };
 
-const generateConstraints = (constraintMapping: Record<string, string>) => {
-  const allKeys = Object.keys(constraintMapping);
+const generateRequiredConstraints = (mapping: Record<string, string>) => {
+  const allKeys = Object.keys(mapping);
   const constraints: Record<string, any> = {};
 
   allKeys.forEach((k) => {
     constraints[k] = {
       presence: {
-        message: `'${constraintMapping[k]}' is required`,
+        message: `'${mapping[k]}' is required`,
         allowEmpty: false,
       },
     };
@@ -177,19 +178,19 @@ const generateConstraints = (constraintMapping: Record<string, string>) => {
   return constraints;
 };
 
-const generateGroupedConstraints = (
-  constraintMapping: Record<string, string>,
+const generateRequiredGroupedConstraints = (
+  mapping: Record<string, string>,
   observationCount: number
 ) => {
-  const allKeys = Object.keys(constraintMapping);
+  const allKeys = Object.keys(mapping);
   const constraints: Record<string, any> = {};
 
   for (let i = 0; i < observationCount; i += 1) {
     allKeys.forEach((k) => {
-      const key = k.replace("_", i.toString());
-      const message = constraintMapping[k].replace("_", i.toString());
-      constraints[key] = {
-        presence: { message: `'${message}' is required`, allowEmpty: false },
+      const parsedKey = k.replace("_", i.toString());
+      const fhirKey = mapping[k].replace("_", i.toString());
+      constraints[parsedKey] = {
+        presence: { message: `'${fhirKey}' is required`, allowEmpty: false },
       };
     });
   }
@@ -198,7 +199,10 @@ const generateGroupedConstraints = (
 };
 
 export type Type = pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[];
-export const getConstraints = (type: Type, observationCount: number) => {
+export const getRequiredConstraints = (
+  type: Type,
+  observationCount: number
+) => {
   const { PdtTypes } = pdtHealthCertV2;
 
   const supportedMultiType = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
@@ -210,9 +214,15 @@ export const getConstraints = (type: Type, observationCount: number) => {
   if (type === PdtTypes.Art) {
     // ART HealthCert
     return {
-      ...generateConstraints(commonConstraints),
-      ...generateGroupedConstraints(commonGroupedConstraints, observationCount),
-      ...generateGroupedConstraints(artGroupedConstraints, observationCount),
+      ...generateRequiredConstraints(commonFhirKeys),
+      ...generateRequiredGroupedConstraints(
+        commonGroupedFhirKeys,
+        observationCount
+      ),
+      ...generateRequiredGroupedConstraints(
+        artGroupedFhirKeys,
+        observationCount
+      ),
     };
   } else if (
     type === PdtTypes.Pcr ||
@@ -222,9 +232,15 @@ export const getConstraints = (type: Type, observationCount: number) => {
     // PCR, SER or PCR + SER HealthCert
     // Currently PCR and SER have the same validation constraint
     return {
-      ...generateConstraints(commonConstraints),
-      ...generateGroupedConstraints(commonGroupedConstraints, observationCount),
-      ...generateGroupedConstraints(pcrGroupedConstraints, observationCount),
+      ...generateRequiredConstraints(commonFhirKeys),
+      ...generateRequiredGroupedConstraints(
+        commonGroupedFhirKeys,
+        observationCount
+      ),
+      ...generateRequiredGroupedConstraints(
+        pcrGroupedFhirKeys,
+        observationCount
+      ),
     };
   } else {
     throw new DocumentInvalidError(
@@ -233,4 +249,30 @@ export const getConstraints = (type: Type, observationCount: number) => {
       )}`
     );
   }
+};
+
+export const getRecognisedConstraints = (
+  _type: Type,
+  observationCount: number
+) => {
+  const constraints: Record<string, any> = {};
+
+  /* Inclusion validation: Limit to 2 sets of Test Result Codes */
+  const recognisedTestResultCodes = [
+    ...Object.keys(euDccTestResultMapping),
+    ...Object.values(euDccTestResultMapping),
+  ];
+  for (let i = 0; i < observationCount; i += 1) {
+    const k = `observations._.observation.result.code`;
+    const parsedKey = k.replace("_", i.toString());
+    const fhirKey = commonGroupedFhirKeys[k].replace("_", i.toString());
+    constraints[parsedKey] = {
+      inclusion: {
+        within: recognisedTestResultCodes,
+        message: `'${fhirKey}' is an unrecognised code - please use one of the following codes: ${recognisedTestResultCodes}`,
+      },
+    };
+  }
+
+  return constraints;
 };
