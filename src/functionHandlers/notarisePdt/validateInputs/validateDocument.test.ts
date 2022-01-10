@@ -365,7 +365,7 @@ describe("document logo validation", () => {
     });
   });
 
-  it("should throw on large base64 image string (>20KB)", async () => {
+  it("should throw on large base64 image string (>21KB)", async () => {
     const sampleDocumentV2InvalidLogo = { ...examplePcrHealthCertV2Wrapped };
     sampleDocumentV2InvalidLogo.data.logo = `a60dd179-4029-44c5-8b77-296b10412836:string:${mockImage["33KB"]}`;
 
@@ -379,7 +379,7 @@ describe("document logo validation", () => {
     }
     expect(thrownError).toStrictEqual({
       title: `Submitted HealthCert is invalid`,
-      body: `Document "logo" in base64 image string is too large (33.95KB). Only <=20KB is supported.`,
+      body: `Document "logo" in base64 image string is too large (33.95KB). Only <=21KB is supported.`,
     });
   });
 
