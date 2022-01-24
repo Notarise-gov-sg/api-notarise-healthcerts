@@ -175,7 +175,7 @@ custom:
     production: "ssm"
     other: "dotenv"
   customDomainList:
-    production: "api-notarise-healthcerts."
+    production: "api-notarise-healthcerts.notarise.gov.sg"
     stg: "api-notarise-healthcerts.stg.notarise.io"
     other: "api-notarise-healthcerts-${self:provider.stage}.stg.notarise.io"
 
@@ -183,7 +183,7 @@ custom:
     domainName: ${self:custom.customDomainList.${self:provider.stage}, self:custom.customDomainList.other},
     basePath: ""
     stage: STAGE
-    createRoute53Record: true
+    createRoute53Record: false
     endpointType: "edge"
     autoDomain: true
   envSource: ${self:custom.envSourceConfig.${self:provider.stage}, self:custom.envSourceConfig.other}
