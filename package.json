@@ -39,7 +39,7 @@
     "aws-sdk": "^2.1036.0",
     "aws-xray-sdk-core": "^3.3.4",
     "axios": "^0.24.0",
-    "debug": "^4.3.2",
+    "debug": "^4.3.3",
     "fhir": "^4.11.1",
     "file-loader": "^6.2.0",
     "file-type": "16.5.3",
