@@ -183,9 +183,9 @@ custom:
     domainName: ${self:custom.customDomainList.${self:provider.stage}, self:custom.customDomainList.other},
     basePath: ""
     stage: STAGE
-    createRoute53Record: false
+    createRoute53Record: true
     endpointType: "edge"
-    autoDomain: true
+    autoDomain: false
   envSource: ${self:custom.envSourceConfig.${self:provider.stage}, self:custom.envSourceConfig.other}
   KMS_ARN: ${env:KMS_ARN, "PLACEHOLDER_ARN"}
   ethereumConfig:
