@@ -178,9 +178,8 @@ custom:
     production: "api-notarise-healthcerts.notarise.gov.sg"
     stg: "api-notarise-healthcerts.stg.notarise.io"
     other: "api-notarise-healthcerts-${self:provider.stage}.stg.notarise.io"
-
   customDomain:
-    domainName: ${self:custom.customDomainList.${self:provider.stage}, self:custom.customDomainList.other},
+    domainName: "${self:custom.customDomainList.${self:provider.stage}, self:custom.customDomainList.other}"
     basePath: ""
     stage: STAGE
     createRoute53Record: true
