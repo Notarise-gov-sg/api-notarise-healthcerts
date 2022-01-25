@@ -181,7 +181,7 @@ custom:
   customDomain:
     domainName: "${self:custom.customDomainList.${self:provider.stage}, self:custom.customDomainList.other}"
     basePath: ""
-    stage: STAGE
+    stage: ${self:provider.stage}
     createRoute53Record: false
     endpointType: "edge"
     autoDomain: true
