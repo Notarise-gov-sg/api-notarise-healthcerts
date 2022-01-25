@@ -32,7 +32,6 @@ jobs:
       env:
         cache-name: cache-node-modules
       with:
-        node-version: '14.x'
         path: ~/.npm
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
