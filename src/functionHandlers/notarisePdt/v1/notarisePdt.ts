@@ -51,7 +51,7 @@ export const notarisePdt = async (
       const testDataTypes = testData.map((test) => test.swabTypeCode);
       if (
         testDataTypes.includes(config.swabTestTypes.ART) ||
-        testDataTypes.includes(config.swabTestTypes.PCR)
+        testDataTypes.includes(config.swabTestTypes.PCR_NASAL)
       ) {
         traceWithRef("signedEuHealthCerts: Generating EU test cert...");
         const euTestCerts = createEuTestCert(testData, reference, universalUrl);

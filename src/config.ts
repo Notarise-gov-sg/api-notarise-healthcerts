@@ -87,7 +87,8 @@ const generateConfig = () => ({
   isGPayCovidCardEnabled: isTruthy(process.env.GPAY_COVID_CARD_ENABLED),
   swabTestTypes: {
     ART: "697989009",
-    PCR: "258500001",
+    PCR_NASAL: "258500001",
+    PCR_SALIVA: "119342007",
   },
 });
 

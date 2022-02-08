@@ -533,3 +533,76 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with detected/not_detecte
     ]);
   });
 });
+
+describe("createEuTestCert for PCR Saliva Swab", () => {
+  let dateNowSpy: jest.SpyInstance;
+  let spy: jest.SpyInstance;
+  beforeAll(() => {
+    spy = jest.spyOn(console, "error").mockImplementation(() => {
+      // do not display errors
+    });
+    dateNowSpy = jest
+      .spyOn(Date.prototype, "toISOString")
+      .mockReturnValue("2021-06-30T00:00:00.000Z");
+  });
+  afterAll(() => {
+    spy.mockRestore();
+    dateNowSpy.mockRestore();
+  });
+
+  const testData: TestData[] = [
+    {
+      provider: "MacRitchie Medical Clinic",
+      gender: "M",
+      lab: "lab",
+      nationality: "SG",
+      nric: "123",
+      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
+      passportNumber: "ES12345",
+      patientName: "TESTING",
+      performerMcr: "123",
+      performerName: "123",
+      birthDate: "01/01/2021",
+      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
+      swabType: "Saliva swab",
+      swabTypeCode: "119342007",
+      testCode: "94531-1",
+      testType:
+        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+      testResult: "Positive",
+      testResultCode: "10828004",
+    },
+  ];
+
+  it("create EU test cert with valid params", async () => {
+    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    expect(result).toMatchObject([
+      {
+        ver: "1.3.0",
+        nam: {
+          fnt: "TESTING",
+        },
+        dob: "2021-01-01",
+        t: [
+          {
+            tg: "840539006",
+            tt: "LP6464-4",
+            nm: testData[0].testType,
+            sc: "2021-06-27T14:15:00+08:00",
+            tr: "260373001",
+            tc: "MacRitchie Medical Clinic",
+            co: "SG",
+            is: "Ministry of Health (Singapore)",
+            ci: "URN:UVCI:01:SG:1ABC-CDE-CDE",
+          },
+        ],
+        meta: {
+          reference: "abc-cde-cde",
+          notarisedOn: "2021-06-30T00:00:00.000Z",
+          passportNumber: "ES12345",
+          url: "storedUrl",
+        },
+      },
+    ]);
+  });
+});
