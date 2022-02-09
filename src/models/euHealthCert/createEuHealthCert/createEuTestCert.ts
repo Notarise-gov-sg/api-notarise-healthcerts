@@ -55,18 +55,22 @@ export const createEuTestCert = (
       is: euSigner.name,
       ci: UniqueCertificateId,
     };
-    if (item.swabTypeCode === swabTestTypes.PCR) {
+    // check swab test type is valid PCR Nasal or PCR Saliva
+    if (
+      [swabTestTypes.PCR_NASAL, swabTestTypes.PCR_SALIVA].includes(
+        item.swabTypeCode
+      )
+    ) {
       testGroup.tt = "LP6464-4"; // test type code for PCR test [Nucleic acid amplification with probe detection]
       testGroup.nm = item.testType;
     } else if (item.swabTypeCode === swabTestTypes.ART) {
       testGroup.tt = "LP217198-3"; // test type code for ART test [Rapid immunoassay]
       testGroup.ma = item.deviceIdentifier;
     }
-    // generate test cert only for PCR and ART which have valid test result code
+    // generate test cert only for PCR Nasal, PCR Saliva and ART which have valid test result code
     if (
       euDccTestResultCode &&
-      (item.swabTypeCode === swabTestTypes.PCR ||
-        item.swabTypeCode === swabTestTypes.ART)
+      Object.values(swabTestTypes).includes(item.swabTypeCode)
     ) {
       testHealthCerts.push({
         ver: fhirVersion,
