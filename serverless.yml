@@ -125,10 +125,13 @@ custom:
   # ssm failure returns "undefined" while env failure returns ""
   vpcDiscovery:
     vpcName: "${env:VPC_NAME}"
-    subnetNames: # optional if securityGroupNames are specified
-      - "notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*"
-    securityGroupNames:
-      - "default"
+    subnets:
+      - tagKey: Name
+        tagValues:
+          - "notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*"
+    securityGroups:
+      - names:
+        - "default-application-vpc-*"
   subnetEnvName:
     stg: "stg"
     production: "prd"
@@ -145,8 +148,8 @@ custom:
     domainName: "${self:custom.customDomainList.${self:provider.stage}, self:custom.customDomainList.other}"
     basePath: ""
     stage: ${self:provider.stage}
-    createRoute53Record: false
-    endpointType: "edge"
+    createRoute53Record: true
+    endpointType: regional
     autoDomain: true
   envSource: ${self:custom.envSourceConfig.${self:provider.stage}, self:custom.envSourceConfig.other}
   KMS_ARN: ${env:KMS_ARN, "PLACEHOLDER_ARN"}
