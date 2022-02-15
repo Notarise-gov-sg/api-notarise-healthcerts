@@ -1,5 +1,6 @@
 import { WrappedDocument } from "@govtechsg/open-attestation";
-import { notarise } from "@govtechsg/oa-schemata";
+import { notarise, pdtHealthCertV2 } from "@govtechsg/oa-schemata";
+import _ from "lodash";
 import { ParsedBundle } from "../../../models/fhir/types";
 import { getLogger } from "../../../common/logger";
 import { createNotarizedHealthCert } from "../../../models/notarizedHealthCertV2";
@@ -8,20 +9,21 @@ import {
   getQueueNumber,
   uploadDocument,
 } from "../../../services/transientStorage";
-import { PDTHealthCertV2, NotarisationResult, TestData } from "../../../types";
+import { PDTHealthCertV2, NotarisationResult } from "../../../types";
 import { config, getDefaultIfUndefined } from "../../../config";
 import {
   createEuSignedTestQr,
   createEuTestCert,
 } from "../../../models/euHealthCert";
+import { Type } from "../../../models/fhir/constraints";
 
 const { trace } = getLogger("src/functionHandlers/notarisePdt/v2/notarisePdt");
 
 export const notarisePdt = async (
   reference: string,
   certificate: WrappedDocument<PDTHealthCertV2>,
-  parsedFhirBundle: ParsedBundle,
-  testData: TestData[]
+  type: Type,
+  parsedFhirBundle: ParsedBundle
 ): Promise<NotarisationResult> => {
   const errorWithRef = trace.extend(`reference:${reference}`);
   const traceWithRef = trace.extend(`reference:${reference}`);
@@ -43,15 +45,16 @@ export const notarisePdt = async (
   let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
   if (config.isOfflineQrEnabled || whiteListNrics.includes(patientNricFin)) {
     try {
-      const testDataTypes = testData.map((test) => test.swabTypeCode);
+      const { PdtTypes } = pdtHealthCertV2;
       if (
-        testDataTypes.includes(config.swabTestTypes.ART) ||
-        testDataTypes.includes(config.swabTestTypes.PCR_NASAL) ||
-        testDataTypes.includes(config.swabTestTypes.PCR_SALIVA)
+        (_.isString(type) && type === PdtTypes.Art) ||
+        type === PdtTypes.Pcr ||
+        type.includes(PdtTypes.Art) ||
+        type.includes(PdtTypes.Pcr)
       ) {
         traceWithRef("signedEuHealthCerts: Generating EU test cert...");
         const euTestCerts = await createEuTestCert(
-          testData,
+          parsedFhirBundle,
           reference,
           universalUrl
         );
@@ -64,9 +67,7 @@ export const notarisePdt = async (
         }
       } else {
         traceWithRef(
-          `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
-            testDataTypes
-          )}`
+          `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(type)}`
         );
       }
     } catch (e) {

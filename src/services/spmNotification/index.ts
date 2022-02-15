@@ -8,6 +8,7 @@ import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { ParsedBundle } from "../../models/fhir/types";
 import { config } from "../../config";
 import { NotarisationResult, TestData, PDTHealthCertV2 } from "../../types";
+import { getTestDataFromParseFhirBundle } from "../../models/healthCertV2";
 
 const { PdtTypes } = pdtHealthCertV2;
 
@@ -31,7 +32,6 @@ const isEligibleForSpmWallet = (certificateData: PDTHealthCertV2): boolean => {
 export const sendNotification = async (
   result: NotarisationResult,
   parsedFhirBundle: ParsedBundle,
-  testData: TestData[],
   certificateData: PDTHealthCertV2
 ) => {
   /* Send SPM notification using api-notify/wallet when patient is adult (15 years & above) and present NRIC-FIN in OA-Doc. */
@@ -50,6 +50,8 @@ export const sendNotification = async (
       });
     } else {
       /* Send SPM notification to recipient (Only if enabled) */
+      const testData: TestData[] =
+        getTestDataFromParseFhirBundle(parsedFhirBundle);
       await notifyPdt({
         url: result.url,
         nric: parsedFhirBundle.patient?.nricFin,
