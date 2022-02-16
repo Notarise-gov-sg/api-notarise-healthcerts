@@ -5,10 +5,9 @@ import { R4 } from "@ahryman40k/ts-fhir-types";
 import { sendNotification } from "../../../services/spmNotification";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
-import { getTestDataFromParseFhirBundle } from "../../../models/healthCertV2";
 import { getLogger } from "../../../common/logger";
 import { DetailedCodedError } from "../../../common/error";
-import { PDTHealthCertV2, NotarisationResult, TestData } from "../../../types";
+import { PDTHealthCertV2, NotarisationResult } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
 import { config } from "../../../config";
@@ -30,7 +29,6 @@ export const main: Handler = async (
   /* 1. Validation */
   let parsedFhirBundle: ParsedBundle;
   let data: PDTHealthCertV2; // The unwrapped HealthCert
-  let testData: TestData[];
   try {
     await validateV2Inputs(wrappedDocument);
     data = getData(wrappedDocument);
@@ -41,9 +39,6 @@ export const main: Handler = async (
     // validate parsed FhirBundle data with specific healthcert type constraints
     fhirHelper.hasRequiredFields(data.type, parsedFhirBundle);
     fhirHelper.hasRecognisedFields(data.type, parsedFhirBundle);
-
-    // convert parsed Bundle to testdata[]
-    testData = getTestDataFromParseFhirBundle(parsedFhirBundle);
   } catch (e) {
     errorWithRef(
       `Error while validating certificate: ${
@@ -68,8 +63,8 @@ export const main: Handler = async (
     result = await notarisePdt(
       reference,
       wrappedDocument,
-      parsedFhirBundle as ParsedBundle,
-      testData as TestData[]
+      data.type,
+      parsedFhirBundle as ParsedBundle
     );
   } catch (e) {
     errorWithRef(`Unhandled error: ${e instanceof Error ? e.message : e}`);
@@ -85,7 +80,7 @@ export const main: Handler = async (
   /* Send to SPM notification/wallet (Only if enabled) */
   if (config.notification.enabled) {
     try {
-      await sendNotification(result, parsedFhirBundle, testData, data);
+      await sendNotification(result, parsedFhirBundle, data);
     } catch (e) {
       if (e instanceof Error) {
         errorWithRef(`SPM notification/wallet error: ${e.message}`);

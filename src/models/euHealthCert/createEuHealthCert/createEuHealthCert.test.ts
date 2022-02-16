@@ -1,5 +1,10 @@
-import { TestData } from "src/types";
+import { R4 } from "@ahryman40k/ts-fhir-types";
+import _ from "lodash";
 import { createEuTestCert } from "./index";
+import fhirHelper from "../../fhir/index";
+import exampleSingleTypePcrHealthCertWithNric from "../../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
+import exampleSingleTypeArtHealthCertWithNric from "../../../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
+import exampleMultiTypeHealthCertWithNric from "../../../../test/fixtures/v2/pdt_pcr_ser_multi_result_unwrapped.json";
 
 describe("createEuTestCert for invalid tests", () => {
   let dateNowSpy: jest.SpyInstance;
@@ -17,39 +22,19 @@ describe("createEuTestCert for invalid tests", () => {
     dateNowSpy.mockRestore();
   });
 
-  const testData: TestData[] = [
-    {
-      provider: "MacRitchie Medical Clinic",
-      gender: "M",
-      lab: "lab",
-      nationality: "SG",
-      nric: "123",
-      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-      passportNumber: "ES12345",
-      patientName: "TESTING",
-      performerMcr: "123",
-      performerName: "123",
-      birthDate: "01/01/2021",
-      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-      swabType: "Nasopharyngeal swab",
-      swabTypeCode: "258500001",
-      testCode: "94531-1",
-      testType:
-        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
-      testResult: "Positive",
-      testResultCode: "10828004",
-    },
-  ];
-
-  it("invalid EU test cert for other test type", async () => {
-    testData[0].swabTypeCode = "123456";
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
-    expect(result).toMatchObject([]);
-  });
+  const parsedFhirBundle = _.cloneDeep(
+    fhirHelper.parse(
+      exampleSingleTypePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    )
+  );
 
   it("invalid EU test cert for invalid test result code", async () => {
-    testData[0].testResultCode = "123456";
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    parsedFhirBundle.observations[0].observation.result.code = "123456";
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([]);
   });
 });
@@ -70,46 +55,32 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {
     dateNowSpy.mockRestore();
   });
 
-  const testData: TestData[] = [
-    {
-      provider: "MacRitchie Medical Clinic",
-      gender: "M",
-      lab: "lab",
-      nationality: "SG",
-      nric: "123",
-      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-      passportNumber: "ES12345",
-      patientName: "TESTING",
-      performerMcr: "123",
-      performerName: "123",
-      birthDate: "01/01/2021",
-      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-      swabType: "Nasopharyngeal swab",
-      swabTypeCode: "258500001",
-      testCode: "94531-1",
-      testType:
-        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
-      testResult: "Positive",
-      testResultCode: "10828004",
-    },
-  ];
+  const parsedFhirBundle = _.cloneDeep(
+    fhirHelper.parse(
+      exampleSingleTypePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    )
+  );
 
   it("create EU test cert with valid params", async () => {
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
+          fnt: "TAN<CHEN<CHEN",
         },
-        dob: "2021-01-01",
+        dob: "1990-01-15",
         t: [
           {
             tg: "840539006",
             tt: "LP6464-4",
-            nm: testData[0].testType,
-            sc: "2021-06-27T14:15:00+08:00",
-            tr: "260373001",
+            nm: parsedFhirBundle.observations[0].observation.testType.display,
+            sc: "2020-09-27T06:15:00Z",
+            tr: "260415000",
             tc: "MacRitchie Medical Clinic",
             co: "SG",
             is: "Ministry of Health (Singapore)",
@@ -119,7 +90,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab", () => {
         meta: {
           reference: "abc-cde-cde",
           notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
+          passportNumber: "E7831177G",
           url: "storedUrl",
         },
       },
@@ -143,46 +114,32 @@ describe("createEuTestCert for ART Anterior Nares Swab", () => {
     dateNowSpy.mockRestore();
   });
 
-  const testData: TestData[] = [
-    {
-      provider: "MacRitchie Medical Clinic",
-      gender: "M",
-      lab: "lab",
-      nationality: "SG",
-      nric: "123",
-      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-      passportNumber: "ES12345",
-      patientName: "TESTING",
-      performerMcr: "123",
-      performerName: "123",
-      birthDate: "01/01/2021",
-      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-      swabType: "Anterior nares swab",
-      swabTypeCode: "697989009",
-      testCode: "41112601",
-      testType: "Quidel QuickVue At-Home OTC COVID-19 Test",
-      testResult: "Positive",
-      testResultCode: "10828004",
-      deviceIdentifier: "1232",
-    },
-  ];
+  const parsedFhirBundle = _.cloneDeep(
+    fhirHelper.parse(
+      exampleSingleTypeArtHealthCertWithNric.fhirBundle as R4.IBundle
+    )
+  );
 
   it("create EU test cert with valid params", async () => {
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
+          fnt: "TAN<CHEN<CHEN",
         },
-        dob: "2021-01-01",
+        dob: "1990-01-15",
         t: [
           {
             tg: "840539006",
             tt: "LP217198-3",
-            ma: testData[0].deviceIdentifier,
-            sc: "2021-06-27T14:15:00+08:00",
-            tr: "260373001",
+            ma: parsedFhirBundle.observations[0].device?.type.code,
+            sc: "2020-09-27T06:15:00Z",
+            tr: "260415000",
             tc: "MacRitchie Medical Clinic",
             co: "SG",
             is: "Ministry of Health (Singapore)",
@@ -192,7 +149,7 @@ describe("createEuTestCert for ART Anterior Nares Swab", () => {
         meta: {
           reference: "abc-cde-cde",
           notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
+          passportNumber: "E7831177G",
           url: "storedUrl",
         },
       },
@@ -216,67 +173,32 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
     dateNowSpy.mockRestore();
   });
 
-  const testData: TestData[] = [
-    {
-      provider: "MacRitchie Medical Clinic",
-      gender: "M",
-      lab: "lab",
-      nationality: "SG",
-      nric: "123",
-      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-      passportNumber: "ES12345",
-      patientName: "TESTING",
-      performerMcr: "123",
-      performerName: "123",
-      birthDate: "01/01/2021",
-      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-      swabType: "Nasopharyngeal swab",
-      swabTypeCode: "258500001",
-      testCode: "94531-1",
-      testType:
-        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
-      testResult: "Positive",
-      testResultCode: "10828004",
-    },
-    {
-      provider: "MacRitchie Medical Clinic",
-      gender: "M",
-      lab: "lab",
-      nationality: "SG",
-      nric: "123",
-      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-      passportNumber: "ES12345",
-      patientName: "TESTING",
-      performerMcr: "123",
-      performerName: "123",
-      birthDate: "01/01/2021",
-      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-      swabType: "Anterior nares swab",
-      swabTypeCode: "697989009",
-      testCode: "41112601",
-      testType: "Quidel QuickVue At-Home OTC COVID-19 Test",
-      testResult: "Positive",
-      testResultCode: "10828004",
-      deviceIdentifier: "1232",
-    },
-  ];
+  const parsedFhirBundle = _.cloneDeep(
+    fhirHelper.parse(
+      exampleMultiTypeHealthCertWithNric.fhirBundle as R4.IBundle
+    )
+  );
 
   it("create EU test cert with valid params", async () => {
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
+          fnt: "TAN<CHEN<CHEN",
         },
-        dob: "2021-01-01",
+        dob: "1990-01-15",
         t: [
           {
             tg: "840539006",
             tt: "LP6464-4",
-            nm: testData[0].testType,
-            sc: "2021-06-27T14:15:00+08:00",
-            tr: "260373001",
+            nm: parsedFhirBundle.observations[0].observation.testType.display,
+            sc: "2021-10-19T11:50:12.152Z",
+            tr: "260415000",
             tc: "MacRitchie Medical Clinic",
             co: "SG",
             is: "Ministry of Health (Singapore)",
@@ -286,33 +208,7 @@ describe("createEuTestCert for Multiple Swab Test Result", () => {
         meta: {
           reference: "abc-cde-cde",
           notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
-          url: "storedUrl",
-        },
-      },
-      {
-        ver: "1.3.0",
-        nam: {
-          fnt: "TESTING",
-        },
-        dob: "2021-01-01",
-        t: [
-          {
-            tg: "840539006",
-            tt: "LP217198-3",
-            ma: testData[1].deviceIdentifier,
-            sc: "2021-06-27T14:15:00+08:00",
-            tr: "260373001",
-            tc: "MacRitchie Medical Clinic",
-            co: "SG",
-            is: "Ministry of Health (Singapore)",
-            ci: "URN:UVCI:01:SG:2ABC-CDE-CDE",
-          },
-        ],
-        meta: {
-          reference: "abc-cde-cde",
-          notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
+          passportNumber: "E7831177G",
           url: "storedUrl",
         },
       },
@@ -336,45 +232,31 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with positive/negative te
     dateNowSpy.mockRestore();
   });
 
-  const testData: TestData[] = [
-    {
-      provider: "MacRitchie Medical Clinic",
-      gender: "M",
-      lab: "lab",
-      nationality: "SG",
-      nric: "123",
-      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-      passportNumber: "ES12345",
-      patientName: "TESTING",
-      performerMcr: "123",
-      performerName: "123",
-      birthDate: "01/01/2021",
-      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-      swabType: "Nasopharyngeal swab",
-      swabTypeCode: "258500001",
-      testCode: "94531-1",
-      testType:
-        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
-      testResult: "Negative",
-      testResultCode: "260385009",
-    },
-  ];
+  const parsedFhirBundle = _.cloneDeep(
+    fhirHelper.parse(
+      exampleSingleTypePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    )
+  );
 
   it("create EU test cert with valid params negative test result code", async () => {
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
+          fnt: "TAN<CHEN<CHEN",
         },
-        dob: "2021-01-01",
+        dob: "1990-01-15",
         t: [
           {
             tg: "840539006",
             tt: "LP6464-4",
-            nm: testData[0].testType,
-            sc: "2021-06-27T14:15:00+08:00",
+            nm: parsedFhirBundle.observations[0].observation.testType.display,
+            sc: "2020-09-27T06:15:00Z",
             tr: "260415000",
             tc: "MacRitchie Medical Clinic",
             co: "SG",
@@ -385,7 +267,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with positive/negative te
         meta: {
           reference: "abc-cde-cde",
           notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
+          passportNumber: "E7831177G",
           url: "storedUrl",
         },
       },
@@ -393,22 +275,26 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with positive/negative te
   });
 
   it("create EU test cert with valid params positive test result code", async () => {
-    testData[0].testResult = "Positive";
-    testData[0].testResultCode = "10828004";
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    parsedFhirBundle.observations[0].observation.result.display = "Positive";
+    parsedFhirBundle.observations[0].observation.result.code = "10828004";
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
+          fnt: "TAN<CHEN<CHEN",
         },
-        dob: "2021-01-01",
+        dob: "1990-01-15",
         t: [
           {
             tg: "840539006",
             tt: "LP6464-4",
-            nm: testData[0].testType,
-            sc: "2021-06-27T14:15:00+08:00",
+            nm: parsedFhirBundle.observations[0].observation.testType.display,
+            sc: "2020-09-27T06:15:00Z",
             tr: "260373001",
             tc: "MacRitchie Medical Clinic",
             co: "SG",
@@ -419,7 +305,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with positive/negative te
         meta: {
           reference: "abc-cde-cde",
           notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
+          passportNumber: "E7831177G",
           url: "storedUrl",
         },
       },
@@ -443,45 +329,29 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with detected/not_detecte
     dateNowSpy.mockRestore();
   });
 
-  const testData: TestData[] = [
-    {
-      provider: "MacRitchie Medical Clinic",
-      gender: "M",
-      lab: "lab",
-      nationality: "SG",
-      nric: "123",
-      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-      passportNumber: "ES12345",
-      patientName: "TESTING",
-      performerMcr: "123",
-      performerName: "123",
-      birthDate: "01/01/2021",
-      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-      swabType: "Nasopharyngeal swab",
-      swabTypeCode: "258500001",
-      testCode: "94531-1",
-      testType:
-        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
-      testResult: "Not detected",
-      testResultCode: "260415000",
-    },
-  ];
+  const parsedFhirBundle = fhirHelper.parse(
+    exampleSingleTypePcrHealthCertWithNric.fhirBundle as R4.IBundle
+  );
 
   it("create EU test cert with valid params not_detected test result code", async () => {
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
+          fnt: "TAN<CHEN<CHEN",
         },
-        dob: "2021-01-01",
+        dob: "1990-01-15",
         t: [
           {
             tg: "840539006",
             tt: "LP6464-4",
-            nm: testData[0].testType,
-            sc: "2021-06-27T14:15:00+08:00",
+            nm: parsedFhirBundle.observations[0].observation.testType.display,
+            sc: "2020-09-27T06:15:00Z",
             tr: "260415000",
             tc: "MacRitchie Medical Clinic",
             co: "SG",
@@ -492,7 +362,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with detected/not_detecte
         meta: {
           reference: "abc-cde-cde",
           notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
+          passportNumber: "E7831177G",
           url: "storedUrl",
         },
       },
@@ -500,22 +370,26 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with detected/not_detecte
   });
 
   it("create EU test cert with valid params detected test result code", async () => {
-    testData[0].testResult = "Detected";
-    testData[0].testResultCode = "260373001";
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    parsedFhirBundle.observations[0].observation.result.display = "Detected";
+    parsedFhirBundle.observations[0].observation.result.code = "260373001";
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
+          fnt: "TAN<CHEN<CHEN",
         },
-        dob: "2021-01-01",
+        dob: "1990-01-15",
         t: [
           {
             tg: "840539006",
             tt: "LP6464-4",
-            nm: testData[0].testType,
-            sc: "2021-06-27T14:15:00+08:00",
+            nm: parsedFhirBundle.observations[0].observation.testType.display,
+            sc: "2020-09-27T06:15:00Z",
             tr: "260373001",
             tc: "MacRitchie Medical Clinic",
             co: "SG",
@@ -526,7 +400,7 @@ describe("createEuTestCert for PCR Nasopharyngeal Swab with detected/not_detecte
         meta: {
           reference: "abc-cde-cde",
           notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
+          passportNumber: "E7831177G",
           url: "storedUrl",
         },
       },
@@ -550,46 +424,34 @@ describe("createEuTestCert for PCR Saliva Swab", () => {
     dateNowSpy.mockRestore();
   });
 
-  const testData: TestData[] = [
-    {
-      provider: "MacRitchie Medical Clinic",
-      gender: "M",
-      lab: "lab",
-      nationality: "SG",
-      nric: "123",
-      observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-      passportNumber: "ES12345",
-      patientName: "TESTING",
-      performerMcr: "123",
-      performerName: "123",
-      birthDate: "01/01/2021",
-      swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-      swabType: "Saliva swab",
-      swabTypeCode: "119342007",
-      testCode: "94531-1",
-      testType:
-        "Reverse transcription polymerase chain reaction (rRT-PCR) test",
-      testResult: "Positive",
-      testResultCode: "10828004",
-    },
-  ];
+  const parsedFhirBundle = _.cloneDeep(
+    fhirHelper.parse(
+      exampleSingleTypePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    )
+  );
 
   it("create EU test cert with valid params", async () => {
-    const result = await createEuTestCert(testData, "abc-cde-cde", "storedUrl");
+    parsedFhirBundle.observations[0].specimen.swabType.display = "Sliva swab";
+    parsedFhirBundle.observations[0].specimen.swabType.code = "119342007";
+    const result = await createEuTestCert(
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
     expect(result).toMatchObject([
       {
         ver: "1.3.0",
         nam: {
-          fnt: "TESTING",
+          fnt: "TAN<CHEN<CHEN",
         },
-        dob: "2021-01-01",
+        dob: "1990-01-15",
         t: [
           {
             tg: "840539006",
             tt: "LP6464-4",
-            nm: testData[0].testType,
-            sc: "2021-06-27T14:15:00+08:00",
-            tr: "260373001",
+            nm: parsedFhirBundle.observations[0].observation.testType.display,
+            sc: "2020-09-27T06:15:00Z",
+            tr: "260415000",
             tc: "MacRitchie Medical Clinic",
             co: "SG",
             is: "Ministry of Health (Singapore)",
@@ -599,7 +461,7 @@ describe("createEuTestCert for PCR Saliva Swab", () => {
         meta: {
           reference: "abc-cde-cde",
           notarisedOn: "2021-06-30T00:00:00.000Z",
-          passportNumber: "ES12345",
+          passportNumber: "E7831177G",
           url: "storedUrl",
         },
       },

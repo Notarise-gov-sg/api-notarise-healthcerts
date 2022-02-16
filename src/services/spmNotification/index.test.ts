@@ -2,8 +2,9 @@ import {
   notifyHealthCert,
   notifyPdt,
 } from "@notarise-gov-sg/sns-notify-recipients";
+import { TestData } from "@notarise-gov-sg/sns-notify-recipients/dist/types";
 import { ParsedBundle, GroupedObservation } from "../../models/fhir/types";
-import { NotarisationResult, TestData, PDTHealthCertV2 } from "../../types";
+import { NotarisationResult, PDTHealthCertV2 } from "../../types";
 import { config } from "../../config";
 import { sendNotification } from "./index";
 
@@ -76,25 +77,11 @@ describe("single type oa-doc notification", () => {
     };
     testDataMock = [
       {
-        provider: "MacRitchie Medical Clinic",
-        gender: "M",
-        lab: "lab",
-        nationality: "SG",
-        nric: "123",
-        observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-        passportNumber: "ES12345",
-        patientName: "TESTING",
-        performerMcr: "123",
-        performerName: "123",
-        birthDate: "01/01/2021",
-        swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-        swabType: "Nasopharyngeal swab",
-        swabTypeCode: "258500001",
-        testCode: "94531-1",
+        patientName: "Tan Chen Chen",
+        swabCollectionDate: "",
         testType:
-          "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+          "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
         testResult: "Negative",
-        testResultCode: "260385009",
       },
     ];
   });
@@ -112,12 +99,7 @@ describe("single type oa-doc notification", () => {
       1,
       1
     ).toISOString();
-    await sendNotification(
-      resultMock,
-      parsedFhirBundleMock,
-      testDataMock,
-      certificateData
-    );
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyHealthCert).toBeCalledTimes(0);
     expect(notifyPdt).toBeCalledTimes(0);
   });
@@ -125,12 +107,7 @@ describe("single type oa-doc notification", () => {
   it("skip notifyHealthCert/notifyPdt for valid PCR test cert without nric/fin", async () => {
     // remove patient nric/fin
     delete parsedFhirBundleMock.patient.nricFin;
-    await sendNotification(
-      resultMock,
-      parsedFhirBundleMock,
-      testDataMock,
-      certificateData
-    );
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyHealthCert).toBeCalledTimes(0);
     expect(notifyPdt).toBeCalledTimes(0);
   });
@@ -142,12 +119,7 @@ describe("single type oa-doc notification", () => {
       code: "94661-6",
       display: "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
     };
-    await sendNotification(
-      resultMock,
-      parsedFhirBundleMock,
-      testDataMock,
-      certificateData
-    );
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyPdt).toBeCalledTimes(1);
     expect(notifyPdt).toHaveBeenCalledWith({
       nric: parsedFhirBundleMock.patient.nricFin,
@@ -165,12 +137,7 @@ describe("single type oa-doc notification", () => {
       code: "697989009",
       display: "Anterior nares swab",
     };
-    await sendNotification(
-      resultMock,
-      parsedFhirBundleMock,
-      testDataMock,
-      certificateData
-    );
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
 
     expect(notifyHealthCert).toBeCalledTimes(1);
     expect(notifyHealthCert).toHaveBeenCalledWith({
@@ -183,12 +150,7 @@ describe("single type oa-doc notification", () => {
   });
 
   it("trigger notifyHealthCert for valid PCR test cert", async () => {
-    await sendNotification(
-      resultMock,
-      parsedFhirBundleMock,
-      testDataMock,
-      certificateData
-    );
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
 
     expect(notifyHealthCert).toBeCalledTimes(1);
     expect(notifyHealthCert).toHaveBeenCalledWith({
@@ -296,46 +258,17 @@ describe("multi type oa-doc notification", () => {
     };
     testDataMock = [
       {
-        provider: "MacRitchie Medical Clinic",
-        gender: "M",
-        lab: "lab",
-        nationality: "SG",
-        nric: "123",
-        observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-        passportNumber: "ES12345",
-        patientName: "TESTING",
-        performerMcr: "123",
-        performerName: "123",
-        birthDate: "01/01/2021",
-        swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-        swabType: "Nasopharyngeal swab",
-        swabTypeCode: "258500001",
-        testCode: "94531-1",
-        testType:
-          "Reverse transcription polymerase chain reaction (rRT-PCR) test",
+        patientName: "Tan Chen Chen",
+        swabCollectionDate: "",
+        testType: "Nasopharyngeal swab",
         testResult: "Negative",
-        testResultCode: "260385009",
       },
       {
-        provider: "MacRitchie Medical Clinic",
-        gender: "M",
-        lab: "lab",
-        nationality: "SG",
-        nric: "123",
-        observationDate: "6/28/21 2:15:00 PM GMT+08:00",
-        passportNumber: "ES12345",
-        patientName: "TESTING",
-        performerMcr: "123",
-        performerName: "123",
-        birthDate: "01/01/2021",
-        swabCollectionDate: "6/27/21 2:15:00 PM GMT+08:00",
-        swabType: "Nasopharyngeal swab",
-        swabTypeCode: "258500001",
-        testCode: "94661-6",
+        patientName: "Tan Chen Chen",
+        swabCollectionDate: "",
         testType:
           "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
         testResult: "Negative",
-        testResultCode: "260385009",
       },
     ];
   });
@@ -353,12 +286,7 @@ describe("multi type oa-doc notification", () => {
       1,
       1
     ).toISOString();
-    await sendNotification(
-      resultMock,
-      parsedFhirBundleMock,
-      testDataMock,
-      certificateData
-    );
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyHealthCert).toBeCalledTimes(0);
     expect(notifyPdt).toBeCalledTimes(0);
   });
@@ -366,23 +294,13 @@ describe("multi type oa-doc notification", () => {
   it("skip notifyHealthCert/notifyPdt for [PCR, SER] test cert without nric/fin", async () => {
     // remove patient nric/fin
     delete parsedFhirBundleMock.patient.nricFin;
-    await sendNotification(
-      resultMock,
-      parsedFhirBundleMock,
-      testDataMock,
-      certificateData
-    );
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyHealthCert).toBeCalledTimes(0);
     expect(notifyPdt).toBeCalledTimes(0);
   });
 
   it("trigger notifyPdt for valid [PCR, SER] test cert", async () => {
-    await sendNotification(
-      resultMock,
-      parsedFhirBundleMock,
-      testDataMock,
-      certificateData
-    );
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyPdt).toBeCalledTimes(1);
     expect(notifyPdt).toHaveBeenCalledWith({
       nric: parsedFhirBundleMock.patient.nricFin,

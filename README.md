@@ -10,12 +10,12 @@ To get onboarded as a HealthCerts Issuer, please refer to the [Notarise FAQ (poi
 
 To start endorsing your **Pre-departure Test (PDT) HealthCerts** on Notarise.gov.sg, please take note of the respective endpoints for each version/environment:
 
-| **Environment** | **PDT Schema v1.0**\*      | **PDT Schema v2.0**           |
-| --------------- | -------------------------- | ----------------------------- |
-| Staging         | `/stg/notarise/pdt`        | `/stg/v2/notarise/pdt`        |
-| Production      | `/production/notarise/pdt` | `/production/v2/notarise/pdt` |
+| **Environment** | **PDT Schema v2.0**           |
+| --------------- | ----------------------------- |
+| Staging         | `/stg/v2/notarise/pdt`        |
+| Production      | `/production/v2/notarise/pdt` |
 
-> **Deprecation notice**: v1.0 endpoint is scheduled to be deprecated on 31 October 2021. Please refer to [this guide](https://github.com/Open-Attestation/schemata/pull/38) to migrate to PDT Schema v2.0.<br/><br/>Please be reminded that endorsement of documents utilising the new PDT HealthCert Schema v2.0 is only available in the new v2 Notarise endpoint: `/stg/v2/notarise/pdt` or `/production/v2/notarise/pdt`.
+> **Deprecation notice**: v1.0 endpoint is deprecated on 31 January 2022. Please refer to [this guide](https://github.com/Open-Attestation/schemata/pull/38) to migrate to PDT Schema v2.0.<br/><br/>Please be reminded that endorsement of documents utilising the new PDT HealthCert Schema v2.0 is only available in the new v2 Notarise endpoint: `/stg/v2/notarise/pdt` or `/production/v2/notarise/pdt`.
 
 **Request Format**:
 

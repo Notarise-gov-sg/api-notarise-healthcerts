@@ -5,9 +5,11 @@ import {
 import _ from "lodash";
 import moment from "moment-timezone";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
+import { TestData } from "@notarise-gov-sg/sns-notify-recipients/dist/types";
 import { ParsedBundle } from "../../models/fhir/types";
 import { config } from "../../config";
-import { NotarisationResult, TestData, PDTHealthCertV2 } from "../../types";
+import { NotarisationResult, PDTHealthCertV2 } from "../../types";
+import { parseDateTime } from "../../common/datetime";
 
 const { PdtTypes } = pdtHealthCertV2;
 
@@ -28,10 +30,27 @@ const isEligibleForSpmWallet = (certificateData: PDTHealthCertV2): boolean => {
   );
 };
 
+const getTestDataForNofityPdt = (
+  parsedFhirBundle: ParsedBundle
+): TestData[] => {
+  const testData: TestData[] = [];
+  parsedFhirBundle.observations.forEach((observationGroup) => {
+    const testDataValue: TestData = {
+      patientName: parsedFhirBundle.patient?.fullName,
+      swabCollectionDate: parseDateTime(
+        observationGroup.specimen.collectionDateTime
+      ),
+      testType: observationGroup.observation.testType?.display || "",
+      testResult: observationGroup.observation.result.display || "",
+    };
+    testData.push(testDataValue);
+  });
+  return testData;
+};
+
 export const sendNotification = async (
   result: NotarisationResult,
   parsedFhirBundle: ParsedBundle,
-  testData: TestData[],
   certificateData: PDTHealthCertV2
 ) => {
   /* Send SPM notification using api-notify/wallet when patient is adult (15 years & above) and present NRIC-FIN in OA-Doc. */
@@ -50,6 +69,7 @@ export const sendNotification = async (
       });
     } else {
       /* Send SPM notification to recipient (Only if enabled) */
+      const testData: TestData[] = getTestDataForNofityPdt(parsedFhirBundle);
       await notifyPdt({
         url: result.url,
         nric: parsedFhirBundle.patient?.nricFin,

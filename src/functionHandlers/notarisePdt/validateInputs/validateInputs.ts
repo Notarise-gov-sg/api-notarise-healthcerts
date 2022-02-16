@@ -1,13 +1,6 @@
 import { WrappedDocument } from "@govtechsg/open-attestation";
-import { validateDocument, validateV2Document } from "./validateDocument";
-import { HealthCertDocument, PDTHealthCertV2 } from "../../../types";
-
-/**
- * @deprecated This function should be removed when PDT HealthCert v1.0 is deprecated.
- */
-export const validateInputs = async (
-  attachment: WrappedDocument<HealthCertDocument>
-) => Promise.all([validateDocument(attachment)]);
+import { validateV2Document } from "./validateDocument";
+import { PDTHealthCertV2 } from "../../../types";
 
 export const validateV2Inputs = async (
   wrappedDocument: WrappedDocument<PDTHealthCertV2>

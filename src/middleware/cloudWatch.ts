@@ -3,12 +3,7 @@
 
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import middy, { MiddlewareObj } from "@middy/core";
-import {
-  HealthCertDocument,
-  NotarisationResult,
-  Observation,
-  PDTHealthCertV2,
-} from "../types";
+import { NotarisationResult, PDTHealthCertV2 } from "../types";
 import { logError, trace } from "./trace";
 
 export type Request = Pick<middy.Request, "event" | "response">;
@@ -36,8 +31,7 @@ export class CloudWatchMiddleware
   }
 
   before = async (req: Request): Promise<void> => {
-    const wrappedDocument = req.event
-      .body as WrappedDocument<HealthCertDocument>;
+    const wrappedDocument = req.event.body as WrappedDocument<PDTHealthCertV2>;
     const data = getData(wrappedDocument);
     const provider = data.issuers[0].identityProof?.location ?? "UNKNOWN";
     this.specificDomain = provider;
@@ -58,16 +52,11 @@ export class CloudWatchMiddleware
     try {
       const notarisationResult: NotarisationResult = JSON.parse(body);
       const { notarisedDocument } = notarisationResult;
-      const data: HealthCertDocument | PDTHealthCertV2 =
-        getData(notarisedDocument);
+      const data: PDTHealthCertV2 = getData(notarisedDocument);
       let testTypes: string[] = [];
       if (data.version === "pdt-healthcert-v2.0") {
         // version 2
         testTypes = this.extractTestTypesV2(data as PDTHealthCertV2);
-      } else {
-        // version 1
-        // @ts-ignore
-        testTypes = this.extractTestTypesV1(data as HealthCertDocument);
       }
       const { specificDomain } = this;
       const aggregateDomain = this.toAggregateDomain(specificDomain);
@@ -104,33 +93,6 @@ export class CloudWatchMiddleware
       }
     }
     return testTypes;
-  }
-
-  // version 1
-  private extractTestTypesV1(data: HealthCertDocument): string[] {
-    const testTypes = new Set<string>();
-    const entries = data.fhirBundle?.entry;
-    if (entries == null) {
-      return [];
-    }
-    const observations = (entries as Observation[]).filter(
-      (entry) => entry.resourceType === "Observation"
-    );
-    for (let i = 0; i < observations.length; i += 1) {
-      const observation = observations[i];
-      const codings = observation.code.coding;
-
-      for (let j = 0; j < codings.length; j += 1) {
-        const { code } = codings[j];
-        if (code in this.validTests) {
-          testTypes.add(this.validTests[code]);
-        } else {
-          testTypes.add(`UNRECOGNISED: ${code}`);
-        }
-      }
-    }
-
-    return Array.from(testTypes);
   }
 }
 
