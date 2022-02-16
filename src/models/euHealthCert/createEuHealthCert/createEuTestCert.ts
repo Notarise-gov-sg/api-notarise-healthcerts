@@ -1,5 +1,4 @@
 import { notarise, pdtHealthCertV2 } from "@govtechsg/oa-schemata";
-import moment from "moment-timezone";
 import _ from "lodash";
 import { getLogger } from "../../../common/logger";
 import { config } from "../../../config";
@@ -50,9 +49,7 @@ export const createEuTestCert = (
     const testGroup: EuTestParams = {
       tg: "840539006",
       tt: "LP6464-4", // need to confirm with MOH for for Serology, it can either be [Nucleic acid amplification with probe detection] or [Rapid immunoassay]
-      sc: moment
-        .tz(item.specimen.collectionDateTime, "Asia/Singapore")
-        .format(),
+      sc: item.specimen.collectionDateTime,
       tr: euDccTestResultCode,
       tc: item.organization.lhp.fullName,
       co: "SG",
