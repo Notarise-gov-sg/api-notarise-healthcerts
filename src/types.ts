@@ -51,28 +51,6 @@ export const WorkflowContextData = WorkflowReferenceData.And(
 );
 export type WorkflowContextData = Static<typeof WorkflowContextData>;
 
-export interface TestData {
-  provider: string;
-  lab?: string;
-  swabType: string;
-  swabTypeCode: string;
-  patientName: string;
-  swabCollectionDate: string;
-  performerName: string;
-  performerMcr: string;
-  observationDate: string;
-  nric: string;
-  passportNumber: string;
-  birthDate: string;
-  testType: string;
-  testCode: string;
-  nationality: string;
-  gender: string;
-  testResult: string;
-  testResultCode: string;
-  deviceIdentifier?: string;
-}
-
 export interface EuTestParams {
   tg: string;
   tt: string;

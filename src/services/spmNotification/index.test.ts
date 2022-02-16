@@ -2,8 +2,9 @@ import {
   notifyHealthCert,
   notifyPdt,
 } from "@notarise-gov-sg/sns-notify-recipients";
+import { TestData } from "@notarise-gov-sg/sns-notify-recipients/dist/types";
 import { ParsedBundle, GroupedObservation } from "../../models/fhir/types";
-import { NotarisationResult, TestData, PDTHealthCertV2 } from "../../types";
+import { NotarisationResult, PDTHealthCertV2 } from "../../types";
 import { config } from "../../config";
 import { sendNotification } from "./index";
 
@@ -76,25 +77,11 @@ describe("single type oa-doc notification", () => {
     };
     testDataMock = [
       {
-        birthDate: "15/01/1990",
-        gender: "He",
-        lab: undefined,
-        nationality: "Singaporean",
-        nric: "S9098989Z",
-        observationDate: "9/28/20 2:15:00 PM GMT+08:00",
-        passportNumber: "E7831177G",
         patientName: "Tan Chen Chen",
-        performerMcr: undefined as any,
-        performerName: undefined as any,
-        provider: undefined as any,
         swabCollectionDate: "",
-        swabType: "",
-        swabTypeCode: "",
-        testCode: "94661-6",
         testType:
           "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
         testResult: "Negative",
-        testResultCode: "260385009",
       },
     ];
   });
@@ -271,45 +258,17 @@ describe("multi type oa-doc notification", () => {
     };
     testDataMock = [
       {
-        birthDate: "15/01/1990",
-        gender: "He",
-        lab: undefined,
-        nationality: "Singaporean",
-        nric: "S9098989Z",
-        observationDate: "9/28/20 2:15:00 PM GMT+08:00",
-        passportNumber: "E7831177G",
         patientName: "Tan Chen Chen",
-        performerMcr: undefined as any,
-        performerName: undefined as any,
-        provider: undefined as any,
         swabCollectionDate: "",
-        swabType: "",
-        swabTypeCode: "",
-        testCode: "258500001",
         testType: "Nasopharyngeal swab",
         testResult: "Negative",
-        testResultCode: "260385009",
       },
       {
-        birthDate: "15/01/1990",
-        gender: "He",
-        lab: undefined,
-        nationality: "Singaporean",
-        nric: "S9098989Z",
-        observationDate: "9/28/20 2:15:00 PM GMT+08:00",
-        passportNumber: "E7831177G",
         patientName: "Tan Chen Chen",
-        performerMcr: undefined,
-        performerName: undefined,
-        provider: undefined,
         swabCollectionDate: "",
-        swabType: "",
-        swabTypeCode: "",
-        testCode: "94661-6",
         testType:
           "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
         testResult: "Negative",
-        testResultCode: "260385009",
       },
     ];
   });

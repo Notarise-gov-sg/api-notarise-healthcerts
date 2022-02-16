@@ -1,5 +1,7 @@
 // Replica of https://github.com/Notarise-gov-sg/healthcert-renderer/blob/352bc3ce4e24308942dce295b604a13daa394b0e/src/util/datetime.ts
 
+import moment from "moment-timezone";
+
 const SG_LOCALE = "en-sg";
 
 // FIXME: "en-sg" locale may not be supported in user's browser
@@ -38,3 +40,15 @@ export const isoToDateOnlyString = (iso = ""): string =>
     day: "numeric",
     year: "numeric",
   });
+
+/**
+ * Returns a nicely formatted date-time string with GMT+08:00 timezone.
+ * @param iso "2020-09-28T06:15:00Z"
+ * @returns "9/28/20 6:15:00 AM GMT+08:00"
+ */
+export const parseDateTime = (dateString: string | undefined): string =>
+  dateString
+    ? `${moment
+        .tz(dateString, "Asia/Singapore")
+        .format("M/D/YY h:mm:ss A")} GMT+08:00`
+    : "";

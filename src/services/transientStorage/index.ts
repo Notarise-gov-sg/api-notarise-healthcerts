@@ -1,10 +1,7 @@
 import { Record, String, Number, Runtype } from "runtypes";
 import { SignedWrappedDocument } from "@govtechsg/open-attestation";
 import axios from "axios";
-import {
-  SignedNotarizedHealthCert,
-  EndorsedPDTHealthCertV2,
-} from "../../types";
+import { EndorsedPDTHealthCertV2 } from "../../types";
 import { config } from "../../config";
 import { getLogger } from "../../common/logger";
 
@@ -72,9 +69,7 @@ export const getQueueNumber = async (reference: string) => {
 };
 
 export const uploadDocument = async (
-  document:
-    | SignedNotarizedHealthCert
-    | SignedWrappedDocument<EndorsedPDTHealthCertV2>,
+  document: SignedWrappedDocument<EndorsedPDTHealthCertV2>,
   id: string,
   reference: string
 ) => {

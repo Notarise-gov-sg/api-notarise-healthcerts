@@ -1,11 +1,15 @@
-import { notarise } from "@govtechsg/oa-schemata";
+import { notarise, pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import moment from "moment-timezone";
 import _ from "lodash";
+import { getLogger } from "../../../common/logger";
 import { config } from "../../../config";
 import { EuHealthCert, EuNameParams, EuTestParams } from "../../../types";
 import * as EUDccTestResult from "../../../static/EU-DCC-test-result.mapping.json";
 import { ParsedBundle } from "../../fhir/types";
+import { Type } from "../../fhir/constraints";
+import { createEuSignedTestQr } from "./createEuSignedTestQr";
 
+const { trace } = getLogger("src/models/euHealthCert/createEuTestCert");
 const { euSigner, swabTestTypes } = config;
 
 export const createEuTestCert = (
@@ -86,4 +90,39 @@ export const createEuTestCert = (
   });
 
   return testHealthCerts;
+};
+
+export const generateEuHealthCert = async (
+  type: Type,
+  parsedFhirBundle: ParsedBundle,
+  reference: string,
+  storedUrl: string
+): Promise<notarise.SignedEuHealthCert[]> => {
+  const traceWithRef = trace.extend(`reference:${reference}`);
+  const { PdtTypes } = pdtHealthCertV2;
+  let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
+  if (
+    (_.isString(type) && (type === PdtTypes.Art || type === PdtTypes.Pcr)) ||
+    type.includes(PdtTypes.Art) ||
+    type.includes(PdtTypes.Pcr)
+  ) {
+    traceWithRef("signedEuHealthCerts: Generating EU test cert...");
+    const euTestCerts = createEuTestCert(
+      parsedFhirBundle,
+      reference,
+      storedUrl
+    );
+    traceWithRef(euTestCerts);
+    signedEuHealthCerts = await createEuSignedTestQr(euTestCerts);
+    if (!signedEuHealthCerts.length) {
+      throw new Error(
+        `Generated EU Vacc Cert is invalid: signedEuHealthCerts has 0 entries`
+      );
+    }
+  } else {
+    traceWithRef(
+      `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(type)}`
+    );
+  }
+  return signedEuHealthCerts;
 };
