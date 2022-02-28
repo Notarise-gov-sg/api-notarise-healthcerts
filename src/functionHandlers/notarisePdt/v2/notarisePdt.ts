@@ -10,8 +10,8 @@ import {
 } from "../../../services/transientStorage";
 import { PDTHealthCertV2, NotarisationResult } from "../../../types";
 import { config, getDefaultIfUndefined } from "../../../config";
+import { generateEuHealthCert } from "../../../models/euHealthCert";
 import { Type } from "../../../models/fhir/constraints";
-import { genEuDccCertificates } from "../../../models/euDccCertificates";
 
 const { trace } = getLogger("src/functionHandlers/notarisePdt/v2/notarisePdt");
 
@@ -34,16 +34,17 @@ export const notarisePdt = async (
     .split(",")
     .map((nirc) => nirc.trim());
   const patientNricFin = parsedFhirBundle.patient.nricFin ?? "";
-  const isWhitelistedNric = patientNricFin
-    ? whiteListNrics.includes(patientNricFin)
-    : false;
-  traceWithRef(`Is offline Qr nric/fin in whitelist : ${isWhitelistedNric}`);
+  traceWithRef(
+    `Is offline Qr nric/fin in whitelist : ${whiteListNrics.includes(
+      patientNricFin
+    )}`
+  );
 
   /* Generate EU Test Health Cert (Only if enabled or Match with whitelisted NRIC) */
   let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
-  if (config.isOfflineQrEnabled || isWhitelistedNric) {
+  if (config.isOfflineQrEnabled || whiteListNrics.includes(patientNricFin)) {
     try {
-      signedEuHealthCerts = await genEuDccCertificates(
+      signedEuHealthCerts = await generateEuHealthCert(
         type,
         parsedFhirBundle,
         reference,

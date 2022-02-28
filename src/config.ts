@@ -43,11 +43,10 @@ const getDidSigner = () => ({
 });
 
 const getEuSigner = () => ({
-  issuer: getDefaultIfUndefined(
+  name: getDefaultIfUndefined(
     process.env.SIGNING_EU_QR_NAME,
     sampleSigningDidName
   ),
-  expiryDays: 7, // set PDT expiry day as 7 (issue date + 7 days)
 });
 
 const getGPayCovidCardSigner = () => ({
@@ -86,11 +85,10 @@ const generateConfig = () => ({
   },
   isOfflineQrEnabled: isTruthy(process.env.OFFLINE_QR_ENABLED),
   isGPayCovidCardEnabled: isTruthy(process.env.GPAY_COVID_CARD_ENABLED),
-  // Type of Test (Loinc)
-  testTypes: {
-    ART: "97097-0",
-    PCR: "94531-1",
-    SER: "94661-6",
+  swabTestTypes: {
+    ART: "697989009",
+    PCR_NASAL: "258500001",
+    PCR_SALIVA: "119342007",
   },
 });
 
