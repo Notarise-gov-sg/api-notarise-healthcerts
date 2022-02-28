@@ -59,11 +59,20 @@ const genEuDccCertificates = async (
       },
     };
 
+    // Map the test type code from single healthcert oa-doc type
+    let testTypeCode: string;
+    if (type === PdtTypes.Art) {
+      testTypeCode = testTypes.ART;
+    } else if (type === PdtTypes.Pcr) {
+      testTypeCode = testTypes.PCR;
+    }
+
     let testRecords: TestingRecord[] = parsedFhirBundle.observations.map(
       (o) => {
         const testRecord: TestingRecord = {
-          testTypeCode: o.observation.testType
-            .code as TestingRecord["testTypeCode"],
+          testTypeCode:
+            testTypeCode ??
+            (o.observation.testType.code as TestingRecord["testTypeCode"]), // take observations' test type code if oa-doc have multiple types like [PCR, SER]
           collectionDateTime: isoToLocaleString(o.specimen.collectionDateTime), // I.e. Specimen collection datetime;
           testResultCode: o.observation.result
             .code as TestingRecord["testResultCode"], // E.g. "260385009";
