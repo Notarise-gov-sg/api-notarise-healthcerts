@@ -34,11 +34,7 @@
     "@notarise-gov-sg/eu-dcc-generator": "^1.1.1",
     "@notarise-gov-sg/gpay-covid-cards": "^1.0.5",
     "@notarise-gov-sg/sns-notify-recipients": "^1.5.2",
-<<<<<<< HEAD
-=======
     "@notarise-gov-sg/transient-storage-lib": "git+https://github.com/Notarise-gov-sg/transient-storage-lib.git#deploy/dist",
-    "@pathcheck/dcc-sdk": "0.0.17",
->>>>>>> 6dc2b90 (experiment: use transient-lib)
     "@types/url-join": "^4.0.1",
     "aws-sdk": "^2.1062.0",
     "aws-xray-sdk-core": "^3.3.4",

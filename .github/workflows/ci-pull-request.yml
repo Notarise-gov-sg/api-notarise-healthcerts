@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
     - uses: actions/setup-node@v2
       with:
         node-version: '14.x'
@@ -38,9 +40,8 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
+    - run: git config --global url."https://${{ secrets.BOT_GITHUB_TOKEN }}@github.com/".insteadOf ssh://git@github.com/
     - run: npm ci
-      env:
-        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
     - run: npm run lint
     - run: npm run typecheck
     - run: npm run test
