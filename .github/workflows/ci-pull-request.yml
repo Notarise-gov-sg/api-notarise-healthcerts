@@ -40,7 +40,7 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-    - run: git config --global url."https://${{ secrets.BOT_GITHUB_TOKEN }}@github.com/".insteadOf ssh://git@github.com/
+    - run: git config --global url."https://notarize-bot:${{ secrets.BOT_GITHUB_TOKEN }}@github.com/".insteadOf ssh://git@github.com/
     - run: npm ci
     - run: npm run lint
     - run: npm run typecheck
