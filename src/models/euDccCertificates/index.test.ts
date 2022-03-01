@@ -4,6 +4,7 @@ import _ from "lodash";
 import { genEuDccCertificates } from "./index";
 import fhirHelper from "../fhir/index";
 import exampleSingleTypePcrHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
+import exampleSingleTypeArtHealthCertWithNric from "../../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
 import exampleMultiTypeHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_ser_multi_result_unwrapped.json";
 
 const PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
@@ -47,13 +48,10 @@ describe("genEuDccCertificates for Single Type OA Doc", () => {
     dateNowSpy.mockRestore();
   });
 
-  const parsedFhirBundle = _.cloneDeep(
-    fhirHelper.parse(
-      exampleSingleTypePcrHealthCertWithNric.fhirBundle as R4.IBundle
-    )
-  );
-
   it("create EU vacc cert with valid PCR Type", async () => {
+    const parsedFhirBundle = fhirHelper.parse(
+      exampleSingleTypePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    );
     const result = await genEuDccCertificates(
       PdtTypes.Pcr,
       parsedFhirBundle,
@@ -69,7 +67,10 @@ describe("genEuDccCertificates for Single Type OA Doc", () => {
     ]);
   });
 
-  it("create EU vacc cert with valid ART Type regardless of observation test type", async () => {
+  it("create EU vacc cert with valid ART Type", async () => {
+    const parsedFhirBundle = fhirHelper.parse(
+      exampleSingleTypeArtHealthCertWithNric.fhirBundle as R4.IBundle
+    );
     const result = await genEuDccCertificates(
       PdtTypes.Art,
       parsedFhirBundle,
