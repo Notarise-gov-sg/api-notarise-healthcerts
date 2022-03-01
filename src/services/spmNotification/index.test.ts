@@ -112,7 +112,23 @@ describe("single type oa-doc notification", () => {
     expect(notifyPdt).toBeCalledTimes(0);
   });
 
-  it("trigger notifyPdt for single valid SER test cert", async () => {
+  it("trigger notifyHealthCert for single valid SER test cert Staging Env", async () => {
+    process.env.STAGE = "stg";
+    // set test type code to SER
+    certificateData.type = "SER" as any;
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
+    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledWith({
+      expiry: resultMock.ttl,
+      type: "SER",
+      uin: parsedFhirBundleMock.patient.nricFin,
+      url: resultMock.url,
+      version: "2.0",
+    });
+  });
+
+  it("trigger notifyPdt for single valid SER test cert Prod Env", async () => {
+    process.env.STAGE = "production";
     // set test type code to SER
     certificateData.type = "SER" as any;
     parsedFhirBundleMock.observations[0].observation.testType = {
@@ -299,7 +315,21 @@ describe("multi type oa-doc notification", () => {
     expect(notifyPdt).toBeCalledTimes(0);
   });
 
-  it("trigger notifyPdt for valid [PCR, SER] test cert", async () => {
+  it("trigger notifyHealthCert for valid [PCR, SER] test cert Staging Env", async () => {
+    process.env.STAGE = "stg";
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
+    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledWith({
+      expiry: resultMock.ttl,
+      type: "PCR_SER",
+      uin: parsedFhirBundleMock.patient.nricFin,
+      url: resultMock.url,
+      version: "2.0",
+    });
+  });
+
+  it("trigger notifyPdt for valid [PCR, SER] test cert Prod Env", async () => {
+    process.env.STAGE = "production";
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyPdt).toBeCalledTimes(1);
     expect(notifyPdt).toHaveBeenCalledWith({
