@@ -10,6 +10,7 @@ import { sendNotification } from "./index";
 
 jest.mock("@notarise-gov-sg/sns-notify-recipients");
 
+const OLD_ENV = process.env;
 describe("single type oa-doc notification", () => {
   let certificateData: PDTHealthCertV2;
   let resultMock: NotarisationResult;
@@ -24,6 +25,7 @@ describe("single type oa-doc notification", () => {
     config.healthCertNotification.enabled = true;
   });
   beforeEach(() => {
+    process.env = { ...OLD_ENV };
     certificateData = {
       validFrom: "2021-08-24T04:22:36.062Z",
       type: "PCR" as any,
@@ -87,6 +89,7 @@ describe("single type oa-doc notification", () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
+    process.env = OLD_ENV;
   });
   afterAll(() => {
     spy.mockRestore();
@@ -193,6 +196,7 @@ describe("multi type oa-doc notification", () => {
     config.healthCertNotification.enabled = true;
   });
   beforeEach(() => {
+    process.env = { ...OLD_ENV };
     certificateData = {
       validFrom: "2021-08-24T04:22:36.062Z",
       type: ["PCR", "SER"] as any,
@@ -290,6 +294,7 @@ describe("multi type oa-doc notification", () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
+    process.env = OLD_ENV;
   });
   afterAll(() => {
     spy.mockRestore();
