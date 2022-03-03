@@ -17,6 +17,7 @@ export enum ErrorCodes {
   FILE_INVALID = 4007,
 
   // 5xxx internal server error
+  EU_QR_ERROR = 5001,
 }
 
 export abstract class AbstractError extends Error {
@@ -158,6 +159,19 @@ export class FileInvalidError extends DetailedCodedError {
       `We noted that there were formatting errors in the submitted .oa file.
 
 Please request for clinic to re-issue the document correctly before submission at Notarise.`
+    );
+  }
+}
+
+export class EuDccInvalidError extends DetailedCodedError {
+  constructor(errorMessage: string) {
+    errorLogger(`EuDccInvalidError triggered with reason: ${errorMessage}`);
+    super(
+      "Invalid Eu Dcc error",
+      ErrorCodes.EU_QR_ERROR,
+      ErrorCodes[ErrorCodes.EU_QR_ERROR],
+      "Submitted HealthCert is invalid",
+      errorMessage
     );
   }
 }

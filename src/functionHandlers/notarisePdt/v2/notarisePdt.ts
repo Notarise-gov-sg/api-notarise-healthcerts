@@ -21,7 +21,6 @@ export const notarisePdt = async (
   type: Type,
   parsedFhirBundle: ParsedBundle
 ): Promise<NotarisationResult> => {
-  const errorWithRef = trace.extend(`reference:${reference}`);
   const traceWithRef = trace.extend(`reference:${reference}`);
 
   /* Get transientStorage queue number for upload and build verify url. */
@@ -42,18 +41,12 @@ export const notarisePdt = async (
   /* Generate EU Test Health Cert (Only if enabled or Match with whitelisted NRIC) */
   let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
   if (config.isOfflineQrEnabled || isWhitelistedNric) {
-    try {
-      signedEuHealthCerts = await genEuDccCertificates(
-        type,
-        parsedFhirBundle,
-        reference,
-        universalUrl
-      );
-    } catch (e) {
-      errorWithRef(
-        `signedEuHealthCerts error: ${e instanceof Error ? e.message : e}`
-      );
-    }
+    signedEuHealthCerts = await genEuDccCertificates(
+      type,
+      parsedFhirBundle,
+      reference,
+      universalUrl
+    );
   }
 
   /* Generate notarised Test Health Cert Document and Upload to transientStorage bucket. */

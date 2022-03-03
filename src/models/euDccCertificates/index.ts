@@ -9,6 +9,7 @@ import { GroupedObservation, ParsedBundle } from "../../models/fhir/types";
 import { isoToDateOnlyString, isoToLocaleString } from "../../common/datetime";
 import { config, getDefaultIfUndefined } from "../../config";
 import { getLogger } from "../../common/logger";
+import { EuDccInvalidError } from "../../common/error";
 
 const { trace } = getLogger("src/models/euDccCertificates");
 const { euSigner, testTypes } = config;
@@ -122,15 +123,15 @@ const genEuDccCertificates = async (
     );
 
     if (!signedEuHealthCerts.length) {
-      throw new Error(
-        `Generated EU Vacc Cert is invalid: signedEuHealthCerts has 0 entries`
+      throw new EuDccInvalidError(
+        `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
       );
     }
-  } else {
-    traceWithRef(
+  } else if (documentType !== PdtTypes.Ser) {
+    throw new EuDccInvalidError(
       `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
         documentType
-      )}`
+      )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
     );
   }
   return signedEuHealthCerts;
