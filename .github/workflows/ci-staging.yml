@@ -1,10 +1,10 @@
-name: CI - Master
+name: CI - Staging
 
 # Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# events but only for the staging branch
 on:
   push:
-    branches: [ master ]
+    branches: [ staging ]
 
 env:
   SLS_DEBUG: "*"
@@ -42,24 +42,8 @@ jobs:
         SIGNING_DID_KEY: ${{ secrets.SIGNING_DID_KEY }}
         SIGNING_DID_PRIVATE_KEY: ${{ secrets.SIGNING_DID_PRIVATE_KEY }}
     - run: npm run sls-config-check
-  create-new-tag:
-    needs: test
-    name: Create New Git Tag for release
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: '0'
-    - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.33.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-        WITH_V: true
-        RELEASE_BRANCHES: master
-        DEFAULT_BUMP: patch
   trigger-deploy:
-    needs: create-new-tag
-    name: trigger deploy
+    name: trigger staging deploy
     runs-on: ubuntu-latest
     steps:
     - uses: benc-uk/workflow-dispatch@v1
@@ -67,4 +51,4 @@ jobs:
         workflow: ${{ secrets.DEPLOYER_WORKFLOW }}
         repo: ${{ secrets.DEPLOYER_REPO }}
         token: ${{ secrets.BOT_GITHUB_TOKEN_PRIVATE }}
-        inputs: '{ "ref": "${{ github.ref }}", "branch": "master" }'
+        inputs: '{ "ref": "${{ github.ref }}", "branch": "staging" }'
