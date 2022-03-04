@@ -10,6 +10,7 @@ import { sendNotification } from "./index";
 
 jest.mock("@notarise-gov-sg/sns-notify-recipients");
 
+const OLD_ENV = process.env;
 describe("single type oa-doc notification", () => {
   let certificateData: PDTHealthCertV2;
   let resultMock: NotarisationResult;
@@ -24,6 +25,7 @@ describe("single type oa-doc notification", () => {
     config.healthCertNotification.enabled = true;
   });
   beforeEach(() => {
+    process.env = { ...OLD_ENV };
     certificateData = {
       validFrom: "2021-08-24T04:22:36.062Z",
       type: "PCR" as any,
@@ -87,6 +89,7 @@ describe("single type oa-doc notification", () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
+    process.env = OLD_ENV;
   });
   afterAll(() => {
     spy.mockRestore();
@@ -112,7 +115,23 @@ describe("single type oa-doc notification", () => {
     expect(notifyPdt).toBeCalledTimes(0);
   });
 
-  it("trigger notifyPdt for single valid SER test cert", async () => {
+  it("trigger notifyHealthCert for single valid SER test cert Staging Env", async () => {
+    process.env.STAGE = "stg";
+    // set test type code to SER
+    certificateData.type = "SER" as any;
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
+    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledWith({
+      expiry: resultMock.ttl,
+      type: "SER",
+      uin: parsedFhirBundleMock.patient.nricFin,
+      url: resultMock.url,
+      version: "2.0",
+    });
+  });
+
+  it("trigger notifyPdt for single valid SER test cert Prod Env", async () => {
+    process.env.STAGE = "production";
     // set test type code to SER
     certificateData.type = "SER" as any;
     parsedFhirBundleMock.observations[0].observation.testType = {
@@ -177,6 +196,7 @@ describe("multi type oa-doc notification", () => {
     config.healthCertNotification.enabled = true;
   });
   beforeEach(() => {
+    process.env = { ...OLD_ENV };
     certificateData = {
       validFrom: "2021-08-24T04:22:36.062Z",
       type: ["PCR", "SER"] as any,
@@ -274,6 +294,7 @@ describe("multi type oa-doc notification", () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
+    process.env = OLD_ENV;
   });
   afterAll(() => {
     spy.mockRestore();
@@ -299,7 +320,21 @@ describe("multi type oa-doc notification", () => {
     expect(notifyPdt).toBeCalledTimes(0);
   });
 
-  it("trigger notifyPdt for valid [PCR, SER] test cert", async () => {
+  it("trigger notifyHealthCert for valid [PCR, SER] test cert Staging Env", async () => {
+    process.env.STAGE = "stg";
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
+    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledWith({
+      expiry: resultMock.ttl,
+      type: "PCR_SER",
+      uin: parsedFhirBundleMock.patient.nricFin,
+      url: resultMock.url,
+      version: "2.0",
+    });
+  });
+
+  it("trigger notifyPdt for valid [PCR, SER] test cert Prod Env", async () => {
+    process.env.STAGE = "production";
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyPdt).toBeCalledTimes(1);
     expect(notifyPdt).toHaveBeenCalledWith({

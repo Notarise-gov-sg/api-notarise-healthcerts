@@ -13,6 +13,8 @@ provider:
   tracing:
     lambda: true
     apiGateway: true
+  apiGateway:
+    metrics: true
   permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
   iamRoleStatements:
     - Effect: "Allow"

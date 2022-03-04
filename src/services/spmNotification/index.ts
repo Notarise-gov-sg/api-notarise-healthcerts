@@ -18,15 +18,20 @@ const isChildPatient = (parsedFhirBundle: ParsedBundle): boolean => {
   return moment().diff(patientDOB, "years") < 15;
 };
 
+/**
+ * @deprecated This function need to remove after SPM successfully release 'SER' or multi-type ['PCR', 'SER'] support in Prod.
+ * Currently, SPM released 'SER' or multi-type ['PCR', 'SER'] support only in Staging
+ */
 const isEligibleForSpmWallet = (certificateData: PDTHealthCertV2): boolean => {
   const supportedSingleTypes = [PdtTypes.Pcr, PdtTypes.Art];
   /* 
   [NEW] SPM wallet notification support only for; 
-    - single type OA-Doc PCR or ART (currently, doesn't support either single-type 'SER' or multi-type ['PCR', 'SER'].)
+    - single type OA-Doc PCR or ART (currently, doesn't support either single-type 'SER' or multi-type ['PCR', 'SER'] in Prod.)
   */
   return (
-    _.isString(certificateData.type) &&
-    supportedSingleTypes.some((t) => t === certificateData.type)
+    (_.isString(certificateData.type) &&
+      supportedSingleTypes.some((t) => t === certificateData.type)) ||
+    process.env.STAGE !== "production"
   );
 };
 
@@ -55,15 +60,18 @@ export const sendNotification = async (
 ) => {
   /* Send SPM notification using api-notify/wallet when patient is adult (15 years & above) and present NRIC-FIN in OA-Doc. */
   if (parsedFhirBundle.patient?.nricFin && !isChildPatient(parsedFhirBundle)) {
-    /* [NEW] Send HealthCert to SPM wallet for PCR | ART (Only if enabled) */
+    /* [NEW] Send HealthCert to SPM wallet for PCR | ART | SER or multi-type ['PCR', 'SER'] (Only if enabled) */
     if (
       config.healthCertNotification.enabled &&
       isEligibleForSpmWallet(certificateData)
     ) {
+      const certificateType = _.isString(certificateData.type)
+        ? certificateData.type
+        : certificateData.type.join("_");
       await notifyHealthCert({
         uin: parsedFhirBundle.patient?.nricFin,
         version: "2.0",
-        type: certificateData.type as string,
+        type: certificateType as string,
         url: result.url,
         expiry: result.ttl,
       });

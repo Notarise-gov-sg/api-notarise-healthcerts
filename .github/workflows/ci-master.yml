@@ -67,4 +67,4 @@ jobs:
         workflow: ${{ secrets.DEPLOYER_WORKFLOW }}
         repo: ${{ secrets.DEPLOYER_REPO }}
         token: ${{ secrets.BOT_GITHUB_TOKEN_PRIVATE }}
-        inputs: '{ "ref": "${{ github.ref }}" }'
+        inputs: '{ "ref": "${{ github.ref }}", "ENABLE_PROD_DEPLOY": "${{ secrets.ENABLE_PROD_DEPLOY }}" }'
