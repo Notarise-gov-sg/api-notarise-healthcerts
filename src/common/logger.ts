@@ -1,6 +1,6 @@
 import debug from "debug";
 
-if (!process.env.JEST_WORKER_ID) debug.enable("*"); // enable log outputs if not running in jest
+debug.enable("api-notarize-healthcerts:*,transient-storage-lib:*");
 const logger = debug("api-notarize-healthcerts");
 
 interface Logger {
