@@ -73,7 +73,10 @@ export const main: Handler = async (
       headers: {
         "x-trace-id": reference,
       },
-      body: "",
+      body:
+        e instanceof DetailedCodedError
+          ? `${e.title}, ${e.messageBody}`
+          : String(e),
     };
   }
 
