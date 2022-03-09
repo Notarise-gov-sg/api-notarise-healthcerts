@@ -43,7 +43,7 @@
     <td>✅</td>
   </tr>
   <tr>
-    <td>"LAM"</td>
+    <td>"LAMP"</td>
     <td>96986-5</td>
     <td>SARS-CoV-2 (COVID-19) N gene [Presence] in Nose by NAA with non-probe detection</td>
     <td>❌</td>
@@ -111,7 +111,7 @@ Example:
     <td rowspan="2">Anterior nares swab</td>
   </tr>
   <tr>
-    <td>“LAM”</td>
+    <td>“LAMP”</td>
   </tr>
   <tr>
     <td>"SER"</td>
