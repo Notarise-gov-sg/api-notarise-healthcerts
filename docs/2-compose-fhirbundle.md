@@ -54,248 +54,244 @@ Ensure that the `fhirBundle` has the required fields for Notarise endorsement de
 ## Mapping Table
 
 <table>
-  <thead>
-    <tr>
-      <th>Meta</th>
-      <th>FHIR Mapping</th>
-      <th>Required</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="3" align="center"><b>Patient</b></td>
-    </tr>
-    <tr>
-      <td>Patient Full Name</td>
-      <td>Patient.name[0].text</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Gender</td>
-      <td>Patient.gender</td>
-      <td>Optional - Recommended</td>
-    </tr>
-    <tr>
-      <td>Birth Date (YYYY-MM-DD)</td>
-      <td>Patient.birthDate</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Nationality (2-letter ISO 3166 code)</td>
-      <td>
-        Patient.extension[0].extension[url=code].valueCodeableConcept.coding[0].{
-        system, code }
-      </td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Passport Number</td>
-      <td>Patient.identifier[0].{ id=PPN, type, value }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>NRIC or FIN</td>
-      <td>Patient.identifier[1].{ id=NRIC-FIN, value }</td>
-      <td>Yes - If known</td>
-    </tr>
-    <tr>
-      <td colspan="3" align="center"><b>Observation(s)</b></td>
-    </tr>
-    <tr>
-      <td>Specimen Resource Reference (UUID)</td>
-      <td>Observation.specimen.{ type=Specimen, reference }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Practitioner Resource Reference (UUID)</td>
-      <td>Observation.performer[0].{ type=Practitioner, reference }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization (LHP) Resource Reference (UUID)</td>
-      <td>Observation.performer[1].{ id=LHP, type=Organization, reference }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization (AL) Resource Reference (UUID)</td>
-      <td>Observation.performer[2].{ id=AL, type=Organization, reference }</td>
-      <td>PCR HealthCerts only</td>
-    </tr>
-    <tr>
-      <td>ASCN</td>
-      <td>Observation.identifier[0].{ id=ACSN, value }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Target Disease</td>
-      <td>Observation.category[0].coding[0].{ system, code, display }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Type of Test</td>
-      <td>Observation.code.coding[0].{ system, code, display }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Test Result</td>
-      <td>
-        Observation.valueCodeableConcept.coding[0].{ system, code, display }
-      </td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Effective datetime (ISO 8601 timestamp)</td>
-      <td>Observation.effectiveDateTime</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Status</td>
-      <td>Observation.status</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td colspan="3" align="center"><b>Specimen(s)</b></td>
-    </tr>
-    <tr>
-      <td>Device Resource Reference (UUID)</td>
-      <td>Specimen.subject.{ type=Device, reference }</td>
-      <td>ART HealthCerts only</td>
-    </tr>
-    <tr>
-      <td>Type of Swab</td>
-      <td>Specimen.type.coding[0].{ system, code, display }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Collection datetime (ISO 8601 timestamp)</td>
-      <td>Specimen.collection.collectedDateTime</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td colspan="3" align="center"><b>Practitioner</b></td>
-    </tr>
-    <tr>
-      <td>Practitioner Full Name</td>
-      <td>Practitioner.name[0].text</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Practitioner Medicare number</td>
-      <td>Practitioner.qualification[0].identifier[0].{ id=MCR, value }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization (MOH) Resource Reference (UUID)</td>
-      <td>
-        Practitioner.qualification[0].issuer.{ type=Organization, reference }
-      </td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td colspan="3" align="center"><b>Organization (MOH)</b></td>
-    </tr>
-    <tr>
-      <td>Organization Full Name</td>
-      <td>Organization.name</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization Type</td>
-      <td>Organization.type[0].coding[0].{ system, code, display }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization URL</td>
-      <td>Organization.contact[0].telecom[0].{ system=url, value }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization Phone</td>
-      <td>Organization.contact[0].telecom[1].{ system=phone, value }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization Address</td>
-      <td>Organization.contact[0].address.{ type, use, text }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td colspan="3" align="center">
-        <b>Organization (Licensed Healthcare Provider)</b>
-      </td>
-    </tr>
-    <tr>
-      <td>Organization Full Name</td>
-      <td>Organization.name</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization Type Text</td>
-      <td>Organization.type[0].text="Licensed Healthcare Provider"</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization Type</td>
-      <td>Organization.type[0].coding[0].{ system, code, display }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization URL</td>
-      <td>Organization.contact[0].telecom[0].{ system=url, value }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization Phone</td>
-      <td>Organization.contact[0].telecom[1].{ system=phone, value }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Organization Address</td>
-      <td>Organization.contact[0].address.{ type, use, text }</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td colspan="3" align="center">
-        <b>Organization (Accredited Laboratory) [PCR HealthCerts only]</b>
-      </td>
-    </tr>
-    <tr>
-      <td>Organization Full Name</td>
-      <td>Organization.name</td>
-      <td>PCR HealthCerts only</td>
-    </tr>
-    <tr>
-      <td>Organization Type Text</td>
-      <td>Organization.type[0].text="Accredited Laboratory"</td>
-      <td>PCR HealthCerts only</td>
-    </tr>
-    <tr>
-      <td>Organization Type</td>
-      <td>Organization.type[0].coding[0].{ system, code, display }</td>
-      <td>PCR HealthCerts only</td>
-    </tr>
-    <tr>
-      <td>Organization URL</td>
-      <td>Organization.contact[0].telecom[0].{ system=url, value }</td>
-      <td>PCR HealthCerts only</td>
-    </tr>
-    <tr>
-      <td>Organization Phone</td>
-      <td>Organization.contact[0].telecom[1].{ system=phone, value }</td>
-      <td>PCR HealthCerts only</td>
-    </tr>
-    <tr>
-      <td>Organization Address</td>
-      <td>Organization.contact[0].address.{ type, use, text }</td>
-      <td>PCR HealthCerts only</td>
-    </tr>
-    <tr>
-      <td colspan="3" align="center"><b>Device [ART HealthCerts only]</b></td>
-    </tr>
-    <tr>
-      <td>Device Type</td>
-      <td>Device.type.coding[0].{ system, code, display }</td>
-      <td>ART HealthCerts only</td>
-    </tr>
-  </tbody>
+<thead>
+  <tr>
+    <th>Meta</th>
+    <th>FHIR Mapping</th>
+    <th>Required</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td colspan="3" align="center"><b>Patient</b></td>
+  </tr>
+  <tr>
+    <td>Patient Full Name</td>
+    <td>Patient.name[0].text</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Gender</td>
+    <td>Patient.gender</td>
+    <td>Optional - Recommended</td>
+  </tr>
+  <tr>
+    <td>Birth Date (YYYY-MM-DD)</td>
+    <td>Patient.birthDate</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Nationality (2-letter ISO 3166 code)</td>
+    <td>Patient.extension[0].extension[url=code].valueCodeableConcept.coding[0].{ system, code }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Passport Number</td>
+    <td>Patient.identifier[0].{ id=PPN, type, value }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>NRIC or FIN</td>
+    <td>Patient.identifier[1].{ id=NRIC-FIN, value }</td>
+    <td>Yes - If known</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center"><b>Observation(s)</b></td>
+  </tr>
+  <tr>
+    <td>Specimen Resource Reference (UUID)</td>
+    <td>Observation.specimen.{ type=Specimen, reference }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Practitioner Resource Reference (UUID)</td>
+    <td>Observation.performer[0].{ type=Practitioner, reference }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization (LHP) Resource Reference (UUID)</td>
+    <td>Observation.performer[1].{ id=LHP, type=Organization, reference }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization (AL) Resource Reference (UUID)</td>
+    <td>Observation.performer[2].{ id=AL, type=Organization, reference }</td>
+    <td>PCR HealthCerts only</td>
+  </tr>
+  <tr>
+    <td>ASCN</td>
+    <td>Observation.identifier[0].{ id=ACSN, value }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Target Disease</td>
+    <td>Observation.category[0].coding[0].{ system, code, display }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Type of Test</td>
+    <td>Observation.code.coding[0].{ system, code, display }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Test Result</td>
+    <td>Observation.valueCodeableConcept.coding[0].{ system, code, display }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td><sup>i</sup>Modality</td>
+    <td>Observation.note[0].{ id=MODALITY, text }</td>
+    <td>ART HealthCerts only</td>
+  </tr>
+  <tr>
+    <td>Effective datetime (ISO 8601 timestamp)</td>
+    <td>Observation.effectiveDateTime</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Status</td>
+    <td>Observation.status</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center"><b>Specimen(s)</b></td>
+  </tr>
+  <tr>
+    <td>Device Resource Reference (UUID)</td>
+    <td>Specimen.subject.{ type=Device, reference }</td>
+    <td>ART HealthCerts only</td>
+  </tr>
+  <tr>
+    <td>Type of Swab</td>
+    <td>Specimen.type.coding[0].{ system, code, display }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Collection datetime (ISO 8601 timestamp)</td>
+    <td>Specimen.collection.collectedDateTime</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center"><b>Practitioner</b></td>
+  </tr>
+  <tr>
+    <td>Practitioner Full Name</td>
+    <td>Practitioner.name[0].text</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Practitioner Medicare number</td>
+    <td>Practitioner.qualification[0].identifier[0].{ id=MCR, value }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization (MOH) Resource Reference (UUID)</td>
+    <td>Practitioner.qualification[0].issuer.{ type=Organization, reference }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center"><b>Organization (MOH)</b></td>
+  </tr>
+  <tr>
+    <td>Organization Full Name</td>
+    <td>Organization.name</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization Type</td>
+    <td>Organization.type[0].coding[0].{ system, code, display }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization URL</td>
+    <td>Organization.contact[0].telecom[0].{ system=url, value }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization Phone</td>
+    <td>Organization.contact[0].telecom[1].{ system=phone, value }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization Address</td>
+    <td>Organization.contact[0].address.{ type, use, text }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center"><b>Organization (Licensed Healthcare Provider)</b></td>
+  </tr>
+  <tr>
+    <td>Organization Full Name</td>
+    <td>Organization.name</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization Type Text</td>
+    <td>Organization.type[0].text="Licensed Healthcare Provider"</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization Type</td>
+    <td>Organization.type[0].coding[0].{ system, code, display }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization URL</td>
+    <td>Organization.contact[0].telecom[0].{ system=url, value }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization Phone</td>
+    <td>Organization.contact[0].telecom[1].{ system=phone, value }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Organization Address</td>
+    <td>Organization.contact[0].address.{ type, use, text }</td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center"><b>Organization (Accredited Laboratory) [PCR HealthCerts only]</b></td>
+  </tr>
+  <tr>
+    <td>Organization Full Name</td>
+    <td>Organization.name</td>
+    <td>PCR HealthCerts only</td>
+  </tr>
+  <tr>
+    <td>Organization Type Text</td>
+    <td>Organization.type[0].text="Accredited Laboratory"</td>
+    <td>PCR HealthCerts only</td>
+  </tr>
+  <tr>
+    <td>Organization Type</td>
+    <td>Organization.type[0].coding[0].{ system, code, display }</td>
+    <td>PCR HealthCerts only</td>
+  </tr>
+  <tr>
+    <td>Organization URL</td>
+    <td>Organization.contact[0].telecom[0].{ system=url, value }</td>
+    <td>PCR HealthCerts only</td>
+  </tr>
+  <tr>
+    <td>Organization Phone</td>
+    <td>Organization.contact[0].telecom[1].{ system=phone, value }</td>
+    <td>PCR HealthCerts only</td>
+  </tr>
+  <tr>
+    <td>Organization Address</td>
+    <td>Organization.contact[0].address.{ type, use, text }</td>
+    <td>PCR HealthCerts only</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center"><b>Device [ART HealthCerts only]</b></td>
+  </tr>
+  <tr>
+    <td>Device Type</td>
+    <td>Device.type.coding[0].{ system, code, display }</td>
+    <td>ART HealthCerts only</td>
+  </tr>
+</tbody>
 </table>
+
+> <sup>i</sup>**Modality**: Accepted text are "Administered", "Supervised" or "Remotely Supervised"
