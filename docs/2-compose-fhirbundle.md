@@ -5,16 +5,16 @@ The `fhirBundle` is a collection of FHIR resources. Each resource and the entire
 The PDT HealthCert v2.0 requires the following resources to be present:
 
 1. Patient
-2. Specimen (`device` should reference <sup>ii</sup>Device resource uuid)
-3. Observation (`specimen` should reference Specimen resource uuid + `performer` should reference Practitioner, Organization (LHP) & <sup>i</sup>Organization (AL) resource uuid)
+2. Specimen (`device` should reference [^2]Device resource uuid)
+3. Observation (`specimen` should reference Specimen resource uuid + `performer` should reference Practitioner, Organization (LHP) & [^1]Organization (AL) resource uuid)
 4. Practitioner (`issuer` should reference to Observation (MOH) resource uuid)
 5. Organization (MOH)
 6. Organization (Licensed Healthcare Provider)
-7. <sup>i</sup>Organization (Accredited Laboratory)
-8. <sup>ii</sup>Device
+7. [^1]Organization (Accredited Laboratory)
+8. [^2]Device
 
-<sup>i</sup>Organisation (AL) is not needed for ART HealthCerts
-<sup>ii</sup>Device resource is only needed for ART HealthCerts
+[^1]: Organisation (AL) is not needed for ART HealthCerts
+[^2]: Device resource is only needed for ART HealthCerts
 
 ## How to compose fhirBundle
 

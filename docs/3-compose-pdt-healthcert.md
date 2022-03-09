@@ -47,9 +47,9 @@ Since the bundle and its individual resources have been validated to be FHIR com
 4. logo (optional)
 5. validFrom
 6. fhirVersion
-7. fhirBundle[^1]
+7. [^1]fhirBundle
 
-[^1]: The fhirBundle shouldn't be throwing any errors here since we have already validated it to be FHIR compliant in the earlier step.
+[^1]: The fhirBundle shouldn't be throwing any errors here since we have already validated it to be FHIR compliant in the [earlier step](./2-compose-fhirbundle.md).
 
 You may use any JSON Schema validators that are available. Here are a few examples:
 
