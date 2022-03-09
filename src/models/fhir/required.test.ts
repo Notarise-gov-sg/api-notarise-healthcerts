@@ -1,5 +1,6 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
+import { cloneDeep } from "lodash";
 import { DetailedCodedError } from "../../common/error";
 import fhirHelper from "./index";
 import exampleHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
@@ -50,6 +51,32 @@ describe("validateARTHealthCertData", () => {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle)
     ).not.toThrow();
   });
+
+  test("should throw error if ART healthcert lacks Observation.note", () => {
+    let thrownError;
+    const malformedHealthCert = cloneDeep(exampleArtHealthCertWithNric);
+    delete (
+      malformedHealthCert.fhirBundle.entry.find(
+        (ent) => ent.resource.resourceType === "Observation"
+      )?.resource as any
+    ).note;
+
+    const parseFhirBundle = fhirHelper.parse(
+      malformedHealthCert.fhirBundle as R4.IBundle
+    );
+
+    try {
+      fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
+    } catch (e) {
+      if (e instanceof DetailedCodedError) {
+        thrownError = `${e.title}, ${e.messageBody}`;
+      }
+    }
+    expect(thrownError).toMatchInlineSnapshot(
+      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Observation.note' is required\\"]. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38"`
+    );
+  });
+
   test("should throw error if ART healthcert not have device identifier", () => {
     let thrownError;
     const malformedHealthCert = exampleArtHealthCertWithNric as any;

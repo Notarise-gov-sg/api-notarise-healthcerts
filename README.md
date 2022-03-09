@@ -4,7 +4,7 @@ This repository implements the API endpoint for the endorsement of HealthCerts o
 
 ## Collaborators
 
-HealthCert collaborators may refer to the documentation [here](./docs).
+HealthCert collaborators may refer to the documentation [here](https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki).
 
 ## Getting Started
 
