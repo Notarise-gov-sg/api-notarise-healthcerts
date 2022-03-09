@@ -24,6 +24,7 @@ The `fhirBundle` can be easily composed using the following examples found here:
 To provide a better understanding, this diagram provides a simplified overview of each `type` of PDT HealthCert (e.g. `"PCR"`, `"ART"`, `["PCR", "SER"]`). The arrows describe how each resource is linked via the resource UUID (refer to the **Mapping Table** below).
 
 ![FHIR Bundle Diagram drawio](./images/fhir-bundle-diagram.jpg)
+
 [Source file](./images/fhir-bundle-diagram.drawio)
 
 > **Note**: If a provider intends to add additional properties or resources, they would have ensure the added fields complies to the base spec of FHIR.
