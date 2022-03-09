@@ -113,7 +113,24 @@ describe("genEuDccCertificates for Multiple Type OA Doc", () => {
     )
   );
 
-  it("create EU vacc cert with valid [PCR,SER] Doc Type", async () => {
+  it("create EU vacc cert with valid [OLDPCR,SER] Doc Type", async () => {
+    const result = await genEuDccCertificates(
+      [PdtTypes.Pcr, PdtTypes.Ser],
+      parsedFhirBundle,
+      "abc-cde-cde",
+      "storedUrl"
+    );
+    expect(result).toMatchObject([
+      {
+        type: "PCR",
+        expiryDateTime: "2021-06-30T00:00:00.000Z",
+        qr: expect.stringMatching(/HC1:/),
+      },
+    ]);
+  });
+
+  it("create EU vacc cert with valid [RecommededPCR,SER] Doc Type", async () => {
+    parsedFhirBundle.observations[0].observation.testType.code = "94309-2"; // MOH recommended code
     const result = await genEuDccCertificates(
       [PdtTypes.Pcr, PdtTypes.Ser],
       parsedFhirBundle,

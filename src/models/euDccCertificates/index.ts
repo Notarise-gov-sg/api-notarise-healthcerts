@@ -15,6 +15,13 @@ const { trace } = getLogger("src/models/euDccCertificates");
 const { euSigner, testTypes } = config;
 const { PdtTypes } = pdtHealthCertV2;
 
+/**
+ * @deprecated This function need to remove after we support only MOH recommended Test Type code: PCR[94309-2].
+ * Currently, we allowed to generate either PCR[94309-2] or OLD_PCR[94531-1]
+ */
+const isPcrTestTypeCode = (testTypeCode: string): boolean =>
+  testTypeCode === testTypes.PCR || testTypeCode === testTypes.OLD_PCR;
+
 const buildEuDccTestRecord = (
   documentType: pdtHealthCertV2.PdtTypes.Art | pdtHealthCertV2.PdtTypes.Pcr,
   groupedObservation: GroupedObservation
@@ -92,7 +99,7 @@ const genEuDccCertificates = async (
       .filter(
         (o) =>
           o.observation.testType.code === testTypes.ART ||
-          o.observation.testType.code === testTypes.PCR
+          isPcrTestTypeCode(o.observation.testType.code || "")
       )
       .forEach((groupedObservation) => {
         testRecords.push(
