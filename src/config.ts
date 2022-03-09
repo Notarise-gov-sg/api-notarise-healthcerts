@@ -89,7 +89,8 @@ const generateConfig = () => ({
   // Type of Test (Loinc)
   testTypes: {
     ART: "97097-0",
-    PCR: "94531-1",
+    PCR: "94309-2", // MOH recommended code
+    OLD_PCR: "94531-1",
     SER: "94661-6",
   },
 });
