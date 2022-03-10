@@ -52,7 +52,7 @@ describe("validateARTHealthCertData", () => {
     ).not.toThrow();
   });
 
-  test("should throw error if ART healthcert lacks Observation.note", () => {
+  test("should throw error if ART healthcert lacks Observation.modality", () => {
     let thrownError;
     const malformedHealthCert = cloneDeep(exampleArtHealthCertWithNric);
     delete (
@@ -73,7 +73,7 @@ describe("validateARTHealthCertData", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Observation.note' is required\\"]. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38"`
+      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Observation.note[n].{ id=MODALITY, text }' is required\\"]. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38"`
     );
   });
 

@@ -130,7 +130,8 @@ const artGroupedFhirKeys = {
   "observations._.device.type.display": "_.Device.type.coding[0].display",
 
   // Note(s)
-  "observations._.observation.note": "_.Observation.note",
+  "observations._.observation.modality":
+    "_.Observation.note[n].{ id=MODALITY, text }",
 };
 
 /**

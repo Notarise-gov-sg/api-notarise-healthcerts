@@ -26,7 +26,7 @@ export interface ParsedObservation {
   result: R4.ICoding;
   effectiveDateTime: string;
   status: R4.ObservationStatusKind;
-  note?: any[];
+  modality: string;
 }
 
 export interface ParsedPractitioner {
