@@ -130,6 +130,24 @@ const artGroupedFhirKeys = {
   "observations._.device.type.display": "_.Device.type.coding[0].display",
 };
 
+const generateArtModality = (observationCount: number): Record<string, any> => {
+  const modality: Record<string, any> = {};
+  for (let i = 0; i < observationCount; i += 1) {
+    modality[`observations.${i}.observation.modality`] = {
+      presence: {
+        message: `"_.Observation.note[n].{ id=MODALITY, text }"' is required`,
+        allowEmpty: false,
+      },
+      inclusion: {
+        within: ["Administered", "Supervised", "Remotely Supervised"],
+        message:
+          "_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']",
+      },
+    };
+  }
+  return modality;
+};
+
 /**
  * PCR constraints:
  * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
@@ -214,21 +232,6 @@ export const getRequiredConstraints = (
   if (type === PdtTypes.Art) {
     // ART HealthCert
 
-    const modality: Record<string, any> = {};
-    for (let i = 0; i < observationCount; i += 1) {
-      modality[`observations.${i}.observation.modality`] = {
-        presence: {
-          message: `"_.Observation.note[n].{ id=MODALITY, text }"' is required`,
-          allowEmpty: false,
-        },
-        inclusion: {
-          within: ["Administered", "Supervised", "Remotely Supervised"],
-          message:
-            "_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']",
-        },
-      };
-    }
-
     return {
       ...generateRequiredConstraints(commonFhirKeys),
       ...generateRequiredGroupedConstraints(
@@ -239,7 +242,7 @@ export const getRequiredConstraints = (
         artGroupedFhirKeys,
         observationCount
       ),
-      ...modality,
+      ...generateArtModality(observationCount),
     };
   } else if (
     type === PdtTypes.Pcr ||
