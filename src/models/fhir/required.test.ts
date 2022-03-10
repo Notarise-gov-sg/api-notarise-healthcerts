@@ -1,9 +1,8 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
-import { cloneDeep } from "lodash";
 import { DetailedCodedError } from "../../common/error";
 import fhirHelper from "./index";
-import exampleHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
+import examplePcrHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 import exampleArtHealthCertWithNric from "../../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
 
 const { PdtTypes } = pdtHealthCertV2;
@@ -11,7 +10,7 @@ const { PdtTypes } = pdtHealthCertV2;
 describe("validatePCRHealthCertData", () => {
   test("should pass for valid PCR healthcert", () => {
     const parseFhirBundle = fhirHelper.parse(
-      exampleHealthCertWithNric.fhirBundle as R4.IBundle
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
     );
     expect(() =>
       fhirHelper.hasRequiredFields(PdtTypes.Pcr, parseFhirBundle)
@@ -19,7 +18,7 @@ describe("validatePCRHealthCertData", () => {
   });
   test("should pass for valid SER healthcert", () => {
     const parseFhirBundle = fhirHelper.parse(
-      exampleHealthCertWithNric.fhirBundle as R4.IBundle
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
     );
     expect(() =>
       fhirHelper.hasRequiredFields(PdtTypes.Ser, parseFhirBundle)
@@ -54,12 +53,7 @@ describe("validateARTHealthCertData", () => {
 
   test("should throw error if ART healthcert lacks Observation.modality", () => {
     let thrownError;
-    const malformedHealthCert = cloneDeep(exampleArtHealthCertWithNric);
-    delete (
-      malformedHealthCert.fhirBundle.entry.find(
-        (ent) => ent.resource.resourceType === "Observation"
-      )?.resource as any
-    ).note;
+    const malformedHealthCert = examplePcrHealthCertWithNric;
 
     const parseFhirBundle = fhirHelper.parse(
       malformedHealthCert.fhirBundle as R4.IBundle
@@ -73,7 +67,7 @@ describe("validateARTHealthCertData", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Observation.note[n].{ id=MODALITY, text }' is required\\"]. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38"`
+      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Specimen.subject.{ type=Device, reference }' is required\\",\\"'0.Device.type.coding[0].system' is required\\",\\"'0.Device.type.coding[0].code' is required\\",\\"'0.Device.type.coding[0].display' is required\\",\\"'0.Observation.note[n].{ id=MODALITY, text }' is required\\"]. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38"`
     );
   });
 

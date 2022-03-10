@@ -227,6 +227,13 @@ export const getRequiredConstraints = (
         artGroupedFhirKeys,
         observationCount
       ),
+      "observations._.observation.modality": {
+        inclusion: {
+          within: ["Administered", "Supervised", "Remotely Supervised"],
+          message:
+            "_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']",
+        },
+      },
     };
   } else if (
     type === PdtTypes.Pcr ||
