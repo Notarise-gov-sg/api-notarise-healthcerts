@@ -128,10 +128,6 @@ const artGroupedFhirKeys = {
   "observations._.device.type.system": "_.Device.type.coding[0].system",
   "observations._.device.type.code": "_.Device.type.coding[0].code",
   "observations._.device.type.display": "_.Device.type.coding[0].display",
-
-  // Note(s)
-  "observations._.observation.modality":
-    "_.Observation.note[n].{ id=MODALITY, text }",
 };
 
 /**
@@ -217,6 +213,22 @@ export const getRequiredConstraints = (
 
   if (type === PdtTypes.Art) {
     // ART HealthCert
+
+    const modality: Record<string, any> = {};
+    for (let i = 0; i < observationCount; i += 1) {
+      modality[`observations.${i}.observation.modality`] = {
+        presence: {
+          message: `"_.Observation.note[n].{ id=MODALITY, text }"' is required`,
+          allowEmpty: false,
+        },
+        inclusion: {
+          within: ["Administered", "Supervised", "Remotely Supervised"],
+          message:
+            "_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']",
+        },
+      };
+    }
+
     return {
       ...generateRequiredConstraints(commonFhirKeys),
       ...generateRequiredGroupedConstraints(
@@ -227,13 +239,7 @@ export const getRequiredConstraints = (
         artGroupedFhirKeys,
         observationCount
       ),
-      "observations._.observation.modality": {
-        inclusion: {
-          within: ["Administered", "Supervised", "Remotely Supervised"],
-          message:
-            "_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']",
-        },
-      },
+      ...modality,
     };
   } else if (
     type === PdtTypes.Pcr ||
