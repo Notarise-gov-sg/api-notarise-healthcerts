@@ -2,17 +2,18 @@ import { APIGatewayProxyResult, Handler } from "aws-lambda";
 import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { R4 } from "@ahryman40k/ts-fhir-types";
+import { serializeError } from "serialize-error";
 import { sendNotification } from "../../../services/spmNotification";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
 import { getLogger } from "../../../common/logger";
-import { DetailedCodedError } from "../../../common/error";
 import { PDTHealthCertV2, NotarisationResult } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
 import { config } from "../../../config";
 import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
+import { CodedError } from "../../../common/error";
 
 const { trace, error } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
@@ -40,20 +41,18 @@ export const main: Handler = async (
     fhirHelper.hasRequiredFields(data.type, parsedFhirBundle);
     fhirHelper.hasRecognisedFields(data.type, parsedFhirBundle);
   } catch (e) {
-    errorWithRef(
-      `Error while validating certificate: ${
-        e instanceof DetailedCodedError ? `${e.title}, ${e.messageBody}` : e
-      }`
+    const codedError = new CodedError(
+      "UNKNOWN_ERROR",
+      "Error while validating certificate",
+      JSON.stringify(serializeError(e))
     );
+    errorWithRef(codedError.toString());
     return {
       statusCode: 400,
       headers: {
         "x-trace-id": reference,
       },
-      body:
-        e instanceof DetailedCodedError
-          ? `${e.title}, ${e.messageBody}`
-          : String(e),
+      body: codedError.toString(),
     };
   }
 
@@ -67,16 +66,21 @@ export const main: Handler = async (
       parsedFhirBundle as ParsedBundle
     );
   } catch (e) {
-    errorWithRef(`Unhandled error: ${e instanceof Error ? e.message : e}`);
+    const codedError =
+      e instanceof CodedError
+        ? e
+        : new CodedError(
+            "UNKNOWN_ERROR",
+            "Unable to Notarise document(s)",
+            JSON.stringify(serializeError(e))
+          );
+    errorWithRef(codedError.toString());
     return {
       statusCode: 500,
       headers: {
         "x-trace-id": reference,
       },
-      body:
-        e instanceof DetailedCodedError
-          ? `${e.title}, ${e.messageBody}`
-          : String(e),
+      body: codedError.toString(),
     };
   }
 
@@ -85,9 +89,22 @@ export const main: Handler = async (
     try {
       await sendNotification(result, parsedFhirBundle, data);
     } catch (e) {
-      if (e instanceof Error) {
-        errorWithRef(`SPM notification/wallet error: ${e.message}`);
-      }
+      const codedError =
+        e instanceof CodedError
+          ? e
+          : new CodedError(
+              "UNKNOWN_ERROR",
+              "SPM notification/wallet error",
+              JSON.stringify(serializeError(e))
+            );
+      errorWithRef(codedError.toString());
+      return {
+        statusCode: 500,
+        headers: {
+          "x-trace-id": reference,
+        },
+        body: codedError.toString(),
+      };
     }
   }
 
@@ -101,9 +118,22 @@ export const main: Handler = async (
         result.url
       );
     } catch (e) {
-      errorWithRef(
-        `GPay COVID Card error: ${e instanceof Error ? e.message : e}`
-      );
+      const codedError =
+        e instanceof CodedError
+          ? e
+          : new CodedError(
+              "UNKNOWN_ERROR",
+              "GPay COVID Card error",
+              JSON.stringify(serializeError(e))
+            );
+      errorWithRef(codedError.toString());
+      return {
+        statusCode: 500,
+        headers: {
+          "x-trace-id": reference,
+        },
+        body: codedError.toString(),
+      };
     }
   }
 

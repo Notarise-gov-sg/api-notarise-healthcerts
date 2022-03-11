@@ -1,6 +1,6 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
-import { DetailedCodedError } from "../../common/error";
+import { CodedError } from "../../common/error";
 import fhirHelper from "./index";
 import exampleSingleTypeHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 import exampleMultiTypeHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_ser_multi_result_unwrapped.json";
@@ -17,8 +17,8 @@ describe("recognised fields", () => {
     try {
       fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}, ${e.details}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -35,8 +35,8 @@ describe("recognised fields", () => {
     try {
       fhirHelper.hasRecognisedFields(PdtTypes.Art, parsedFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}, ${e.details}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(

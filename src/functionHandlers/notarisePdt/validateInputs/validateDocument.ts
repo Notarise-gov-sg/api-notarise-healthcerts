@@ -10,13 +10,11 @@ import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import _ from "lodash";
 import axios from "axios";
 import { fromStream, fromBuffer } from "file-type";
+import { serializeError } from "serialize-error";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { PDTHealthCertV2 } from "../../../types";
-import {
-  UnrecognisedClinicError,
-  DocumentInvalidError,
-} from "../../../common/error";
 import { config } from "../../../config";
+import { CodedError } from "../../../common/error";
 
 export const validateV2Document = async (
   wrappedDocument: WrappedDocument<PDTHealthCertV2>
@@ -30,8 +28,10 @@ export const validateV2Document = async (
   const results = await verify(wrappedDocument);
   const documentIsValid = isValid(results);
   if (!documentIsValid) {
-    throw new DocumentInvalidError(
-      `validation error: ${JSON.stringify(results)}`
+    throw new CodedError(
+      "DOCUMENT_INVALID",
+      "Unable to validate document",
+      `document is invalid: ${JSON.stringify(results)}`
     );
   }
   const identityFragments = results.filter(
@@ -39,8 +39,10 @@ export const validateV2Document = async (
       fragment.status === "VALID" && fragment.type === "ISSUER_IDENTITY"
   );
   if (identityFragments.length !== 1)
-    throw new DocumentInvalidError(
-      "Document may only have one issuer identity test"
+    throw new CodedError(
+      "DOCUMENT_INVALID",
+      "Unable to validate document",
+      `Document may only have one issuer identity test - (identityFragments.length !== 1)`
     );
 
   type IdentityFragment = VerificationFragment & {
@@ -50,19 +52,27 @@ export const validateV2Document = async (
   const issuer = identityFragments[0] as IdentityFragment;
 
   if (!issuer || issuer.data.length !== 1) {
-    throw new DocumentInvalidError("Document may only have one issuer");
+    throw new CodedError(
+      "DOCUMENT_INVALID",
+      "Unable to validate document",
+      `Document may only have one issuer - (!issuer || issuer.data.length !== 1)`
+    );
   }
 
   /* 2. Validate against PDT Schema v2.0 */
   const data = getData(wrappedDocument);
   if (!data.id || typeof data.id !== "string")
-    throw new DocumentInvalidError(
-      `Document should include a valid "id" in string (e.g. "00738c55-0af8-472d-b346-4af39155b8e3")`
+    throw new CodedError(
+      "DOCUMENT_INVALID",
+      `Document should include a valid "id" in string (e.g. "00738c55-0af8-472d-b346-4af39155b8e3")`,
+      `Unable to validate document - (!data.id || typeof data.id !== "string")`
     );
 
   if (!data.version || !data.version.match(/(pdt-healthcert-v2.0)$/))
-    throw new DocumentInvalidError(
-      `Document should include a valid "version" attribute (e.g. "pdt-healthcert-v2.0")`
+    throw new CodedError(
+      "DOCUMENT_INVALID",
+      `Document should include a valid "version" attribute (e.g. "pdt-healthcert-v2.0")`,
+      `Unable to validate document - (!data.version || !data.version.match(/(pdt-healthcert-v2.0)$/))`
     );
 
   // validate `validFrom` to be valid ISO 8601 date time (e.g. "2021-08-18T05:13:53.378Z" or "2021-10-25T00:00:00+08:00")
@@ -72,17 +82,20 @@ export const validateV2Document = async (
       /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z)|(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+|-]\d{2}:\d{2})$/
     )
   )
-    throw new DocumentInvalidError(
+    throw new CodedError(
+      "DOCUMENT_INVALID",
       `Document should include a valid "validFrom" attribute in ISO 8601 datetime value (e.g. "2021-08-18T05:13:53.378Z" or "2021-10-25T00:00:00+08:00")`
     );
 
   if (!data.fhirVersion || !data.fhirVersion.match(/(4.0.1)$/))
-    throw new DocumentInvalidError(
+    throw new CodedError(
+      "DOCUMENT_INVALID",
       `Document should include a valid "fhirVersion" attribute (e.g. "4.0.1")`
     );
 
   if (!data.type)
-    throw new DocumentInvalidError(
+    throw new CodedError(
+      "DOCUMENT_INVALID",
       `Document should include a valid "type" attribute (e.g. "PCR", "ART", "SER" or ["PCR", "SER"])`
     );
 
@@ -93,7 +106,8 @@ export const validateV2Document = async (
     const isValidSingleType = supportedSingleTypes.some((t) => t === data.type);
 
     if (!isValidSingleType)
-      throw new DocumentInvalidError(
+      throw new CodedError(
+        "DOCUMENT_INVALID",
         `Document type of "${data.type}" is invalid. Only "PCR", "ART" or "SER" is supported`
       );
   } else {
@@ -105,7 +119,8 @@ export const validateV2Document = async (
     );
 
     if (!isValidMultiType)
-      throw new DocumentInvalidError(
+      throw new CodedError(
+        "DOCUMENT_INVALID",
         `Document type of ${JSON.stringify(
           data.type
         )} is invalid. Only ${supportedMultiTypes.map((mt) =>
@@ -117,7 +132,7 @@ export const validateV2Document = async (
   /* 3. Check against issuer domain whitelist [api-authorized-issuers] */
   const issuerDomain: string | undefined = issuer.data[0]?.location;
   if (!issuerDomain)
-    throw new DocumentInvalidError("Issuer's domain is not found");
+    throw new CodedError("DOCUMENT_INVALID", `Issuer's domain is not found`);
 
   const whitelistType =
     _.isString(data.type) && data.type === PdtTypes.Art
@@ -126,7 +141,13 @@ export const validateV2Document = async (
 
   const validDomain = await isAuthorizedIssuer(issuerDomain, whitelistType);
   if (!validDomain)
-    throw new UnrecognisedClinicError(issuerDomain, JSON.stringify(data.type));
+    throw new CodedError(
+      "UNRECOGNISED_CLINIC",
+      "The HealthCert was not issued by a clinic recognised by the Ministry of Health Singapore",
+      `Submitted HealthCert not a recognised/whitelisted clinic - ${issuerDomain} (${JSON.stringify(
+        data.type
+      )})`
+    );
 
   /* 4. Validate logo (<=20KB base64 image string or HTTPS direct link) */
   if (data.logo) {
@@ -137,7 +158,9 @@ export const validateV2Document = async (
     const MAX_LOGO_SIZE_IN_KILOBYTES = 21 * 1024; // 20KB (21KB) for some leeway
 
     if (!VALID_LOGO_PATTERN.test(data.logo)) {
-      throw new DocumentInvalidError(
+      throw new CodedError(
+        "DOCUMENT_INVALID",
+        "Submitted HealthCert is invalid",
         `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. ${VALID_LOGO_PATTERN})`
       );
     }
@@ -147,13 +170,16 @@ export const validateV2Document = async (
         const res = await axios.get(data.logo, { responseType: "stream" });
         const httpsFileType = await fromStream(res.data);
         if (!VALID_MIME_PATTERN.test(httpsFileType?.mime || "")) {
-          throw new DocumentInvalidError(
-            `Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)`
+          throw new CodedError(
+            "DOCUMENT_INVALID",
+            `Submitted HealthCert is invalid - Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)`
           );
         }
       } catch (err) {
-        throw new DocumentInvalidError(
-          `Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)`
+        throw new CodedError(
+          "DOCUMENT_INVALID",
+          `Submitted HealthCert is invalid - Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)`,
+          JSON.stringify(serializeError(err))
         );
       }
     } else if (data.logo.startsWith("data:image")) {
@@ -161,15 +187,18 @@ export const validateV2Document = async (
       const base64FileType = await fromBuffer(buffer);
 
       if (!VALID_MIME_PATTERN.test(base64FileType?.mime || "")) {
-        throw new DocumentInvalidError(
-          `Document "logo" should resolve to a valid base64 image string (i.e. png|jpg|jpeg)`
+        throw new CodedError(
+          "DOCUMENT_INVALID",
+          `Document "logo" should resolve to a valid base64 image string (i.e. png|jpg|jpeg)`,
+          `Unable to validate document - (!VALID_MIME_PATTERN.test(base64FileType?.mime || ""))`
         );
       }
 
       if (data.logo.startsWith("data:")) {
         const byteLength = Buffer.byteLength(data.logo, "utf-8");
         if (byteLength >= MAX_LOGO_SIZE_IN_KILOBYTES) {
-          throw new DocumentInvalidError(
+          throw new CodedError(
+            "DOCUMENT_INVALID",
             `Document "logo" in base64 image string is too large (${(
               byteLength / 1024
             ).toFixed(2)}KB). Only <=${
