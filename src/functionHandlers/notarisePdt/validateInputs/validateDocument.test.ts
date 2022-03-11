@@ -129,86 +129,108 @@ it("should not throw on valid PCR+SER v2 document", async () => {
 
 it("should throw on v2 document failing when pass v1 document data", async () => {
   whenFragmentsAreValid();
-  await expect(
-    validateV2Document(examplePcrHealthCertV1Wrapped)
-  ).rejects.toThrow(/Invalid document error/);
+  let thrownError;
+  try {
+    await validateV2Document(examplePcrHealthCertV1Wrapped);
+  } catch (e) {
+    if (e instanceof DocumentInvalidError) {
+      thrownError = { title: e.title, body: e.messageBody };
+    }
+  }
+  expect(thrownError).toStrictEqual({
+    title: `Submitted HealthCert is invalid`,
+    body: `The following required fields are missing: [{"instancePath":"","schemaPath":"#/required","keyword":"required","params":{"missingProperty":"version"},"message":"must have required property 'version'"},{"instancePath":"","schemaPath":"#/required","keyword":"required","params":{"missingProperty":"type"},"message":"must have required property 'type'"},{"instancePath":"/validFrom","schemaPath":"#/properties/validFrom/format","keyword":"format","params":{"format":"date-time"},"message":"must match format \\"date-time\\""},{"instancePath":"/fhirBundle/entry/0","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"resourceType"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/0","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"identifier"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/0","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"name"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/0","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"gender"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/0","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"birthDate"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/0/extension/0","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"code"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/1","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"resourceType"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/1","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"type"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/1","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"collection"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/2","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"resourceType"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/2","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"identifier"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/2","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"code"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/2","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"valueCodeableConcept"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/2","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"effectiveDateTime"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/2","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"status"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/2","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"performer"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/2","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"qualification"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/3","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"resourceType"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/3","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"name"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/3","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"type"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/3","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"endpoint"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/3","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"contact"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/4","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"resourceType"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/4","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"name"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/4","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"type"},"message":"must NOT have additional properties"},{"instancePath":"/fhirBundle/entry/4","schemaPath":"#/additionalProperties","keyword":"additionalProperties","params":{"additionalProperty":"contact"},"message":"must NOT have additional properties"}]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
+  });
 });
 
 it("should throw on v2 document failing when document data id string invalid", async () => {
   const sampleDocumentV2InvalidId = {
-    version: "https://schema.openattestation.com/2.0/schema.json",
+    ...examplePcrSerHealthCertV2Wrapped,
     data: {
+      ...exampleArtHealthCertV2Wrapped.data,
       id: 123456,
     },
   } as any;
-  await expect(validateV2Document(sampleDocumentV2InvalidId)).rejects.toThrow(
-    /Invalid document error/
-  );
+  let thrownError;
+  try {
+    await validateV2Document(sampleDocumentV2InvalidId);
+  } catch (e) {
+    if (e instanceof DocumentInvalidError) {
+      thrownError = { title: e.title, body: e.messageBody };
+    }
+  }
+  expect(thrownError).toStrictEqual({
+    title: `Submitted HealthCert is invalid`,
+    body: `The following required fields are missing: [{"instancePath":"/id","schemaPath":"#/properties/id/type","keyword":"type","params":{"type":"string"},"message":"must be string"}]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
+  });
 });
 
 it("should throw on v2 document failing when document data version invalid", async () => {
   const sampleDocumentV2InvalidVersion = {
-    version: "https://schema.openattestation.com/2.0/schema.json",
+    ...examplePcrSerHealthCertV2Wrapped,
     data: {
-      id: "5981af19-fe9f-43c1-9f31-9ccb9a1fcbd2:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
+      ...exampleArtHealthCertV2Wrapped.data,
       version:
         "a9c30f4a-d12a-444f-b129-169f4151f9b8:string:invalid-healthcert-v2.0",
     },
   } as any;
-  await expect(
-    validateV2Document(sampleDocumentV2InvalidVersion)
-  ).rejects.toThrow(/Invalid document error/);
+  let thrownError;
+  try {
+    await validateV2Document(sampleDocumentV2InvalidVersion);
+  } catch (e) {
+    if (e instanceof DocumentInvalidError) {
+      thrownError = { title: e.title, body: e.messageBody };
+    }
+  }
+  expect(thrownError).toStrictEqual({
+    title: `Submitted HealthCert is invalid`,
+    body: `The following required fields are missing: [{"instancePath":"/version","schemaPath":"#/properties/version/enum","keyword":"enum","params":{"allowedValues":["pdt-healthcert-v2.0"]},"message":"must be equal to one of the allowed values"}]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
+  });
 });
 
 it("should throw on v2 document failing when document data validFrom invalid", async () => {
   const sampleDocumentV2InvalidValidFrom = {
-    version: "https://schema.openattestation.com/2.0/schema.json",
+    ...examplePcrSerHealthCertV2Wrapped,
     data: {
-      id: "5981af19-fe9f-43c1-9f31-9ccb9a1fcbd2:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
-      version:
-        "a9c30f4a-d12a-444f-b129-169f4151f9b8:string:pdt-healthcert-v2.0",
+      ...exampleArtHealthCertV2Wrapped.data,
       validFrom:
         "9a3aee04-5ff2-4a8a-8407-863dd951a7ef:string:18-05-2021T06:43:12.152Z",
     },
   } as any;
-  await expect(
-    validateV2Document(sampleDocumentV2InvalidValidFrom)
-  ).rejects.toThrow(/Invalid document error/);
-});
-
-it("should throw on v2 document failing when document data fhirVersion invalid", async () => {
-  const sampleDocumentV2InvalidFhirVersion = {
-    version: "https://schema.openattestation.com/2.0/schema.json",
-    data: {
-      id: "5981af19-fe9f-43c1-9f31-9ccb9a1fcbd2:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
-      version:
-        "a9c30f4a-d12a-444f-b129-169f4151f9b8:string:pdt-healthcert-v2.0",
-      validFrom:
-        "9a3aee04-5ff2-4a8a-8407-863dd951a7ef:string:2021-05-18T06:43:12.152Z",
-      fhirVersion: "e68b58fd-318e-4c5b-88ed-06b52c2247bc:string:0.0.1",
-    },
-  } as any;
-  await expect(
-    validateV2Document(sampleDocumentV2InvalidFhirVersion)
-  ).rejects.toThrow(/Invalid document error/);
+  let thrownError;
+  try {
+    await validateV2Document(sampleDocumentV2InvalidValidFrom);
+  } catch (e) {
+    if (e instanceof DocumentInvalidError) {
+      thrownError = { title: e.title, body: e.messageBody };
+    }
+  }
+  expect(thrownError).toStrictEqual({
+    title: `Submitted HealthCert is invalid`,
+    body: `The following required fields are missing: [{"instancePath":"/validFrom","schemaPath":"#/properties/validFrom/format","keyword":"format","params":{"format":"date-time"},"message":"must match format \\"date-time\\""}]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
+  });
 });
 
 it("should throw on v2 document failing when document data type invalid", async () => {
   const sampleDocumentV2InvalidType = {
-    version: "https://schema.openattestation.com/2.0/schema.json",
+    ...examplePcrSerHealthCertV2Wrapped,
     data: {
-      id: "5981af19-fe9f-43c1-9f31-9ccb9a1fcbd2:string:76caf3f9-5591-4ef1-b756-1cb47a76dede",
-      version:
-        "a9c30f4a-d12a-444f-b129-169f4151f9b8:string:pdt-healthcert-v2.0",
-      validFrom:
-        "9a3aee04-5ff2-4a8a-8407-863dd951a7ef:string:2021-05-18T06:43:12.152Z",
-      fhirVersion: "e68b58fd-318e-4c5b-88ed-06b52c2247bc:string:4.0.1",
+      ...exampleArtHealthCertV2Wrapped.data,
       type: "a60dd179-4029-44c5-8b77-296b10412836:string:Other",
     },
   } as any;
-  await expect(validateV2Document(sampleDocumentV2InvalidType)).rejects.toThrow(
-    /Invalid document error/
-  );
+  let thrownError;
+  try {
+    await validateV2Document(sampleDocumentV2InvalidType);
+  } catch (e) {
+    if (e instanceof DocumentInvalidError) {
+      thrownError = { title: e.title, body: e.messageBody };
+    }
+  }
+  expect(thrownError).toStrictEqual({
+    title: `Submitted HealthCert is invalid`,
+    body: `The following required fields are missing: [{"instancePath":"/type","schemaPath":"#/definitions/PdtTypes/enum","keyword":"enum","params":{"allowedValues":["PCR","ART","SER","LAMP"]},"message":"must be equal to one of the allowed values"},{"instancePath":"/type","schemaPath":"#/properties/type/oneOf/1/type","keyword":"type","params":{"type":"array"},"message":"must be array"},{"instancePath":"/type","schemaPath":"#/properties/type/oneOf","keyword":"oneOf","params":{"passingSchemas":null},"message":"must match exactly one schema in oneOf"}]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
+  });
 });
 
 describe("document logo validation", () => {

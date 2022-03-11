@@ -60,9 +60,13 @@ export const sendNotification = async (
 ) => {
   /* Send SPM notification using api-notify/wallet when patient is adult (15 years & above) and present NRIC-FIN in OA-Doc. */
   if (parsedFhirBundle.patient?.nricFin && !isChildPatient(parsedFhirBundle)) {
-    /* [NEW] Send HealthCert to SPM wallet for PCR | ART | SER or multi-type ['PCR', 'SER'] (Only if enabled) */
+    /*
+     * [NEW] Send HealthCert to SPM wallet for PCR | ART | SER or multi-type ['PCR', 'SER'] (Only if enabled).
+     * [NEW] `LAMP` type HealthCert isn't support yet for SPM notification.
+     */
     if (
       config.healthCertNotification.enabled &&
+      certificateData.type !== PdtTypes.Lamp &&
       isEligibleForSpmWallet(certificateData)
     ) {
       const certificateType = _.isString(certificateData.type)

@@ -180,6 +180,31 @@ describe("single type oa-doc notification", () => {
       version: "2.0",
     });
   });
+
+  it("trigger notifyPdt for single valid LAMP test cert", async () => {
+    // set test type code to LAMP
+    certificateData.type = "LAMP" as any;
+    parsedFhirBundleMock.observations[0].observation.testType = {
+      code: "96986-5",
+      display: "LUCIRA Test",
+    };
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
+    expect(notifyPdt).toBeCalledTimes(1);
+    expect(notifyPdt).toHaveBeenCalledWith({
+      nric: parsedFhirBundleMock.patient.nricFin,
+      passportNumber: parsedFhirBundleMock.patient.passportNumber,
+      testData: [
+        {
+          patientName: testDataMock[0].patientName,
+          swabCollectionDate: testDataMock[0].swabCollectionDate,
+          testResult: testDataMock[0].testResult,
+          testType: "LUCIRA Test",
+        },
+      ],
+      url: resultMock.url,
+      validFrom: certificateData.validFrom,
+    });
+  });
 });
 
 describe("multi type oa-doc notification", () => {

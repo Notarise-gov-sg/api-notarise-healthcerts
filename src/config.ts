@@ -92,6 +92,7 @@ const generateConfig = () => ({
     PCR: "94309-2", // MOH recommended code
     OLD_PCR: "94531-1",
     SER: "94661-6",
+    LAMP: "96986-5",
   },
 });
 

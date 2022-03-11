@@ -24,7 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "@ahryman40k/ts-fhir-types": "^4.0.36",
-    "@govtechsg/oa-schemata": "^1.15.10",
+    "@govtechsg/oa-schemata": "^1.16.1",
     "@govtechsg/oa-verify": "^7.8.0",
     "@govtechsg/open-attestation": "^6.2.0",
     "@middy/core": "^2.5.6",
@@ -35,6 +35,8 @@
     "@notarise-gov-sg/gpay-covid-cards": "^1.0.5",
     "@notarise-gov-sg/sns-notify-recipients": "^1.5.2",
     "@types/url-join": "^4.0.1",
+    "ajv": "^8.10.0",
+    "ajv-formats": "^2.1.1",
     "aws-sdk": "^2.1062.0",
     "aws-xray-sdk-core": "^3.3.4",
     "axios": "^0.24.0",

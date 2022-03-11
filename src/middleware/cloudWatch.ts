@@ -18,11 +18,7 @@ export class CloudWatchMiddleware
 {
   private specificDomain = "";
 
-  private validTests: Record<string, string> = {
-    "94531-1": "pcr",
-    "97097-0": "art",
-    "94661-6": "ser",
-  };
+  private validTests = ["pcr", "art", "ser", "lamp"];
 
   // split "abc.riverr.io" into "riverr.io"
   // searches for final "."
@@ -80,7 +76,6 @@ export class CloudWatchMiddleware
   // version 2
   private extractTestTypesV2(data: PDTHealthCertV2): string[] {
     let testTypes: string[] = [];
-    const validTestTypes = Object.values(this.validTests);
     if (typeof data.type === "string") {
       testTypes = [data.type];
     } else if (Array.isArray(data.type)) {
@@ -88,7 +83,7 @@ export class CloudWatchMiddleware
     }
     for (let i = 0; i < testTypes.length; i += 1) {
       testTypes[i] = testTypes[i].toLowerCase();
-      if (!validTestTypes.includes(testTypes[i])) {
+      if (!this.validTests.includes(testTypes[i])) {
         testTypes[i] = `UNRECOGNISED: ${testTypes[i]}`;
       }
     }

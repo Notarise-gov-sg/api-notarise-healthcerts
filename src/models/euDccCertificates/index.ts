@@ -131,14 +131,15 @@ const genEuDccCertificates = async (
 
     if (!signedEuHealthCerts.length) {
       throw new EuDccInvalidError(
-        `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
+        `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`
       );
     }
-  } else if (documentType !== PdtTypes.Ser) {
+  } else if (documentType !== PdtTypes.Ser && documentType !== PdtTypes.Lamp) {
+    // only throw error when the request document type isn't `SER` or `LAMP`
     throw new EuDccInvalidError(
       `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
         documentType
-      )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
+      )}. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`
     );
   }
   return signedEuHealthCerts;

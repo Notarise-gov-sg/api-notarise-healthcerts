@@ -40,7 +40,7 @@ describe("test cloudwatch middleware for v2", () => {
   it("middleware should log cert type from response", async () => {
     jest.spyOn(log, "trace");
     const doc = cloneDeep(wrappedDocumentV2);
-    doc.data.type = ["pcr", "ser"] as any;
+    doc.data.type = ["pcr", "ser", "lamp"] as any;
 
     // let's assume the wrappedDocumentV2 has been notarized
     const notarisationResult: NotarisationResult = {
@@ -63,10 +63,10 @@ describe("test cloudwatch middleware for v2", () => {
     await cloudWatchMiddleware.before(request);
     await cloudWatchMiddleware.after(request);
     expect(log.trace).toHaveBeenCalledWith(
-      `aggregateDomain gov.sg successfully notarised pdt of type pcr, ser`
+      `aggregateDomain gov.sg successfully notarised pdt of type pcr, ser, lamp`
     );
     expect(log.trace).toHaveBeenCalledWith(
-      `specificDomain donotverify.testing.verify.gov.sg successfully notarised pdt of type pcr, ser`
+      `specificDomain donotverify.testing.verify.gov.sg successfully notarised pdt of type pcr, ser, lamp`
     );
   });
 

@@ -18,7 +18,7 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
     throw new DocumentInvalidError(
       `the following fields in fhirBundle are not recognised: ${JSON.stringify(
         errors
-      )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
+      )}. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`
     );
   }
 };

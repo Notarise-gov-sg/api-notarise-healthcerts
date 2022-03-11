@@ -37,7 +37,7 @@ describe("validatePCRHealthCertData", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'Observation.performer[2].{ id=AL, type=Organization, reference }' is required\\",\\"'0.Organization.name' is required\\",\\"'0.Organization.type[0].coding[0].system' is required\\",\\"'0.Organization.type[0].coding[0].code' is required\\",\\"'0.Organization.type[0].coding[0].display' is required\\",\\"'0.Organization.contact[0].telecom[0].{ system=url, value }' is required\\",\\"'0.Organization.contact[0].telecom[1].{ system=phone, value }' is required\\",\\"'0.Organization.contact[0].address.type' is required\\",\\"'0.Organization.contact[0].address.use' is required\\",\\"'0.Organization.contact[0].address.text' is required\\"]. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38"`
+      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'Observation.performer[2].{ id=AL, type=Organization, reference }' is required\\",\\"'0.Organization.name' is required\\",\\"'0.Organization.type[0].coding[0].system' is required\\",\\"'0.Organization.type[0].coding[0].code' is required\\",\\"'0.Organization.type[0].coding[0].display' is required\\",\\"'0.Organization.contact[0].telecom[0].{ system=url, value }' is required\\",\\"'0.Organization.contact[0].telecom[1].{ system=phone, value }' is required\\",\\"'0.Organization.contact[0].address.type' is required\\",\\"'0.Organization.contact[0].address.use' is required\\",\\"'0.Organization.contact[0].address.text' is required\\"]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 });
@@ -65,7 +65,7 @@ describe("validateARTHealthCertData", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Device.type.coding[0].system' is required\\",\\"'0.Device.type.coding[0].code' is required\\",\\"'0.Device.type.coding[0].display' is required\\"]. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38"`
+      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Device.type.coding[0].system' is required\\",\\"'0.Device.type.coding[0].code' is required\\",\\"'0.Device.type.coding[0].display' is required\\"]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 });
