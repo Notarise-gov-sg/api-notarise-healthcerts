@@ -9,7 +9,7 @@ import { GroupedObservation, ParsedBundle } from "../../models/fhir/types";
 import { isoToDateOnlyString, isoToLocaleString } from "../../common/datetime";
 import { config, getDefaultIfUndefined } from "../../config";
 import { getLogger } from "../../common/logger";
-import { EuDccInvalidError } from "../../common/error";
+import { CodedError } from "../../common/error";
 
 const { trace } = getLogger("src/models/euDccCertificates");
 const { euSigner, testTypes } = config;
@@ -130,15 +130,19 @@ const genEuDccCertificates = async (
     );
 
     if (!signedEuHealthCerts.length) {
-      throw new EuDccInvalidError(
-        `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
+      throw new CodedError(
+        "EU_QR_ERROR",
+        `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`,
+        "Unable to generate EU DCC certificates - (!signedEuHealthCerts.length)"
       );
     }
   } else if (documentType !== PdtTypes.Ser) {
-    throw new EuDccInvalidError(
+    throw new CodedError(
+      "EU_QR_ERROR",
       `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
         documentType
-      )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
+      )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`,
+      "Unable to generate EU DCC certificates - (documentType !== PdtTypes.Ser)"
     );
   }
   return signedEuHealthCerts;
