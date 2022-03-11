@@ -25,7 +25,6 @@ function loadSchema(uri: string) {
 }
 const ajv = new Ajv({
   allErrors: true,
-  strictTypes: false,
   loadSchema,
 }).addVocabulary(["deprecationMessage"]);
 addFormats(ajv);
