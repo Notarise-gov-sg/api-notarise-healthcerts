@@ -131,10 +131,10 @@ const artGroupedFhirKeys = {
 };
 
 /**
- * PCR or LAMP constraints:
+ * PCR/SER/LAMP constraints:
  * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
  */
-const pcrOrLampGroupedFhirKeys = {
+const pcrSerLampGroupedFhirKeys = {
   // Observation(s)
   "observations._.observation.organizationAlResourceUuid":
     "Observation.performer[2].{ id=AL, type=Organization, reference }",
@@ -260,7 +260,7 @@ export const getRequiredConstraints = (
         observationCount
       ),
       ...generateRequiredGroupedConstraints(
-        pcrOrLampGroupedFhirKeys,
+        pcrSerLampGroupedFhirKeys,
         observationCount
       ),
     };

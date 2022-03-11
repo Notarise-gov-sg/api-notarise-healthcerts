@@ -19,7 +19,6 @@ import {
   DocumentInvalidError,
 } from "../../../common/error";
 import { config } from "../../../config";
-import clinicProviderSchema from "../../../static/clinic-provider-schema.json";
 
 function loadSchema(uri: string) {
   return axios.get(uri).then((res) => res.data);
@@ -68,6 +67,14 @@ export const validateV2Document = async (
 
   /* 2. Validate against PDT Schema v2.0 */
   const data = getData(wrappedDocument);
+  const clinicProviderSchema = await loadSchema(
+    "https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/clinic-provider-schema.json"
+  );
+  /*
+   * Remove `$id` key from main schema for prevent below error.
+   * Error: schema with key or id "https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/1.0/healthcert-open-attestation-schema" already exists.
+   */
+  delete clinicProviderSchema.$id;
   const validator = await ajv.compileAsync(clinicProviderSchema);
   if (!validator(data)) {
     throw new DocumentInvalidError(
