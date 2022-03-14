@@ -19,13 +19,19 @@ import {
   DocumentInvalidError,
 } from "../../../common/error";
 import { config } from "../../../config";
+import clinicProviderSchema from "../../../static/schema/clinic-provider-schema.json";
+import OpenAttestationSchema from "../../../static/schema/schema.json";
+import pdtHealthcertSchema from "../../../static/schema/pdt-healthcert-schema.json";
+import fhirLiteSchema from "../../../static/schema/fhir-lite-schema.json";
 
-function loadSchema(uri: string) {
-  return axios.get(uri).then((res) => res.data);
-}
 const ajv = new Ajv({
   allErrors: true,
-  loadSchema,
+  schemas: [
+    clinicProviderSchema,
+    OpenAttestationSchema,
+    pdtHealthcertSchema,
+    fhirLiteSchema,
+  ],
 }).addVocabulary(["deprecationMessage"]);
 addFormats(ajv);
 
@@ -66,16 +72,10 @@ export const validateV2Document = async (
 
   /* 2. Validate against PDT Schema v2.0 */
   const data = getData(wrappedDocument);
-  const clinicProviderSchema = await loadSchema(
-    "https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/clinic-provider-schema.json"
+  const validator = ajv.getSchema(
+    "https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/1.0/healthcert-open-attestation-schema"
   );
-  /*
-   * Remove `$id` key from main schema for prevent below error.
-   * Error: schema with key or id "https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/1.0/healthcert-open-attestation-schema" already exists.
-   */
-  delete clinicProviderSchema.$id;
-  const validator = await ajv.compileAsync(clinicProviderSchema);
-  if (!validator(data)) {
+  if (validator && !validator(data)) {
     throw new DocumentInvalidError(
       `The following required fields are missing: ${JSON.stringify(
         _.uniqWith(validator.errors, _.isEqual)

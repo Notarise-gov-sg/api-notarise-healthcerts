@@ -114,7 +114,7 @@
                             {
                                 "system": "http://loinc.org",
                                 "code": "96986-5",
-                                "display": "Lucira Test"
+                                "display": "SARS-CoV-2 (COVID-19) N gene [Presence] in Nose by NAA with non-probe detection"
                             }
                         ]
                     },
