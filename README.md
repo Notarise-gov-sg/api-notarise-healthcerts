@@ -2,20 +2,11 @@
 
 This repository implements the API endpoint for the endorsement of HealthCerts on Notarise.gov.sg.
 
-## Prerequisites
+## Collaborators
 
-To get onboarded as a HealthCerts Issuer, please refer to the [Notarise FAQ (point 36)](https://www.notarise.gov.sg/faq#medfac) or the [onboarding form](https://go.gov.sg/whitelist-healthcerts-clinics).
+HealthCert collaborators may refer to the documentation [here](https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki).
 
 ## Getting Started
-
-To start endorsing your **Pre-departure Test (PDT) HealthCerts** on Notarise.gov.sg, please take note of the respective endpoints for each version/environment:
-
-| **Environment** | **PDT Schema v2.0**           |
-| --------------- | ----------------------------- |
-| Staging         | `/stg/v2/notarise/pdt`        |
-| Production      | `/production/v2/notarise/pdt` |
-
-> **Deprecation notice**: v1.0 endpoint is deprecated on 31 January 2022. Please refer to [this guide](https://github.com/Open-Attestation/schemata/pull/38) to migrate to PDT Schema v2.0.<br/><br/>Please be reminded that endorsement of documents utilising the new PDT HealthCert Schema v2.0 is only available in the new v2 Notarise endpoint: `/stg/v2/notarise/pdt` or `/production/v2/notarise/pdt`.
 
 **Request Format**:
 
@@ -46,7 +37,7 @@ curl -i -X POST \
 
 - **Notarise Issued Sample**: Sample HealthCert after endorsement by Notarise.gov.sg that utilises the new PDT Schema v2.0 [here](https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/endorsed-wrapped.json).
 
-- **All Schemas/Samples**: For all documented schemas/samples, refer to the `PDT-HEALTHCERT v2.0` section [here](https://schemata.openattestation.com>).
+- **All Schemas/Samples**: For all documented schemas/samples, refer to the `PDT-HEALTHCERT v2.0` section [here](https://schemata.openattestation.com).
 
 - **GUI Toolkit**: For ease of development with the Open Attestation library, use this [toolkit](https://toolkit.openattestation.com) for wrapping/unwrapping, diagnosing, verifying etc.
 
@@ -59,7 +50,7 @@ curl -i -X POST \
 - Copy `.env` from a co-worker or insert own credentials to get started. A copy of the .env file is available at `.env.example`.
 - When running locally, a local API key is required. Obtain it from the console when starting the serverless framework.
 
-### Getting Started
+### Developing locally
 
 To start local environment:
 

@@ -198,6 +198,26 @@ const generateRequiredGroupedConstraints = (
   return constraints;
 };
 
+const generateArtModalityConstraints = (
+  observationCount: number
+): Record<string, any> => {
+  const constraints: Record<string, any> = {};
+  for (let i = 0; i < observationCount; i += 1) {
+    constraints[`observations.${i}.observation.modality`] = {
+      presence: {
+        message: `"_.Observation.note[n].{ id=MODALITY, text }"' is required`,
+        allowEmpty: false,
+      },
+      inclusion: {
+        within: ["Administered", "Supervised", "Remotely Supervised"],
+        message:
+          "_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']",
+      },
+    };
+  }
+  return constraints;
+};
+
 export type Type = pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[];
 export const getRequiredConstraints = (
   type: Type,
@@ -223,6 +243,7 @@ export const getRequiredConstraints = (
         artGroupedFhirKeys,
         observationCount
       ),
+      ...generateArtModalityConstraints(observationCount),
     };
   } else if (
     type === PdtTypes.Pcr ||
