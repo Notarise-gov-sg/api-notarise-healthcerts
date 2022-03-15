@@ -42,18 +42,12 @@ export const main: Handler = async (
     fhirHelper.hasRecognisedFields(data.type, parsedFhirBundle);
   } catch (e) {
     const codedError = new CodedError(
-      "UNKNOWN_ERROR",
+      "INVALID_REQUEST_PAYLOAD",
       "Error while validating certificate",
       JSON.stringify(serializeError(e))
     );
     errorWithRef(codedError.toString());
-    return {
-      statusCode: 400,
-      headers: {
-        "x-trace-id": reference,
-      },
-      body: codedError.toString(),
-    };
+    return codedError.toResponse(reference);
   }
 
   /* 2. Endorsement */
@@ -75,13 +69,7 @@ export const main: Handler = async (
             JSON.stringify(serializeError(e))
           );
     errorWithRef(codedError.toString());
-    return {
-      statusCode: 500,
-      headers: {
-        "x-trace-id": reference,
-      },
-      body: codedError.toString(),
-    };
+    return codedError.toResponse(reference);
   }
 
   /* Send to SPM notification/wallet (Only if enabled) */
@@ -98,13 +86,7 @@ export const main: Handler = async (
               JSON.stringify(serializeError(e))
             );
       errorWithRef(codedError.toString());
-      return {
-        statusCode: 500,
-        headers: {
-          "x-trace-id": reference,
-        },
-        body: codedError.toString(),
-      };
+      return codedError.toResponse(reference);
     }
   }
 
@@ -127,13 +109,7 @@ export const main: Handler = async (
               JSON.stringify(serializeError(e))
             );
       errorWithRef(codedError.toString());
-      return {
-        statusCode: 500,
-        headers: {
-          "x-trace-id": reference,
-        },
-        body: codedError.toString(),
-      };
+      return codedError.toResponse(reference);
     }
   }
 
