@@ -343,13 +343,12 @@ describe("document logo validation", () => {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = { title: e.message, body: e.details };
+        thrownError = { title: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
       title:
         'Submitted HealthCert is invalid - Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)',
-      body: '{"message":"getaddrinfo ENOTFOUND foobar.notarise","name":"Error","stack":"Error: getaddrinfo ENOTFOUND foobar.notarise\\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:71:26)","config":{"transitional":{"silentJSONParsing":true,"forcedJSONParsing":true,"clarifyTimeoutError":false},"transformRequest":[null],"transformResponse":[null],"timeout":0,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN","maxContentLength":-1,"maxBodyLength":-1,"headers":{"Accept":"application/json, text/plain, */*","User-Agent":"axios/0.24.0"},"responseType":"stream","method":"get","url":"https://foobar.notarise/unknown.png"},"code":"ENOTFOUND","status":null}',
     });
   });
 
