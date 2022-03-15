@@ -62,8 +62,8 @@ describe("validateARTHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}, ${e.details}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -88,8 +88,8 @@ describe("validateARTHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}, ${e.details}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
