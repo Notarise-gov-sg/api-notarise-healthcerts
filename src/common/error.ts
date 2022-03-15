@@ -3,6 +3,9 @@ import { APIGatewayProxyResult } from "aws-lambda";
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-shadow */
 export enum ErrorType {
+  // 4xx invalid requests error
+  INVALID_REQUEST_PAYLOAD = 400,
+
   // 4xxx invalid requests error
   MISMATCHING_PARTICULARS = 4001,
   UNRECOGNISED_CLINIC = 4002,
@@ -12,8 +15,10 @@ export enum ErrorType {
   FILE_TYPE_INVALID = 4006,
   FILE_INVALID = 4007,
 
+  // 5xx internal server error
+  UNKNOWN_ERROR = 500,
+
   // 5xxx internal server error
-  UNKNOWN_ERROR = 5000,
   EU_QR_ERROR = 5001,
 }
 
