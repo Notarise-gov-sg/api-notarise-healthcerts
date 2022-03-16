@@ -73,7 +73,7 @@ export const validateV2Document = async (
   /* 2. Validate against PDT Schema v2.0 */
   const data = getData(wrappedDocument);
   const validator = ajv.getSchema(
-    "https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/1.0/healthcert-open-attestation-schema"
+    "https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/clinic-provider-schema.json"
   );
   if (validator && !validator(data)) {
     throw new DocumentInvalidError(
