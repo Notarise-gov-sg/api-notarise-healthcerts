@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env SLS_DEBUG=* IS_OFFLINE=true sls offline",
+    "dev": "cross-env DEBUG=api-notarize-healthcerts:* IS_OFFLINE=true sls offline",
     "invoke-local:notarisePdt": "cross-env ./scripts/invoke-notarisePdt.sh",
     "deploy": "sls deploy",
     "depcheck": "depcheck . --ignores=\"serverless-*\"",
@@ -34,6 +34,7 @@
     "@notarise-gov-sg/eu-dcc-generator": "^1.1.1",
     "@notarise-gov-sg/gpay-covid-cards": "^1.0.5",
     "@notarise-gov-sg/sns-notify-recipients": "^1.5.2",
+    "@notarise-gov-sg/transient-storage-lib": "^0.3.1",
     "@types/url-join": "^4.0.1",
     "aws-sdk": "^2.1062.0",
     "aws-xray-sdk-core": "^3.3.4",
