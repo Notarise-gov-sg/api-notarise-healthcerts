@@ -8,7 +8,11 @@ import {
   verify as defaultVerify,
 } from "@govtechsg/oa-verify";
 import { WrappedDocument, getData } from "@govtechsg/open-attestation";
-import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
+import {
+  pdtHealthCertV2,
+  pdtHealthCertV2Schema,
+  fhirSchema,
+} from "@govtechsg/oa-schemata";
 import _ from "lodash";
 import axios from "axios";
 import { fromStream, fromBuffer } from "file-type";
@@ -19,18 +23,15 @@ import {
   DocumentInvalidError,
 } from "../../../common/error";
 import { config } from "../../../config";
-import clinicProviderSchema from "../../../static/schema/clinic-provider-schema.json";
-import OpenAttestationSchema from "../../../static/schema/schema.json";
-import pdtHealthcertSchema from "../../../static/schema/pdt-healthcert-schema.json";
-import fhirLiteSchema from "../../../static/schema/fhir-lite-schema.json";
+import OpenAttestationV2Schema from "../../../static/schema/schema.json"; // it's same with `{SchemaId.v2} from "@govtechsg/open-attestation"` schema but we want to load it locally, instead of loading it from http request.
 
 const ajv = new Ajv({
   allErrors: true,
   schemas: [
-    clinicProviderSchema,
-    OpenAttestationSchema,
-    pdtHealthcertSchema,
-    fhirLiteSchema,
+    pdtHealthCertV2Schema.clinicProviderSchema,
+    OpenAttestationV2Schema,
+    pdtHealthCertV2Schema.schema,
+    fhirSchema.liteFhirSchema,
   ],
 }).addVocabulary(["deprecationMessage"]);
 addFormats(ajv);
