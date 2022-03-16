@@ -33,7 +33,7 @@
     "@middy/ssm": "^2.5.6",
     "@notarise-gov-sg/eu-dcc-generator": "^1.1.1",
     "@notarise-gov-sg/gpay-covid-cards": "^1.0.5",
-    "@notarise-gov-sg/sns-notify-recipients": "^1.5.2",
+    "@notarise-gov-sg/sns-notify-recipients": "^1.5.3",
     "@notarise-gov-sg/transient-storage-lib": "^0.3.1",
     "@types/url-join": "^4.0.1",
     "aws-sdk": "^2.1062.0",
