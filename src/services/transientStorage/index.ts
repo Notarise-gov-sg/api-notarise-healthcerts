@@ -1,11 +1,11 @@
 import { Record, String, Number, Runtype } from "runtypes";
-import { SignedWrappedDocument } from "@govtechsg/open-attestation";
-import axios from "axios";
-import { EndorsedPDTHealthCertV2 } from "../../types";
+import {
+  buildStoredUrl as _buildStoredUrl,
+  getQueueNumber as _getQueueNumber,
+  uploadDocument as _uploadDocument,
+  VERIFY_URL,
+} from "@notarise-gov-sg/transient-storage-lib";
 import { config } from "../../config";
-import { getLogger } from "../../common/logger";
-
-const { trace } = getLogger("src/services/transientStorage");
 
 export const SuccessfulGetQueueNumberResponseDef = Record({
   id: String,
@@ -20,6 +20,8 @@ export const SuccessfulResponseDef = Record({
 export type SuccessfulResponse = Runtype<typeof SuccessfulResponseDef>;
 
 const { endpoint, apiKey } = config.transientStorage;
+const subDomain =
+  process.env.STAGE === "production" ? VERIFY_URL.PROD : VERIFY_URL.STAGING;
 
 // const FailureResponseDef = Record({
 //   requestId: String,
@@ -29,64 +31,10 @@ const { endpoint, apiKey } = config.transientStorage;
 // type FailureResponse = Runtype<typeof SuccessfulResponseDef>;
 // type Response = Runtype<typeof ResponseDef>;
 
-const stringifyAndEncode = (obj: any): string =>
-  encodeURIComponent(JSON.stringify(obj));
-
-const universalUrl = (url: string, key: string) => {
-  const subDomain = process.env.STAGE === "production" ? "www" : "dev";
-  const fullDomainToVerifyPath = `https://${subDomain}.verify.gov.sg/verify`;
-  const query = stringifyAndEncode({
-    type: "DOCUMENT",
-    payload: {
-      uri: url,
-      permittedActions: ["VIEW", "STORE"],
-      redirect: fullDomainToVerifyPath,
-    },
-  });
-  const anchor = key ? `#${stringifyAndEncode({ key })}` : ``;
-  return `${fullDomainToVerifyPath}?q=${query}${anchor}`;
-};
-
-export const buildUniversalUrl = (id: string, key: string) => {
-  const url = `${endpoint}/${id}`;
-  return universalUrl(url, key);
-};
-
-export const getQueueNumber = async (reference: string) => {
-  const traceWithRef = trace.extend(`reference:${reference}`);
-  traceWithRef("get queue number");
-  const { data } = await axios({
-    method: "POST",
-    url: `${endpoint}/queue-number`,
-    headers: {
-      "x-api-key": apiKey,
-      "x-trace-key": reference,
-    },
-  });
-  const queueNumber = SuccessfulGetQueueNumberResponseDef.check(data);
-  traceWithRef(`queueNumber=${queueNumber.id}`);
-  return queueNumber;
-};
-
-export const uploadDocument = async (
-  document: SignedWrappedDocument<EndorsedPDTHealthCertV2>,
-  id: string,
-  reference: string
-) => {
-  const traceWithRef = trace.extend(`reference:${reference}`);
-  traceWithRef(`start to upload document to ${id}`);
-  const { data } = await axios({
-    method: "PUT",
-    url: `${endpoint}/${id}`,
-    data: { document },
-    headers: {
-      "x-api-key": apiKey,
-      "x-trace-id": reference,
-    },
-  });
-  traceWithRef(`document uploaded at ${id}`);
-  const response = SuccessfulResponseDef.check(data);
-  return {
-    ...response,
-  };
-};
+export const buildUniversalUrl = _buildStoredUrl.bind(
+  null,
+  endpoint,
+  subDomain
+);
+export const getQueueNumber = _getQueueNumber.bind(null, endpoint, apiKey);
+export const uploadDocument = _uploadDocument.bind(null, endpoint, apiKey);
