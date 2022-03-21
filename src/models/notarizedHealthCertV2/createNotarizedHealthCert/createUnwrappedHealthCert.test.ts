@@ -15,6 +15,7 @@ const sampleSignedEuHealthCerts: notarise.SignedEuHealthCert[] = [
     type: "PCR",
     qr: "HC1:abcde",
     expiryDateTime: "2022-12-17T01:27:50.263Z",
+    appleCovidCardUrl: "https://redirect.health.apple.com/EU-DCC/#abcde",
   },
 ];
 
@@ -1060,6 +1061,7 @@ it("should create the unwrapped v2 document from input data with signedEuHealthC
         "reference": "e35f5d2a-4198-4f8f-96dc-d1afe0b67119",
         "signedEuHealthCerts": Array [
           Object {
+            "appleCovidCardUrl": "https://redirect.health.apple.com/EU-DCC/#abcde",
             "expiryDateTime": "2022-12-17T01:27:50.263Z",
             "qr": "HC1:abcde",
             "type": "PCR",
