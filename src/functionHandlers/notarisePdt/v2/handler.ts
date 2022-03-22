@@ -42,7 +42,7 @@ export const main: Handler = async (
     fhirHelper.hasRecognisedFields(data.type, parsedFhirBundle);
   } catch (e) {
     const codedError = new CodedError(
-      "INVALID_REQUEST_PAYLOAD",
+      "INVALID_CERTIFICATE",
       "Error while validating certificate",
       JSON.stringify(serializeError(e))
     );
@@ -60,14 +60,11 @@ export const main: Handler = async (
       parsedFhirBundle as ParsedBundle
     );
   } catch (e) {
-    const codedError =
-      e instanceof CodedError
-        ? e
-        : new CodedError(
-            "UNKNOWN_ERROR",
-            "Unable to Notarise document(s)",
-            JSON.stringify(serializeError(e))
-          );
+    const codedError = new CodedError(
+      "NOTARISE_PDT_ERROR",
+      "Unable to Notarise document(s)",
+      JSON.stringify(serializeError(e))
+    );
     errorWithRef(codedError.toString());
     return codedError.toResponse(reference);
   }
@@ -81,7 +78,7 @@ export const main: Handler = async (
         e instanceof CodedError
           ? e
           : new CodedError(
-              "UNKNOWN_ERROR",
+              "SPM_NOTIFICATION_ERROR",
               "SPM notification/wallet error",
               JSON.stringify(serializeError(e))
             );
@@ -104,7 +101,7 @@ export const main: Handler = async (
         e instanceof CodedError
           ? e
           : new CodedError(
-              "UNKNOWN_ERROR",
+              "GPAY_COVID_CARD_ERROR",
               "GPay COVID Card error",
               JSON.stringify(serializeError(e))
             );

@@ -16,7 +16,7 @@ export const hasRequiredFields = (type: Type, parsedBundle: ParsedBundle) => {
 
   if (errors) {
     throw new CodedError(
-      "DOCUMENT_INVALID",
+      "INVALID_DOCUMENT",
       `Submitted HealthCert is invalid`,
       `the following required fields in fhirBundle are missing: ${JSON.stringify(
         errors

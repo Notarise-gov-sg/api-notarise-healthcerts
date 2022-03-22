@@ -265,7 +265,7 @@ export const getRequiredConstraints = (
     };
   } else {
     throw new CodedError(
-      "DOCUMENT_INVALID",
+      "INVALID_HEALTHCERT_TYPE",
       `Notarise does not support endorsement of this HealthCert Type: ${JSON.stringify(
         type
       )}`

@@ -19,8 +19,9 @@ class ValidateSchemaMiddleware implements Pick<MiddlewareObj, "before"> {
     if (!body || !validateSchema(body)) {
       logError("Body is not a wrapped health cert");
       throw new CodedError(
-        "INVALID_REQUEST_PAYLOAD",
-        "Body must be a wrapped health cert"
+        "INVALID_SCHEMA",
+        "Body must be a wrapped health cert",
+        "(!body || !validateSchema(body))"
       );
     }
   }

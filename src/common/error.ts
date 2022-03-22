@@ -5,21 +5,20 @@ import { APIGatewayProxyResult } from "aws-lambda";
 export enum ErrorType {
   // 4xx invalid requests error
   INVALID_REQUEST_PAYLOAD = 400,
-
-  // 4xxx invalid requests error
-  MISMATCHING_PARTICULARS = 4001,
-  UNRECOGNISED_CLINIC = 4002,
-  TEST_RESULTS_EXPIRED = 4003,
-  DOCUMENT_INVALID = 4004,
-  DATA_INVALID = 4005,
-  FILE_TYPE_INVALID = 4006,
-  FILE_INVALID = 4007,
+  INVALID_CERTIFICATE = 400,
+  INVALID_DOCUMENT = 400,
+  INVALID_SCHEMA = 400,
+  INVALID_HEALTHCERT_TYPE = 400,
+  INVALID_LOGO = 400,
+  INVALID_LOGO_SIZE = 400,
+  UNRECOGNISED_CLINIC = 400,
 
   // 5xx internal server error
+  NOTARISE_PDT_ERROR = 500,
+  SPM_NOTIFICATION_ERROR = 500,
+  GPAY_COVID_CARD_ERROR = 500,
   UNKNOWN_ERROR = 500,
-
-  // 5xxx internal server error
-  EU_QR_ERROR = 5001,
+  EU_QR_ERROR = 500,
 }
 
 /* eslint-enable no-unused-vars, no-shadow */

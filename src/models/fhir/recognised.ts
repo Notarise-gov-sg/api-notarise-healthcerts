@@ -16,7 +16,7 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
 
   if (errors) {
     throw new CodedError(
-      "DOCUMENT_INVALID",
+      "INVALID_DOCUMENT",
       `Submitted HealthCert is invalid`,
       `the following fields in fhirBundle are not recognised: ${JSON.stringify(
         errors
