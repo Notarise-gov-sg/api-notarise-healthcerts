@@ -63,6 +63,9 @@ describe("genEuDccCertificates for Single Type OA Doc", () => {
         type: "PCR",
         expiryDateTime: "2021-06-30T00:00:00.000Z",
         qr: expect.stringMatching(/HC1:/),
+        appleCovidCardUrl: expect.stringMatching(
+          /https:\/\/redirect.health.apple.com\/EU-DCC\/#/
+        ),
       },
     ]);
   });
@@ -82,6 +85,9 @@ describe("genEuDccCertificates for Single Type OA Doc", () => {
         type: "ART",
         expiryDateTime: "2021-06-30T00:00:00.000Z",
         qr: expect.stringMatching(/HC1:/),
+        appleCovidCardUrl: expect.stringMatching(
+          /https:\/\/redirect.health.apple.com\/EU-DCC\/#/
+        ),
       },
     ]);
   });
@@ -125,6 +131,9 @@ describe("genEuDccCertificates for Multiple Type OA Doc", () => {
         type: "PCR",
         expiryDateTime: "2021-06-30T00:00:00.000Z",
         qr: expect.stringMatching(/HC1:/),
+        appleCovidCardUrl: expect.stringMatching(
+          /https:\/\/redirect.health.apple.com\/EU-DCC\/#/
+        ),
       },
     ]);
   });
@@ -142,6 +151,9 @@ describe("genEuDccCertificates for Multiple Type OA Doc", () => {
         type: "PCR",
         expiryDateTime: "2021-06-30T00:00:00.000Z",
         qr: expect.stringMatching(/HC1:/),
+        appleCovidCardUrl: expect.stringMatching(
+          /https:\/\/redirect.health.apple.com\/EU-DCC\/#/
+        ),
       },
     ]);
   });
