@@ -125,16 +125,16 @@ const genEuDccCertificates = async (
       const payload = euDccGenerator.genEuDcc(basicDetails, testRecords);
       const signedPayload = await euDccGenerator.signPayload(payload);
 
-    // take only ["type", "expiryDateTime", "qr", "appleCovidCardUrl"] for oa-doc signedEuHealthCerts
-    signedEuHealthCerts = signedPayload.map(
-      (signedTestRecord) =>
-        _.pick(signedTestRecord, [
-          "type",
-          "expiryDateTime",
-          "qr",
-          "appleCovidCardUrl",
-        ]) as notarise.SignedEuHealthCert
-    );
+      // take only ["type", "expiryDateTime", "qr", "appleCovidCardUrl"] for oa-doc signedEuHealthCerts
+      signedEuHealthCerts = signedPayload.map(
+        (signedTestRecord) =>
+          _.pick(signedTestRecord, [
+            "type",
+            "expiryDateTime",
+            "qr",
+            "appleCovidCardUrl",
+          ]) as notarise.SignedEuHealthCert
+      );
 
       if (!signedEuHealthCerts.length) {
         throw new CodedError(
