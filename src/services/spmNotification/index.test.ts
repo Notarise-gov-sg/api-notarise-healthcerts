@@ -2,7 +2,6 @@ import {
   notifyHealthCert,
   notifyPdt,
 } from "@notarise-gov-sg/sns-notify-recipients";
-import { TestData } from "@notarise-gov-sg/sns-notify-recipients/dist/types";
 import { ParsedBundle, GroupedObservation } from "../../models/fhir/types";
 import { NotarisationResult, PDTHealthCertV2 } from "../../types";
 import { config } from "../../config";
@@ -16,7 +15,6 @@ describe("single type oa-doc notification", () => {
   let resultMock: NotarisationResult;
   let groupedObservationMock: GroupedObservation[];
   let parsedFhirBundleMock: ParsedBundle;
-  let testDataMock: TestData[];
   let spy: jest.SpyInstance;
   beforeAll(() => {
     spy = jest.spyOn(console, "error").mockImplementation(() => {
@@ -77,15 +75,6 @@ describe("single type oa-doc notification", () => {
       observations: groupedObservationMock,
       organization: {} as any,
     };
-    testDataMock = [
-      {
-        patientName: "Tan Chen Chen",
-        swabCollectionDate: "",
-        testType:
-          "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
-        testResult: "Negative",
-      },
-    ];
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -115,7 +104,7 @@ describe("single type oa-doc notification", () => {
     expect(notifyPdt).toBeCalledTimes(0);
   });
 
-  it("trigger notifyHealthCert for single valid SER test cert Staging Env", async () => {
+  it("trigger notifyHealthCert for single valid SER test cert", async () => {
     process.env.STAGE = "stg";
     // set test type code to SER
     certificateData.type = "SER" as any;
@@ -127,25 +116,6 @@ describe("single type oa-doc notification", () => {
       uin: parsedFhirBundleMock.patient.nricFin,
       url: resultMock.url,
       version: "2.0",
-    });
-  });
-
-  it("trigger notifyPdt for single valid SER test cert Prod Env", async () => {
-    process.env.STAGE = "production";
-    // set test type code to SER
-    certificateData.type = "SER" as any;
-    parsedFhirBundleMock.observations[0].observation.testType = {
-      code: "94661-6",
-      display: "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
-    };
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyPdt).toBeCalledTimes(1);
-    expect(notifyPdt).toHaveBeenCalledWith({
-      nric: parsedFhirBundleMock.patient.nricFin,
-      passportNumber: parsedFhirBundleMock.patient.passportNumber,
-      testData: testDataMock,
-      url: resultMock.url,
-      validFrom: certificateData.validFrom,
     });
   });
 
@@ -212,7 +182,6 @@ describe("multi type oa-doc notification", () => {
   let resultMock: NotarisationResult;
   let groupedObservationMock: GroupedObservation[];
   let parsedFhirBundleMock: ParsedBundle;
-  let testDataMock: TestData[];
   let spy: jest.SpyInstance;
   beforeAll(() => {
     spy = jest.spyOn(console, "error").mockImplementation(() => {
@@ -301,21 +270,6 @@ describe("multi type oa-doc notification", () => {
       observations: groupedObservationMock,
       organization: {} as any,
     };
-    testDataMock = [
-      {
-        patientName: "Tan Chen Chen",
-        swabCollectionDate: "",
-        testType: "Nasopharyngeal swab",
-        testResult: "Negative",
-      },
-      {
-        patientName: "Tan Chen Chen",
-        swabCollectionDate: "",
-        testType:
-          "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
-        testResult: "Negative",
-      },
-    ];
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -345,7 +299,7 @@ describe("multi type oa-doc notification", () => {
     expect(notifyPdt).toBeCalledTimes(0);
   });
 
-  it("trigger notifyHealthCert for valid [PCR, SER] test cert Staging Env", async () => {
+  it("trigger notifyHealthCert for valid [PCR, SER] test cert", async () => {
     process.env.STAGE = "stg";
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyHealthCert).toBeCalledTimes(1);
@@ -355,19 +309,6 @@ describe("multi type oa-doc notification", () => {
       uin: parsedFhirBundleMock.patient.nricFin,
       url: resultMock.url,
       version: "2.0",
-    });
-  });
-
-  it("trigger notifyPdt for valid [PCR, SER] test cert Prod Env", async () => {
-    process.env.STAGE = "production";
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyPdt).toBeCalledTimes(1);
-    expect(notifyPdt).toHaveBeenCalledWith({
-      nric: parsedFhirBundleMock.patient.nricFin,
-      passportNumber: parsedFhirBundleMock.patient.passportNumber,
-      testData: testDataMock,
-      url: resultMock.url,
-      validFrom: certificateData.validFrom,
     });
   });
 });

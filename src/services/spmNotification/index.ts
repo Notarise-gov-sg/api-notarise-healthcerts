@@ -4,8 +4,8 @@ import {
 } from "@notarise-gov-sg/sns-notify-recipients";
 import _ from "lodash";
 import moment from "moment-timezone";
-import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { TestData } from "@notarise-gov-sg/sns-notify-recipients/dist/types";
+import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { ParsedBundle } from "../../models/fhir/types";
 import { config } from "../../config";
 import { NotarisationResult, PDTHealthCertV2 } from "../../types";
@@ -16,23 +16,6 @@ const { PdtTypes } = pdtHealthCertV2;
 const isChildPatient = (parsedFhirBundle: ParsedBundle): boolean => {
   const patientDOB = parsedFhirBundle.patient.birthDate;
   return moment().diff(patientDOB, "years") < 15;
-};
-
-/**
- * @deprecated This function need to remove after SPM successfully release 'SER' or multi-type ['PCR', 'SER'] support in Prod.
- * Currently, SPM released 'SER' or multi-type ['PCR', 'SER'] support only in Staging
- */
-const isEligibleForSpmWallet = (certificateData: PDTHealthCertV2): boolean => {
-  const supportedSingleTypes = [PdtTypes.Pcr, PdtTypes.Art];
-  /* 
-  [NEW] SPM wallet notification support only for; 
-    - single type OA-Doc PCR or ART (currently, doesn't support either single-type 'SER' or multi-type ['PCR', 'SER'] in Prod.)
-  */
-  return (
-    (_.isString(certificateData.type) &&
-      supportedSingleTypes.some((t) => t === certificateData.type)) ||
-    process.env.STAGE !== "production"
-  );
 };
 
 const getTestDataForNofityPdt = (
@@ -66,8 +49,7 @@ export const sendNotification = async (
      */
     if (
       config.healthCertNotification.enabled &&
-      certificateData.type !== PdtTypes.Lamp &&
-      isEligibleForSpmWallet(certificateData)
+      certificateData.type !== PdtTypes.Lamp
     ) {
       const certificateType = _.isString(certificateData.type)
         ? certificateData.type
