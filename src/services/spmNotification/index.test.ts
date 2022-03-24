@@ -2,6 +2,7 @@ import {
   notifyHealthCert,
   notifyPdt,
 } from "@notarise-gov-sg/sns-notify-recipients";
+import { TestData } from "@notarise-gov-sg/sns-notify-recipients/dist/types";
 import { ParsedBundle, GroupedObservation } from "../../models/fhir/types";
 import { NotarisationResult, PDTHealthCertV2 } from "../../types";
 import { config } from "../../config";
@@ -15,6 +16,7 @@ describe("single type oa-doc notification", () => {
   let resultMock: NotarisationResult;
   let groupedObservationMock: GroupedObservation[];
   let parsedFhirBundleMock: ParsedBundle;
+  let testDataMock: TestData[];
   let spy: jest.SpyInstance;
   beforeAll(() => {
     spy = jest.spyOn(console, "error").mockImplementation(() => {
@@ -75,6 +77,15 @@ describe("single type oa-doc notification", () => {
       observations: groupedObservationMock,
       organization: {} as any,
     };
+    testDataMock = [
+      {
+        patientName: "Tan Chen Chen",
+        swabCollectionDate: "",
+        testType:
+          "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
+        testResult: "Negative",
+      },
+    ];
   });
   afterEach(() => {
     jest.clearAllMocks();
