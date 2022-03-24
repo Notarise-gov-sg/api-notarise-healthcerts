@@ -198,7 +198,7 @@ export const validateV2Document = async (
         const byteLength = Buffer.byteLength(data.logo, "utf-8");
         if (byteLength >= MAX_LOGO_SIZE_IN_KILOBYTES) {
           throw new CodedError(
-            "INVALID_LOGO_SIZE",
+            "INVALID_LOGO",
             `Document "logo" in base64 image string is too large (${(
               byteLength / 1024
             ).toFixed(2)}KB). Only <=${

@@ -5,12 +5,10 @@ import { APIGatewayProxyResult } from "aws-lambda";
 export enum ErrorType {
   // 4xx invalid requests error
   INVALID_REQUEST_PAYLOAD = 400,
-  INVALID_CERTIFICATE = 400,
   INVALID_DOCUMENT = 400,
   INVALID_SCHEMA = 400,
   INVALID_HEALTHCERT_TYPE = 400,
   INVALID_LOGO = 400,
-  INVALID_LOGO_SIZE = 400,
   UNRECOGNISED_CLINIC = 400,
 
   // 5xx internal server error
