@@ -62,7 +62,7 @@ const genEuDccCertificates = async (
     process.env.SIGNING_EU_QR_PRIVATE_KEY,
     ""
   );
-  const euDccGenerator = EuDccGenerator(publicKey, privateKey, euSigner.issuer);
+  const euDccGenerator = EuDccGenerator(publicKey, privateKey, "SG");
   const basicDetails: BasicDetails = {
     reference: uuid,
     issuerName: euSigner.issuer,
