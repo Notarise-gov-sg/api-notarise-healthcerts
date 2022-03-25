@@ -33,7 +33,7 @@ describe("validatePCRHealthCertData", () => {
       fhirHelper.hasRequiredFields(PdtTypes.Pcr, parseFhirBundle);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = `${e.message}, ${e.details}`;
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -62,8 +62,8 @@ describe("validateARTHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -88,8 +88,8 @@ describe("validateARTHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -108,7 +108,7 @@ describe("validateARTHealthCertData", () => {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = `${e.message}, ${e.details}`;
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(

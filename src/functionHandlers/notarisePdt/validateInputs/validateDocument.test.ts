@@ -220,7 +220,7 @@ it("should throw on v2 document failing when document data type invalid", async 
 });
 
 describe("document logo validation", () => {
-  const GENERIC_LOGO_ERROR = `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(^data:image\\/(png|jpg|jpeg);base64,.*$)|(^https:\\/\\/.*[.](png|jpg|jpeg)$)/)`;
+  const GENERIC_LOGO_ERROR = `Submitted HealthCert is invalid as document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(^data:image\\/(png|jpg|jpeg);base64,.*$)|(^https:\\/\\/.*[.](png|jpg|jpeg)$)/)`;
 
   it("should not throw on valid base64 image string", async () => {
     whenFragmentsAreValid();
@@ -250,12 +250,11 @@ describe("document logo validation", () => {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = { title: e.message, body: e.details };
+        thrownError = { message: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: GENERIC_LOGO_ERROR,
+      message: GENERIC_LOGO_ERROR,
     });
   });
 
@@ -305,12 +304,11 @@ describe("document logo validation", () => {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = { title: e.message, body: e.details };
+        thrownError = { message: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: GENERIC_LOGO_ERROR,
+      message: GENERIC_LOGO_ERROR,
     });
   });
 
@@ -324,12 +322,11 @@ describe("document logo validation", () => {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = { title: e.message, body: e.details };
+        thrownError = { message: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: GENERIC_LOGO_ERROR,
+      message: GENERIC_LOGO_ERROR,
     });
   });
 
@@ -362,12 +359,11 @@ describe("document logo validation", () => {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = { title: e.message, body: e.details };
+        thrownError = { message: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: GENERIC_LOGO_ERROR,
+      message: GENERIC_LOGO_ERROR,
     });
   });
 });

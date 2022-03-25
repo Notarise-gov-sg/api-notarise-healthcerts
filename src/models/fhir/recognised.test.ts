@@ -18,7 +18,7 @@ describe("recognised fields", () => {
       fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = `${e.message}, ${e.details}`;
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -36,7 +36,7 @@ describe("recognised fields", () => {
       fhirHelper.hasRecognisedFields(PdtTypes.Art, parsedFhirBundle);
     } catch (e) {
       if (e instanceof CodedError) {
-        thrownError = `${e.message}, ${e.details}`;
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(

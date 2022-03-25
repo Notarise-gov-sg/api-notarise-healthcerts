@@ -157,7 +157,7 @@ const genEuDccCertificates = async (
     throw e instanceof CodedError
       ? e
       : new CodedError(
-          "UNKNOWN_ERROR",
+          "EU_QR_ERROR",
           "unable to generate EU DCC certificates",
           JSON.stringify(serializeError(e))
         );

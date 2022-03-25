@@ -79,7 +79,7 @@ export const main: Handler = async (
           ? e
           : new CodedError(
               "SPM_NOTIFICATION_ERROR",
-              "SPM notification/wallet error",
+              "SPM notification/wallet error - unable to send notification",
               JSON.stringify(serializeError(e))
             );
       }
@@ -99,7 +99,7 @@ export const main: Handler = async (
           ? e
           : new CodedError(
               "GPAY_COVID_CARD_ERROR",
-              "GPay COVID Card error",
+              "GPay COVID Card error - unable to generate Google Pay COVID Card URL",
               JSON.stringify(serializeError(e))
             );
       }
