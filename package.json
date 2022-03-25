@@ -49,7 +49,7 @@
     "middy-middleware-json-error-handler": "^3.0.0",
     "moment-timezone": "^0.5.34",
     "runtypes": "^6.5.0",
-    "serverless": "^2.72.1",
+    "serverless": "^2.72.2",
     "serverless-http": "^2.7.0",
     "serverless-offline-ses": "https://github.com/rjchow/serverless-offline-ses/tarball/release/1",
     "serverless-plugin-aws-alerts": "^1.7.4",
