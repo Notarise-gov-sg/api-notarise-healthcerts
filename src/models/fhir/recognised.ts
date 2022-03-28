@@ -24,7 +24,7 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
     );
   }
 
-  // validate nric/fin checksum only if provided in oa-dc
+  // validate nric/fin checksum only if provided in fhirBundle
   if (
     parsedBundle.patient.nricFin &&
     !isNRICValid(parsedBundle.patient.nricFin)
