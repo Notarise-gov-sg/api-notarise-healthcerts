@@ -24,7 +24,11 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
     );
   }
 
-  if (!isNRICValid(parsedBundle.patient.nricFin)) {
+  // validate nric/fin checksum only if provided in oa-dc
+  if (
+    parsedBundle.patient.nricFin &&
+    !isNRICValid(parsedBundle.patient.nricFin)
+  ) {
     throw new CodedError(
       "INVALID_DOCUMENT",
       `Submitted HealthCert is invalid, the patient NRIC-FIN value in fhirBundle has invalid checksum. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
