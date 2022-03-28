@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
-import { DocumentInvalidError } from "../../common/error";
+import { CodedError } from "../../common/error";
 import euDccTestResultMapping from "../../static/EU-DCC-test-result.mapping.json";
 
 /**
@@ -265,7 +265,8 @@ export const getRequiredConstraints = (
       ),
     };
   } else {
-    throw new DocumentInvalidError(
+    throw new CodedError(
+      "INVALID_HEALTHCERT_TYPE",
       `Notarise does not support endorsement of this HealthCert Type: ${JSON.stringify(
         type
       )}`

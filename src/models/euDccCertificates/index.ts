@@ -4,12 +4,13 @@ import EuDccGenerator, {
 } from "@notarise-gov-sg/eu-dcc-generator";
 import { notarise, pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import _ from "lodash";
+import { serializeError } from "serialize-error";
 import { Type } from "../fhir/constraints";
 import { GroupedObservation, ParsedBundle } from "../../models/fhir/types";
 import { isoToDateOnlyString, isoToLocaleString } from "../../common/datetime";
 import { config, getDefaultIfUndefined } from "../../config";
 import { getLogger } from "../../common/logger";
-import { EuDccInvalidError } from "../../common/error";
+import { CodedError } from "../../common/error";
 
 const { trace } = getLogger("src/models/euDccCertificates");
 const { euSigner, testTypes } = config;
@@ -53,97 +54,110 @@ const genEuDccCertificates = async (
   uuid: string,
   storedUrl: string
 ): Promise<notarise.SignedEuHealthCert[]> => {
-  const traceWithRef = trace.extend(`reference:${uuid}`);
-  const publicKey = getDefaultIfUndefined(
-    process.env.SIGNING_EU_QR_PUBLIC_KEY,
-    ""
-  );
-  const privateKey = getDefaultIfUndefined(
-    process.env.SIGNING_EU_QR_PRIVATE_KEY,
-    ""
-  );
-  const euDccGenerator = EuDccGenerator(publicKey, privateKey, euSigner.issuer);
-  const basicDetails: BasicDetails = {
-    reference: uuid,
-    issuerName: euSigner.issuer,
-    expiryDays: euSigner.expiryDays,
-    patientDetails: {
-      name: parsedFhirBundle.patient.fullName,
-      dateOfBirth: isoToDateOnlyString(parsedFhirBundle.patient.birthDate),
-      meta: {
-        reference: uuid,
-        notarisedOn: new Date().toISOString(),
-        passportNumber: parsedFhirBundle.patient.passportNumber,
-        url: storedUrl,
+  try {
+    const traceWithRef = trace.extend(`reference:${uuid}`);
+    const publicKey = getDefaultIfUndefined(
+      process.env.SIGNING_EU_QR_PUBLIC_KEY,
+      ""
+    );
+    const privateKey = getDefaultIfUndefined(
+      process.env.SIGNING_EU_QR_PRIVATE_KEY,
+      ""
+    );
+    const euDccGenerator = EuDccGenerator(publicKey, privateKey, "SG");
+    const basicDetails: BasicDetails = {
+      reference: uuid,
+      issuerName: euSigner.issuer,
+      expiryDays: euSigner.expiryDays,
+      patientDetails: {
+        name: parsedFhirBundle.patient.fullName,
+        dateOfBirth: isoToDateOnlyString(parsedFhirBundle.patient.birthDate),
+        meta: {
+          reference: uuid,
+          notarisedOn: new Date().toISOString(),
+          passportNumber: parsedFhirBundle.patient.passportNumber,
+          url: storedUrl,
+        },
       },
-    },
-  };
+    };
 
-  const testRecords: TestingRecord[] = [];
-  // check if single type ART or PCR type healthcert
-  if (
-    _.isString(documentType) &&
-    (documentType === PdtTypes.Art || documentType === PdtTypes.Pcr)
-  ) {
-    testRecords.push(
-      buildEuDccTestRecord(documentType, parsedFhirBundle.observations[0])
-    );
-  }
-  // check if multi type include ART or PCR type healthcert
-  else if (
-    documentType.includes(PdtTypes.Art) ||
-    documentType.includes(PdtTypes.Pcr)
-  ) {
-    parsedFhirBundle.observations
-      // filter out only ART or PCR observation data
-      .filter(
-        (o) =>
-          o.observation.testType.code === testTypes.ART ||
-          isPcrTestTypeCode(o.observation.testType.code || "")
-      )
-      .forEach((groupedObservation) => {
-        testRecords.push(
-          buildEuDccTestRecord(
-            groupedObservation.observation.testType.code === testTypes.ART
-              ? PdtTypes.Art
-              : PdtTypes.Pcr,
-            groupedObservation
-          )
-        );
-      });
-  }
-
-  let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
-  if (testRecords.length > 0) {
-    traceWithRef("signedEuHealthCerts: Generating EU test cert...");
-    const payload = euDccGenerator.genEuDcc(basicDetails, testRecords);
-    const signedPayload = await euDccGenerator.signPayload(payload);
-
-    // take only ["type", "expiryDateTime", "qr", "appleCovidCardUrl"] for oa-doc signedEuHealthCerts
-    signedEuHealthCerts = signedPayload.map(
-      (signedTestRecord) =>
-        _.pick(signedTestRecord, [
-          "type",
-          "expiryDateTime",
-          "qr",
-          "appleCovidCardUrl",
-        ]) as notarise.SignedEuHealthCert
-    );
-
-    if (!signedEuHealthCerts.length) {
-      throw new EuDccInvalidError(
-        `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`
+    const testRecords: TestingRecord[] = [];
+    // check if single type ART or PCR type healthcert
+    if (
+      _.isString(documentType) &&
+      (documentType === PdtTypes.Art || documentType === PdtTypes.Pcr)
+    ) {
+      testRecords.push(
+        buildEuDccTestRecord(documentType, parsedFhirBundle.observations[0])
       );
     }
-  } else if (documentType !== PdtTypes.Ser && documentType !== PdtTypes.Lamp) {
-    // only throw error when the request document type isn't `SER` or `LAMP`
-    throw new EuDccInvalidError(
-      `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
-        documentType
-      )}. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`
-    );
+    // check if multi type include ART or PCR type healthcert
+    else if (
+      documentType.includes(PdtTypes.Art) ||
+      documentType.includes(PdtTypes.Pcr)
+    ) {
+      parsedFhirBundle.observations
+        // filter out only ART or PCR observation data
+        .filter(
+          (o) =>
+            o.observation.testType.code === testTypes.ART ||
+            isPcrTestTypeCode(o.observation.testType.code || "")
+        )
+        .forEach((groupedObservation) => {
+          testRecords.push(
+            buildEuDccTestRecord(
+              groupedObservation.observation.testType.code === testTypes.ART
+                ? PdtTypes.Art
+                : PdtTypes.Pcr,
+              groupedObservation
+            )
+          );
+        });
+    }
+
+    let signedEuHealthCerts: notarise.SignedEuHealthCert[] = [];
+    if (testRecords.length > 0) {
+      traceWithRef("signedEuHealthCerts: Generating EU test cert...");
+      const payload = euDccGenerator.genEuDcc(basicDetails, testRecords);
+      const signedPayload = await euDccGenerator.signPayload(payload);
+
+      // take only ["type", "expiryDateTime", "qr", "appleCovidCardUrl"] for oa-doc signedEuHealthCerts
+      signedEuHealthCerts = signedPayload.map(
+        (signedTestRecord) =>
+          _.pick(signedTestRecord, [
+            "type",
+            "expiryDateTime",
+            "qr",
+            "appleCovidCardUrl",
+          ]) as notarise.SignedEuHealthCert
+      );
+
+      if (!signedEuHealthCerts.length) {
+        throw new CodedError(
+          "EU_QR_ERROR",
+          `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`,
+          "Unable to generate EU DCC certificates - (!signedEuHealthCerts.length)"
+        );
+      }
+    } else if (documentType !== PdtTypes.Ser) {
+      throw new CodedError(
+        "EU_QR_ERROR",
+        `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
+          documentType
+        )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`,
+        "Unable to generate EU DCC certificates - (documentType !== PdtTypes.Ser)"
+      );
+    }
+    return signedEuHealthCerts;
+  } catch (e) {
+    throw e instanceof CodedError
+      ? e
+      : new CodedError(
+          "EU_QR_ERROR",
+          "unable to generate EU DCC certificates",
+          JSON.stringify(serializeError(e))
+        );
   }
-  return signedEuHealthCerts;
 };
 
 export { genEuDccCertificates };
