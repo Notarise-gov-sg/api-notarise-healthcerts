@@ -1,7 +1,7 @@
 import { validateSchema } from "@govtechsg/open-attestation";
 import middy, { MiddlewareObj } from "@middy/core";
-import createError from "http-errors";
 import { getLogger } from "../common/logger";
+import { CodedError } from "../common/error";
 
 const { error: logError } = getLogger("validateSchema-middleware");
 type Request = middy.Request;
@@ -18,7 +18,11 @@ class ValidateSchemaMiddleware implements Pick<MiddlewareObj, "before"> {
     const { body } = req.event;
     if (!body || !validateSchema(body)) {
       logError("Body is not a wrapped health cert");
-      throw new createError.BadRequest("Body must be a wrapped health cert");
+      throw new CodedError(
+        "INVALID_SCHEMA",
+        "Body must be a wrapped health cert",
+        "(!body || !validateSchema(body))"
+      );
     }
   }
 }

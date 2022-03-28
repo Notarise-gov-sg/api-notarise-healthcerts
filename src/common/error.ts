@@ -1,177 +1,84 @@
-import { getLogger } from "../common/logger";
-
-const codedErrorSymbol = Symbol("Error code property");
-
-const { error: errorLogger } = getLogger("src/common/error");
+import { APIGatewayProxyResult } from "aws-lambda";
 
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-shadow */
-export enum ErrorCodes {
-  // 4xxx invalid requests error
-  MISMATCHING_PARTICULARS = 4001,
-  UNRECOGNISED_CLINIC = 4002,
-  TEST_RESULTS_EXPIRED = 4003,
-  DOCUMENT_INVALID = 4004,
-  DATA_INVALID = 4005,
-  FILE_TYPE_INVALID = 4006,
-  FILE_INVALID = 4007,
+export enum ErrorType {
+  // 4xx invalid requests error
+  INVALID_REQUEST_PAYLOAD = 400,
+  INVALID_DOCUMENT = 400,
+  INVALID_SCHEMA = 400,
+  INVALID_HEALTHCERT_TYPE = 400,
+  INVALID_LOGO = 400,
+  UNRECOGNISED_CLINIC = 400,
 
-  // 5xxx internal server error
-  EU_QR_ERROR = 5001,
+  // 5xx internal server error
+  NOTARISE_PDT_ERROR = 500,
+  SPM_NOTIFICATION_ERROR = 500,
+  GPAY_COVID_CARD_ERROR = 500,
+  UNKNOWN_ERROR = 500,
+  EU_QR_ERROR = 500,
 }
 
-export abstract class AbstractError extends Error {
-  // we use a Symbol() here to make sure this object key will never
-  // be collided with - since error codes aren't all that uncommon
-  [codedErrorSymbol]: ErrorCodes;
+/* eslint-enable no-unused-vars, no-shadow */
 
-  codeString: string;
+type ErrorStrings = keyof typeof ErrorType;
 
-  static isCodedError(error: any): error is AbstractError {
-    return error[codedErrorSymbol] !== undefined;
+const tryParse = (s?: string) => {
+  if (!s) return s;
+  try {
+    return JSON.parse(s) as Record<string, unknown>;
+  } catch (e) {
+    return s;
   }
+};
 
-  // this only exists to get typescript check to pass, it
-  // doesn't actually get called :D
-  // don't hate me hate the language
-  get code(): ErrorCodes {
-    return this[codedErrorSymbol];
-  }
+export class CodedError extends Error {
+  type: ErrorStrings;
 
-  constructor(message: string, code: ErrorCodes, codeString: string) {
+  details?: string;
+
+  statusCode: number;
+
+  /**
+   * Custom coded error for debugging purposes
+   * @param type
+   * @param message
+   * @param details treated as private and omitted from `toResponse()`
+   */
+  constructor(type: ErrorStrings, message: string, details?: string) {
     super(message);
-    this[codedErrorSymbol] = code;
-    this.codeString = codeString;
-    // we do Object.defineProperty instead of getter or function is because
-    // thrown objects do not retain non-enumerable properties -
-    // e.g the functions on these classes disappear after being thrown
-    // as an error
-    // https://coderwall.com/p/be8mba/error-properties-are-not-enumerable-in-javascript
-    Object.defineProperty(this, "code", {
-      value: this[codedErrorSymbol],
-      enumerable: true, // this must be here
-      writable: false,
-    });
+    this.name = "CodedError";
+    this.type = type;
+    this.details = details;
+    this.statusCode = ErrorType[type];
   }
-}
 
-export class DetailedCodedError extends AbstractError {
-  title: string;
+  toJSON() {
+    return {
+      error: true,
+      statusCode: this.statusCode,
 
-  messageBody: string;
-
-  constructor(
-    message: string,
-    code: number,
-    codeString: string,
-    title: string,
-    messageBody: string
-  ) {
-    super(message, code, codeString);
-    this.messageBody = messageBody;
-    this.title = title;
+      type: this.type,
+      message: tryParse(this.message),
+      details: tryParse(this.details),
+    };
   }
-}
 
-export class UnrecognisedClinicError extends DetailedCodedError {
-  constructor(issuerDomain: string, type: string) {
-    errorLogger(
-      `UnrecognisedClinicError triggered by issuer domain: ${issuerDomain} (${type})`
-    );
-    super(
-      "Unrecognised clinic error",
-      ErrorCodes.UNRECOGNISED_CLINIC,
-      ErrorCodes[ErrorCodes.UNRECOGNISED_CLINIC],
-      `Submitted HealthCert not a recognised/whitelisted clinic - ${issuerDomain} (${type})`,
-      "The HealthCert was not issued by a clinic recognised by the Ministry of Health Singapore"
-    );
+  toString() {
+    return `[${this.name}] ${this.type}: ${JSON.stringify(this.toJSON())}`;
   }
-}
 
-export class TestResultsExpiredError extends DetailedCodedError {
-  constructor() {
-    super(
-      "Expired test results error",
-      ErrorCodes.TEST_RESULTS_EXPIRED,
-      ErrorCodes[ErrorCodes.TEST_RESULTS_EXPIRED],
-      "Submitted HealthCert has expired test results",
-      "The test result is no longer valid. \n The HealthCert needs to be submitted within 72 hours of the test."
-    );
-  }
-}
+  toResponse(reference: string): APIGatewayProxyResult {
+    const { error, statusCode, ...rest } = this.toJSON();
+    delete rest.details; // Details are considered private and omitted from API response
+    const body = { error, statusCode, reference, ...rest }; // Insert reference as 3rd property
 
-export class DocumentInvalidError extends DetailedCodedError {
-  constructor(errorMessage: string) {
-    errorLogger(`DocumentInvalidError triggered with reason: ${errorMessage}`);
-    super(
-      "Invalid document error",
-      ErrorCodes.DOCUMENT_INVALID,
-      ErrorCodes[ErrorCodes.DOCUMENT_INVALID],
-      "Submitted HealthCert is invalid",
-      errorMessage
-    );
-  }
-}
-
-export class DataInvalidError extends DetailedCodedError {
-  constructor(invalidParams: string[]) {
-    errorLogger(
-      `DataInvalidError triggered with reason: ${invalidParams.join(
-        ", "
-      )} missing`
-    );
-    super(
-      "Invalid data error",
-      ErrorCodes.DATA_INVALID,
-      ErrorCodes[ErrorCodes.DATA_INVALID],
-      "Submitted HealthCert is invalid",
-      `Error reading the following parameters: ${invalidParams.join(", ")}.`
-    );
-  }
-}
-
-export class FileTypeInvalidError extends DetailedCodedError {
-  constructor(invalidType: string) {
-    errorLogger(
-      `FileTypeInvalidError triggered with reason: ${invalidType} file received`
-    );
-    super(
-      "Invalid file type",
-      ErrorCodes.FILE_TYPE_INVALID,
-      ErrorCodes[ErrorCodes.FILE_TYPE_INVALID],
-      "Submitted HealthCert is of the wrong file type",
-      `The file you have attached is an ${invalidType} file.
-Only .oa files can be uploaded at Notarise.
-
-In case you did not already receive this file form the clinic, please contact for the required .oa file.`
-    );
-  }
-}
-
-export class FileInvalidError extends DetailedCodedError {
-  constructor(message: string) {
-    errorLogger(`FileInvalidError triggered with reason: ${message}`);
-    super(
-      "Invalid file",
-      ErrorCodes.FILE_INVALID,
-      ErrorCodes[ErrorCodes.FILE_INVALID],
-      "Submitted HealthCert is invalid",
-      `We noted that there were formatting errors in the submitted .oa file.
-
-Please request for clinic to re-issue the document correctly before submission at Notarise.`
-    );
-  }
-}
-
-export class EuDccInvalidError extends DetailedCodedError {
-  constructor(errorMessage: string) {
-    errorLogger(`EuDccInvalidError triggered with reason: ${errorMessage}`);
-    super(
-      "Invalid Eu Dcc error",
-      ErrorCodes.EU_QR_ERROR,
-      ErrorCodes[ErrorCodes.EU_QR_ERROR],
-      "Submitted HealthCert is invalid",
-      errorMessage
-    );
+    return {
+      statusCode: this.statusCode,
+      headers: {
+        "x-trace-id": reference,
+      },
+      body: JSON.stringify(body),
+    };
   }
 }

@@ -5,7 +5,7 @@ import _exampleArtHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_art
 import _examplePcrSerHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_ser_multi_result_wrapped.json";
 import { validateV2Document } from "./validateDocument";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
-import { DocumentInvalidError } from "../../../common/error";
+import { CodedError } from "../../../common/error";
 import mockImage from "./mock_image.json";
 
 jest.mock("@govtechsg/oa-verify");
@@ -131,7 +131,9 @@ it("should throw on v2 document failing when pass v1 document data", async () =>
   whenFragmentsAreValid();
   await expect(
     validateV2Document(examplePcrHealthCertV1Wrapped)
-  ).rejects.toThrow(/Invalid document error/);
+  ).rejects.toThrow(
+    'Document should include a valid "version" attribute (e.g. "pdt-healthcert-v2.0")'
+  );
 });
 
 it("should throw on v2 document failing when document data id string invalid", async () => {
@@ -142,7 +144,7 @@ it("should throw on v2 document failing when document data id string invalid", a
     },
   } as any;
   await expect(validateV2Document(sampleDocumentV2InvalidId)).rejects.toThrow(
-    /Invalid document error/
+    'Document should include a valid "id" in string (e.g. "00738c55-0af8-472d-b346-4af39155b8e3")'
   );
 });
 
@@ -157,7 +159,9 @@ it("should throw on v2 document failing when document data version invalid", asy
   } as any;
   await expect(
     validateV2Document(sampleDocumentV2InvalidVersion)
-  ).rejects.toThrow(/Invalid document error/);
+  ).rejects.toThrow(
+    'Document should include a valid "version" attribute (e.g. "pdt-healthcert-v2.0")'
+  );
 });
 
 it("should throw on v2 document failing when document data validFrom invalid", async () => {
@@ -173,7 +177,9 @@ it("should throw on v2 document failing when document data validFrom invalid", a
   } as any;
   await expect(
     validateV2Document(sampleDocumentV2InvalidValidFrom)
-  ).rejects.toThrow(/Invalid document error/);
+  ).rejects.toThrow(
+    'Document should include a valid "validFrom" attribute in ISO 8601 datetime value (e.g. "2021-08-18T05:13:53.378Z" or "2021-10-25T00:00:00+08:00")'
+  );
 });
 
 it("should throw on v2 document failing when document data fhirVersion invalid", async () => {
@@ -190,7 +196,9 @@ it("should throw on v2 document failing when document data fhirVersion invalid",
   } as any;
   await expect(
     validateV2Document(sampleDocumentV2InvalidFhirVersion)
-  ).rejects.toThrow(/Invalid document error/);
+  ).rejects.toThrow(
+    'Document should include a valid "fhirVersion" attribute (e.g. "4.0.1")'
+  );
 });
 
 it("should throw on v2 document failing when document data type invalid", async () => {
@@ -207,12 +215,12 @@ it("should throw on v2 document failing when document data type invalid", async 
     },
   } as any;
   await expect(validateV2Document(sampleDocumentV2InvalidType)).rejects.toThrow(
-    /Invalid document error/
+    `Document type of "Other" is invalid. Only "PCR", "ART" or "SER" is supported`
   );
 });
 
 describe("document logo validation", () => {
-  const GENERIC_LOGO_ERROR = `Document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(^data:image\\/(png|jpg|jpeg);base64,.*$)|(^https:\\/\\/.*[.](png|jpg|jpeg)$)/)`;
+  const GENERIC_LOGO_ERROR = `Submitted HealthCert is invalid as document should include a valid "logo" attribute in base64 image string or HTTPS direct link (i.e. /(^data:image\\/(png|jpg|jpeg);base64,.*$)|(^https:\\/\\/.*[.](png|jpg|jpeg)$)/)`;
 
   it("should not throw on valid base64 image string", async () => {
     whenFragmentsAreValid();
@@ -241,13 +249,12 @@ describe("document logo validation", () => {
     try {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
+      if (e instanceof CodedError) {
+        thrownError = { message: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: GENERIC_LOGO_ERROR,
+      message: GENERIC_LOGO_ERROR,
     });
   });
 
@@ -260,13 +267,13 @@ describe("document logo validation", () => {
     try {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
+      if (e instanceof CodedError) {
+        thrownError = { title: e.message, body: e.details };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: `Document "logo" should resolve to a valid base64 image string (i.e. png|jpg|jpeg)`,
+      title: `Document "logo" should resolve to a valid base64 image string (i.e. png|jpg|jpeg)`,
+      body: `Unable to validate document - (!VALID_MIME_PATTERN.test(base64FileType?.mime || ""))`,
     });
   });
 
@@ -278,13 +285,12 @@ describe("document logo validation", () => {
     try {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
+      if (e instanceof CodedError) {
+        thrownError = { title: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: `Document "logo" in base64 image string is too large (33.95KB). Only <=21KB is supported.`,
+      title: `Document "logo" in base64 image string is too large (33.95KB). Only <=21KB is supported.`,
     });
   });
 
@@ -297,13 +303,12 @@ describe("document logo validation", () => {
     try {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
+      if (e instanceof CodedError) {
+        thrownError = { message: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: GENERIC_LOGO_ERROR,
+      message: GENERIC_LOGO_ERROR,
     });
   });
 
@@ -316,13 +321,12 @@ describe("document logo validation", () => {
     try {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
+      if (e instanceof CodedError) {
+        thrownError = { message: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: GENERIC_LOGO_ERROR,
+      message: GENERIC_LOGO_ERROR,
     });
   });
 
@@ -335,13 +339,13 @@ describe("document logo validation", () => {
     try {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
+      if (e instanceof CodedError) {
+        thrownError = { title: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: `Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)`,
+      title:
+        'Submitted HealthCert is invalid - Document "logo" should resolve to a valid HTTPS direct link (i.e. png|jpg|jpeg)',
     });
   });
 
@@ -354,13 +358,12 @@ describe("document logo validation", () => {
     try {
       await validateV2Document(sampleDocumentV2InvalidLogo);
     } catch (e) {
-      if (e instanceof DocumentInvalidError) {
-        thrownError = { title: e.title, body: e.messageBody };
+      if (e instanceof CodedError) {
+        thrownError = { message: e.message };
       }
     }
     expect(thrownError).toStrictEqual({
-      title: `Submitted HealthCert is invalid`,
-      body: GENERIC_LOGO_ERROR,
+      message: GENERIC_LOGO_ERROR,
     });
   });
 });

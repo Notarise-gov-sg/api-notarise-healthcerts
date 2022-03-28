@@ -1,6 +1,6 @@
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
-import { DetailedCodedError } from "../../common/error";
+import { CodedError } from "../../common/error";
 import fhirHelper from "./index";
 import examplePcrHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 import exampleArtHealthCertWithNric from "../../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
@@ -32,8 +32,8 @@ describe("validatePCRHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields(PdtTypes.Pcr, parseFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -62,8 +62,8 @@ describe("validateARTHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -88,8 +88,8 @@ describe("validateARTHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
@@ -107,8 +107,8 @@ describe("validateARTHealthCertData", () => {
     try {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
     } catch (e) {
-      if (e instanceof DetailedCodedError) {
-        thrownError = `${e.title}, ${e.messageBody}`;
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(

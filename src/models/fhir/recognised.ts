@@ -1,5 +1,5 @@
 import validate from "validate.js";
-import { DocumentInvalidError } from "../../common/error";
+import { CodedError } from "../../common/error";
 import { ParsedBundle } from "./types";
 import { getRecognisedConstraints, Type } from "./constraints";
 
@@ -15,8 +15,9 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
   });
 
   if (errors) {
-    throw new DocumentInvalidError(
-      `the following fields in fhirBundle are not recognised: ${JSON.stringify(
+    throw new CodedError(
+      "INVALID_DOCUMENT",
+      `Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: ${JSON.stringify(
         errors
       )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
     );
