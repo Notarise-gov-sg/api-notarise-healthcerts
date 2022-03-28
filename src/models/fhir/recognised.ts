@@ -1,4 +1,5 @@
 import validate from "validate.js";
+import { isNRICValid } from "@notarise-gov-sg/sns-notify-recipients/dist/services/validateNRIC";
 import { CodedError } from "../../common/error";
 import { ParsedBundle } from "./types";
 import { getRecognisedConstraints, Type } from "./constraints";
@@ -20,6 +21,13 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
       `Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: ${JSON.stringify(
         errors
       )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
+    );
+  }
+
+  if (!isNRICValid(parsedBundle.patient.nricFin)) {
+    throw new CodedError(
+      "INVALID_DOCUMENT",
+      `Submitted HealthCert is invalid, the patient NRIC-FIN value in fhirBundle has invalid checksum. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
     );
   }
 };
