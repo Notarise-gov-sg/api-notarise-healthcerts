@@ -15,6 +15,6 @@ describe("test maskNricFinInPlace function", () => {
     );
 
     expect(fhirBundle).not.toEqual(maskNricInFhirBundle);
-    expect(nricIdentifier?.value).toStrictEqual("S****989Z");
+    expect(nricIdentifier?.value).toStrictEqual("S****470G");
   });
 });

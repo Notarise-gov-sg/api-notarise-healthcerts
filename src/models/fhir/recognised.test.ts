@@ -8,6 +8,24 @@ import exampleMultiTypeHealthCertWithNric from "../../../test/fixtures/v2/pdt_pc
 const { PdtTypes } = pdtHealthCertV2;
 
 describe("recognised fields", () => {
+  test("should throw error if single type HealthCert has an invalid NRIC-FIN", () => {
+    let thrownError;
+    const parsedFhirBundle = fhirHelper.parse(
+      exampleSingleTypeHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+    parsedFhirBundle.patient.nricFin = "S9098989Z";
+    try {
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toMatchInlineSnapshot(
+      `"Submitted HealthCert is invalid, the patient NRIC-FIN value in fhirBundle has invalid checksum. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38"`
+    );
+  });
+
   test("should throw error if single type HealthCert has an invalid test result code", () => {
     let thrownError;
     const parsedFhirBundle = fhirHelper.parse(
