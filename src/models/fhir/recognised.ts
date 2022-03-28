@@ -31,7 +31,7 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
   ) {
     throw new CodedError(
       "INVALID_DOCUMENT",
-      `Submitted HealthCert is invalid, the patient NRIC-FIN value in fhirBundle has an invalid checksum. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`
+      `Submitted HealthCert is invalid, the patient NRIC-FIN value in fhirBundle has an invalid checksum.`
     );
   }
 };
