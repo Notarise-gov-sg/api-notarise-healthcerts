@@ -19,7 +19,7 @@ export const hasRequiredFields = (type: Type, parsedBundle: ParsedBundle) => {
       "INVALID_DOCUMENT",
       `Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: ${JSON.stringify(
         errors
-      )}. For more info, refer to the mapping table here: https://github.com/Open-Attestation/schemata/pull/38`
+      )}. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`
     );
   }
 };
