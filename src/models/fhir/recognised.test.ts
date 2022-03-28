@@ -22,7 +22,7 @@ describe("recognised fields", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the patient NRIC-FIN value in fhirBundle has invalid checksum. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+      `"Submitted HealthCert is invalid, the patient NRIC-FIN value in fhirBundle has an invalid checksum."`
     );
   });
 
@@ -40,7 +40,7 @@ describe("recognised fields", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'0.Observation.valueCodeableConcept.coding[0].code' is an unrecognised code - please use one of the following codes: 10828004,260385009,260373001,260415000\\"]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'0.Observation.valueCodeableConcept.coding[0].code' is an unrecognised code - please use one of the following codes: 10828004,260385009,260373001,260415000\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 
@@ -58,7 +58,7 @@ describe("recognised fields", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'1.Observation.valueCodeableConcept.coding[0].code' is an unrecognised code - please use one of the following codes: 10828004,260385009,260373001,260415000\\"]. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'1.Observation.valueCodeableConcept.coding[0].code' is an unrecognised code - please use one of the following codes: 10828004,260385009,260373001,260415000\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 });

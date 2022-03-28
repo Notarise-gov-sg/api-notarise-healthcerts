@@ -135,21 +135,17 @@ const genEuDccCertificates = async (
       if (!signedEuHealthCerts.length) {
         throw new CodedError(
           "EU_QR_ERROR",
-          `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
+          `signedEuHealthCerts: Generated EU Test Cert is invalid. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
           "Unable to generate EU DCC certificates - (!signedEuHealthCerts.length)"
         );
       }
-    } else if (
-      documentType !== PdtTypes.Ser &&
-      documentType !== PdtTypes.Lamp
-    ) {
-      // only throw error when the request document type isn't `SER` or `LAMP`
+    } else if (documentType !== PdtTypes.Ser) {
       throw new CodedError(
         "EU_QR_ERROR",
         `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
           documentType
-        )}. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
-        "Unable to generate EU DCC certificates - (documentType !== PdtTypes.Ser && documentType !== PdtTypes.Lamp)"
+        )}. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`,
+        "Unable to generate EU DCC certificates - (documentType !== PdtTypes.Ser)"
       );
     }
     return signedEuHealthCerts;
