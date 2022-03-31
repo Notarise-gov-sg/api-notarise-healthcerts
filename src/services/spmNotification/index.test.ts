@@ -1,8 +1,4 @@
-import {
-  notifyHealthCert,
-  notifyPdt,
-} from "@notarise-gov-sg/sns-notify-recipients";
-import { TestData } from "@notarise-gov-sg/sns-notify-recipients/dist/types";
+import { notifyHealthCert } from "@notarise-gov-sg/sns-notify-recipients";
 import { ParsedBundle, GroupedObservation } from "../../models/fhir/types";
 import { NotarisationResult, PDTHealthCertV2 } from "../../types";
 import { config } from "../../config";
@@ -16,7 +12,6 @@ describe("single type oa-doc notification", () => {
   let resultMock: NotarisationResult;
   let groupedObservationMock: GroupedObservation[];
   let parsedFhirBundleMock: ParsedBundle;
-  let testDataMock: TestData[];
   let spy: jest.SpyInstance;
   beforeAll(() => {
     spy = jest.spyOn(console, "error").mockImplementation(() => {
@@ -77,15 +72,6 @@ describe("single type oa-doc notification", () => {
       observations: groupedObservationMock,
       organization: {} as any,
     };
-    testDataMock = [
-      {
-        patientName: "Tan Chen Chen",
-        swabCollectionDate: "",
-        testType:
-          "SARS-CoV-2 (COVID-19) Ab [Interpretation] in Serum or Plasma",
-        testResult: "Negative",
-      },
-    ];
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -93,26 +79,6 @@ describe("single type oa-doc notification", () => {
   });
   afterAll(() => {
     spy.mockRestore();
-  });
-
-  it("skip notifyHealthCert/notifyPdt for child valid test cert", async () => {
-    // set patient dob to 5 years old (less than 15 years)
-    parsedFhirBundleMock.patient.birthDate = new Date(
-      new Date().getFullYear() - 5,
-      1,
-      1
-    ).toISOString();
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(0);
-    expect(notifyPdt).toBeCalledTimes(0);
-  });
-
-  it("skip notifyHealthCert/notifyPdt for valid PCR test cert without nric/fin", async () => {
-    // remove patient nric/fin
-    delete parsedFhirBundleMock.patient.nricFin;
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(0);
-    expect(notifyPdt).toBeCalledTimes(0);
   });
 
   it("trigger notifyHealthCert for single valid SER test cert", async () => {
@@ -162,7 +128,7 @@ describe("single type oa-doc notification", () => {
     });
   });
 
-  it("trigger notifyPdt for single valid LAMP test cert", async () => {
+  it("should not trigger notifyHealthCert for single valid LAMP test cert", async () => {
     // set test type code to LAMP
     certificateData.type = "LAMP" as any;
     parsedFhirBundleMock.observations[0].observation.testType = {
@@ -170,21 +136,7 @@ describe("single type oa-doc notification", () => {
       display: "LUCIRA Test",
     };
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyPdt).toBeCalledTimes(1);
-    expect(notifyPdt).toHaveBeenCalledWith({
-      nric: parsedFhirBundleMock.patient.nricFin,
-      passportNumber: parsedFhirBundleMock.patient.passportNumber,
-      testData: [
-        {
-          patientName: testDataMock[0].patientName,
-          swabCollectionDate: testDataMock[0].swabCollectionDate,
-          testResult: testDataMock[0].testResult,
-          testType: "LUCIRA Test",
-        },
-      ],
-      url: resultMock.url,
-      validFrom: certificateData.validFrom,
-    });
+    expect(notifyHealthCert).toBeCalledTimes(0);
   });
 });
 
@@ -288,26 +240,6 @@ describe("multi type oa-doc notification", () => {
   });
   afterAll(() => {
     spy.mockRestore();
-  });
-
-  it("skip notifyHealthCert/notifyPdt for child valid [PCR, SER] test cert", async () => {
-    // set patient dob to 5 years old (less than 15 years)
-    parsedFhirBundleMock.patient.birthDate = new Date(
-      new Date().getFullYear() - 5,
-      1,
-      1
-    ).toISOString();
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(0);
-    expect(notifyPdt).toBeCalledTimes(0);
-  });
-
-  it("skip notifyHealthCert/notifyPdt for [PCR, SER] test cert without nric/fin", async () => {
-    // remove patient nric/fin
-    delete parsedFhirBundleMock.patient.nricFin;
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(0);
-    expect(notifyPdt).toBeCalledTimes(0);
   });
 
   it("trigger notifyHealthCert for valid [PCR, SER] test cert", async () => {
