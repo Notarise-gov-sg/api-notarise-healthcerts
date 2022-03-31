@@ -1,7 +1,4 @@
-import {
-  notifyHealthCert,
-  notifyPdt,
-} from "@notarise-gov-sg/sns-notify-recipients";
+import { notifyHealthCert } from "@notarise-gov-sg/sns-notify-recipients";
 import { ParsedBundle, GroupedObservation } from "../../models/fhir/types";
 import { NotarisationResult, PDTHealthCertV2 } from "../../types";
 import { config } from "../../config";
@@ -84,26 +81,6 @@ describe("single type oa-doc notification", () => {
     spy.mockRestore();
   });
 
-  it("skip notifyHealthCert/notifyPdt for child valid test cert", async () => {
-    // set patient dob to 5 years old (less than 15 years)
-    parsedFhirBundleMock.patient.birthDate = new Date(
-      new Date().getFullYear() - 5,
-      1,
-      1
-    ).toISOString();
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(0);
-    expect(notifyPdt).toBeCalledTimes(0);
-  });
-
-  it("skip notifyHealthCert/notifyPdt for valid PCR test cert without nric/fin", async () => {
-    // remove patient nric/fin
-    delete parsedFhirBundleMock.patient.nricFin;
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(0);
-    expect(notifyPdt).toBeCalledTimes(0);
-  });
-
   it("trigger notifyHealthCert for single valid SER test cert", async () => {
     process.env.STAGE = "stg";
     // set test type code to SER
@@ -149,6 +126,17 @@ describe("single type oa-doc notification", () => {
       url: resultMock.url,
       version: "2.0",
     });
+  });
+
+  it("should not trigger notifyHealthCert for single valid LAMP test cert", async () => {
+    // set test type code to LAMP
+    certificateData.type = "LAMP" as any;
+    parsedFhirBundleMock.observations[0].observation.testType = {
+      code: "96986-5",
+      display: "LUCIRA Test",
+    };
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
+    expect(notifyHealthCert).toBeCalledTimes(0);
   });
 });
 
@@ -252,26 +240,6 @@ describe("multi type oa-doc notification", () => {
   });
   afterAll(() => {
     spy.mockRestore();
-  });
-
-  it("skip notifyHealthCert/notifyPdt for child valid [PCR, SER] test cert", async () => {
-    // set patient dob to 5 years old (less than 15 years)
-    parsedFhirBundleMock.patient.birthDate = new Date(
-      new Date().getFullYear() - 5,
-      1,
-      1
-    ).toISOString();
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(0);
-    expect(notifyPdt).toBeCalledTimes(0);
-  });
-
-  it("skip notifyHealthCert/notifyPdt for [PCR, SER] test cert without nric/fin", async () => {
-    // remove patient nric/fin
-    delete parsedFhirBundleMock.patient.nricFin;
-    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(0);
-    expect(notifyPdt).toBeCalledTimes(0);
   });
 
   it("trigger notifyHealthCert for valid [PCR, SER] test cert", async () => {

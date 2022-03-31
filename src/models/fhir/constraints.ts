@@ -131,10 +131,10 @@ const artGroupedFhirKeys = {
 };
 
 /**
- * PCR constraints:
+ * PCR/SER/LAMP constraints:
  * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
  */
-const pcrGroupedFhirKeys = {
+const pcrSerLampGroupedFhirKeys = {
   // Observation(s)
   "observations._.observation.organizationAlResourceUuid":
     "Observation.performer[2].{ id=AL, type=Organization, reference }",
@@ -246,11 +246,12 @@ export const getRequiredConstraints = (
       ...generateArtModalityConstraints(observationCount),
     };
   } else if (
+    type === PdtTypes.Lamp ||
     type === PdtTypes.Pcr ||
     type === PdtTypes.Ser ||
     isValidMultiType
   ) {
-    // PCR, SER or PCR + SER HealthCert
+    // LAMP, PCR, SER or PCR + SER HealthCert
     // Currently PCR and SER have the same validation constraint
     return {
       ...generateRequiredConstraints(commonFhirKeys),
@@ -259,7 +260,7 @@ export const getRequiredConstraints = (
         observationCount
       ),
       ...generateRequiredGroupedConstraints(
-        pcrGroupedFhirKeys,
+        pcrSerLampGroupedFhirKeys,
         observationCount
       ),
     };
