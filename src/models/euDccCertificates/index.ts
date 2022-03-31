@@ -139,7 +139,10 @@ const genEuDccCertificates = async (
           "Unable to generate EU DCC certificates - (!signedEuHealthCerts.length)"
         );
       }
-    } else if (documentType !== PdtTypes.Ser) {
+    } else if (
+      documentType !== PdtTypes.Ser &&
+      documentType !== PdtTypes.Lamp
+    ) {
       throw new CodedError(
         "EU_QR_ERROR",
         `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
