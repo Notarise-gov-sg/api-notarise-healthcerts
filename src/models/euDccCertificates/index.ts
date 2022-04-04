@@ -24,13 +24,16 @@ const isPcrTestTypeCode = (testTypeCode: string): boolean =>
   testTypeCode === testTypes.PCR || testTypeCode === testTypes.OLD_PCR;
 
 const buildEuDccTestRecord = (
-  documentType: pdtHealthCertV2.PdtTypes.Art | pdtHealthCertV2.PdtTypes.Pcr,
+  documentType:
+    | pdtHealthCertV2.PdtTypes.Art
+    | pdtHealthCertV2.PdtTypes.Pcr
+    | pdtHealthCertV2.PdtTypes.Lamp,
   groupedObservation: GroupedObservation
 ): TestingRecord => {
   const testRecord: TestingRecord = {
     testTypeCode: (documentType === PdtTypes.Art
       ? testTypes.ART
-      : testTypes.PCR) as TestingRecord["testTypeCode"],
+      : testTypes.PCR) as TestingRecord["testTypeCode"], // both PCR and LAMP use same test type code for EU DCC
     collectionDateTime: isoToLocaleString(
       groupedObservation.specimen.collectionDateTime
     ), // I.e. Specimen collection datetime;
@@ -40,8 +43,8 @@ const buildEuDccTestRecord = (
     testCountry: "SG", // Currently, we only allowed the test taken from SG
   };
 
-  if (documentType === PdtTypes.Pcr) {
-    testRecord.naatTestName = groupedObservation.observation.testType.display; // test type for PCR test [Nucleic acid amplification with probe detection]
+  if (documentType === PdtTypes.Pcr || documentType === PdtTypes.Lamp) {
+    testRecord.naatTestName = groupedObservation.observation.testType.display; // test type name for PCR/LAMP test [Nucleic acid amplification with probe detection]
   } else if (documentType === PdtTypes.Art) {
     testRecord.ratTestDeviceCode = groupedObservation.device?.type.code; // test device code for ART test [Rapid immunoassay]
   }
@@ -82,10 +85,12 @@ const genEuDccCertificates = async (
     };
 
     const testRecords: TestingRecord[] = [];
-    // check if single type ART or PCR type healthcert
+    // check if single type ART or PCR or LAMP type healthcert
     if (
       _.isString(documentType) &&
-      (documentType === PdtTypes.Art || documentType === PdtTypes.Pcr)
+      (documentType === PdtTypes.Art ||
+        documentType === PdtTypes.Pcr ||
+        documentType === PdtTypes.Lamp)
     ) {
       testRecords.push(
         buildEuDccTestRecord(documentType, parsedFhirBundle.observations[0])
@@ -139,10 +144,7 @@ const genEuDccCertificates = async (
           "Unable to generate EU DCC certificates - (!signedEuHealthCerts.length)"
         );
       }
-    } else if (
-      documentType !== PdtTypes.Ser &&
-      documentType !== PdtTypes.Lamp
-    ) {
+    } else if (documentType !== PdtTypes.Ser) {
       throw new CodedError(
         "EU_QR_ERROR",
         `signedEuHealthCerts: Unsupported test type - ${JSON.stringify(
