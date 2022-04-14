@@ -7,7 +7,7 @@ import exampleArtHealthCertWithNric from "../../../test/fixtures/v2/pdt_art_with
 
 const { PdtTypes } = pdtHealthCertV2;
 
-describe("validatePCRHealthCertData", () => {
+describe("PCR: Required values", () => {
   test("should pass for valid PCR healthcert", () => {
     const parseFhirBundle = fhirHelper.parse(
       examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
@@ -24,7 +24,7 @@ describe("validatePCRHealthCertData", () => {
       fhirHelper.hasRequiredFields(PdtTypes.Ser, parseFhirBundle)
     ).not.toThrow();
   });
-  test("should throw error if PCR healthcert not have Accredited Laboratory", () => {
+  test("should throw error if PCR healthcert has missing Accredited Laboratory", () => {
     let thrownError;
     const parseFhirBundle = fhirHelper.parse(
       exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
@@ -41,7 +41,8 @@ describe("validatePCRHealthCertData", () => {
     );
   });
 });
-describe("validateARTHealthCertData", () => {
+
+describe("ART: Required values", () => {
   test("should pass for valid ART healthcert", () => {
     const parseFhirBundle = fhirHelper.parse(
       exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
@@ -50,69 +51,42 @@ describe("validateARTHealthCertData", () => {
       fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle)
     ).not.toThrow();
   });
-
-  test("should throw error if ART healthcert lacks Observation.modality", () => {
+  test("should throw error if ART healthcert has missing Modality", () => {
     let thrownError;
-    const malformedHealthCert = examplePcrHealthCertWithNric;
 
-    const parseFhirBundle = fhirHelper.parse(
-      malformedHealthCert.fhirBundle as R4.IBundle
+    const parsedFhirBundle = fhirHelper.parse(
+      exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
     );
+    delete parsedFhirBundle.observations[0].observation.modality;
 
     try {
-      fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
+      fhirHelper.hasRequiredFields(PdtTypes.Art, parsedFhirBundle);
     } catch (e) {
       if (e instanceof CodedError) {
         thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Specimen.subject.{ type=Device, reference }' is required\\",\\"'0.Device.type.coding[0].system' is required\\",\\"'0.Device.type.coding[0].code' is required\\",\\"'0.Device.type.coding[0].display' is required\\",\\"\\\\\\"_.Observation.note[n].{ id=MODALITY, text }\\\\\\"' is required\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Observation.note[n].{ id=MODALITY, text }' is required\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
-
-  test("should throw error if ART healthcert has unrecognised modality", () => {
+  test("should throw error if ART healthcert has missing Device", () => {
     let thrownError;
-    const malformedHealthCert = exampleArtHealthCertWithNric;
-    const entry = malformedHealthCert.fhirBundle.entry.find(
-      (ent) => ent.resource.resourceType === "Observation"
-    );
-    if (entry != null && entry.resource != null && entry.resource.note) {
-      entry.resource.note[0].text = "UNKNOWN Modality";
-    }
 
-    const parseFhirBundle = fhirHelper.parse(
-      malformedHealthCert.fhirBundle as R4.IBundle
+    const parsedFhirBundle = fhirHelper.parse(
+      exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
     );
+    delete parsedFhirBundle.observations[0].device;
 
     try {
-      fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
+      fhirHelper.hasRequiredFields(PdtTypes.Art, parsedFhirBundle);
     } catch (e) {
       if (e instanceof CodedError) {
         thrownError = `${e.message}`;
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
-    );
-  });
-
-  test("should throw error if ART healthcert not have device identifier", () => {
-    let thrownError;
-    const malformedHealthCert = exampleArtHealthCertWithNric as any;
-    malformedHealthCert.fhirBundle.entry.pop();
-    const parseFhirBundle = fhirHelper.parse(
-      malformedHealthCert.fhirBundle as R4.IBundle
-    );
-    try {
-      fhirHelper.hasRequiredFields(PdtTypes.Art, parseFhirBundle);
-    } catch (e) {
-      if (e instanceof CodedError) {
-        thrownError = `${e.message}`;
-      }
-    }
-    expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Device.type.coding[0].system' is required\\",\\"'0.Device.type.coding[0].code' is required\\",\\"'0.Device.type.coding[0].display' is required\\",\\"_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+      `"Submitted HealthCert is invalid, the following required fields in fhirBundle are missing: [\\"'0.Device.type.coding[0].system' is required\\",\\"'0.Device.type.coding[0].code' is required\\",\\"'0.Device.type.coding[0].display' is required\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 });
