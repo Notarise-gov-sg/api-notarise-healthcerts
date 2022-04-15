@@ -1,5 +1,3 @@
-import Ajv from "ajv";
-import addFormats from "ajv-formats";
 import {
   isValid,
   openAttestationVerifiers,
@@ -8,11 +6,7 @@ import {
   verify as defaultVerify,
 } from "@govtechsg/oa-verify";
 import { WrappedDocument, getData } from "@govtechsg/open-attestation";
-import {
-  pdtHealthCertV2,
-  pdtHealthCertV2Schema,
-  fhirSchema,
-} from "@govtechsg/oa-schemata";
+import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import _ from "lodash";
 import axios from "axios";
 import { fromStream, fromBuffer } from "file-type";
@@ -21,18 +15,6 @@ import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { PDTHealthCertV2 } from "../../../types";
 import { config } from "../../../config";
 import { CodedError } from "../../../common/error";
-import OpenAttestationV2Schema from "../../../static/schema/schema.json"; // it's same with `{SchemaId.v2} from "@govtechsg/open-attestation"` schema but we want to load it locally, instead of loading it from http request.
-
-const ajv = new Ajv({
-  allErrors: true,
-  schemas: [
-    pdtHealthCertV2Schema.clinicProviderSchema,
-    OpenAttestationV2Schema,
-    pdtHealthCertV2Schema.schema,
-    fhirSchema.liteFhirSchema,
-  ],
-}).addVocabulary(["deprecationMessage"]);
-addFormats(ajv);
 
 export const validateV2Document = async (
   wrappedDocument: WrappedDocument<PDTHealthCertV2>
@@ -81,19 +63,76 @@ export const validateV2Document = async (
 
     /* 2. Validate against PDT Schema v2.0 */
     const data = getData(wrappedDocument);
-    const validator = ajv.getSchema(
-      "https://schemata.openattestation.com/sg/gov/moh/pdt-healthcert/2.0/clinic-provider-schema.json"
-    );
-    if (validator && !validator(data)) {
+    if (!data.id || typeof data.id !== "string")
       throw new CodedError(
         "INVALID_DOCUMENT",
-        `The following required fields are missing: ${JSON.stringify(
-          _.uniqWith(validator.errors, _.isEqual)
-        )}. For more info, refer to the mapping table here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki`
+        `Document should include a valid "id" in string (e.g. "00738c55-0af8-472d-b346-4af39155b8e3")`,
+        `Unable to validate document - (!data.id || typeof data.id !== "string")`
       );
-    }
+
+    if (!data.version || !data.version.match(/(pdt-healthcert-v2.0)$/))
+      throw new CodedError(
+        "INVALID_DOCUMENT",
+        `Document should include a valid "version" attribute (e.g. "pdt-healthcert-v2.0")`,
+        `Unable to validate document - (!data.version || !data.version.match(/(pdt-healthcert-v2.0)$/))`
+      );
+
+    // validate `validFrom` to be valid ISO 8601 date time (e.g. "2021-08-18T05:13:53.378Z" or "2021-10-25T00:00:00+08:00")
+    if (
+      !data.validFrom ||
+      !data.validFrom.match(
+        /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z)|(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+|-]\d{2}:\d{2})$/
+      )
+    )
+      throw new CodedError(
+        "INVALID_DOCUMENT",
+        `Document should include a valid "validFrom" attribute in ISO 8601 datetime value (e.g. "2021-08-18T05:13:53.378Z" or "2021-10-25T00:00:00+08:00")`
+      );
+
+    if (!data.fhirVersion || !data.fhirVersion.match(/(4.0.1)$/))
+      throw new CodedError(
+        "INVALID_DOCUMENT",
+        `Document should include a valid "fhirVersion" attribute (e.g. "4.0.1")`
+      );
+
+    if (!data.type)
+      throw new CodedError(
+        "INVALID_DOCUMENT",
+        `Document should include a valid "type" attribute (e.g. "PCR", "ART", "SER" or ["PCR", "SER"])`
+      );
 
     const { PdtTypes } = pdtHealthCertV2;
+    if (_.isString(data.type)) {
+      // When document is a single type (i.e. Just "PCR" | "ART" | "SER")
+      const supportedSingleTypes = [PdtTypes.Pcr, PdtTypes.Art, PdtTypes.Ser];
+      const isValidSingleType = supportedSingleTypes.some(
+        (t) => t === data.type
+      );
+
+      if (!isValidSingleType)
+        throw new CodedError(
+          "INVALID_DOCUMENT",
+          `Document type of "${data.type}" is invalid. Only "PCR", "ART" or "SER" is supported`
+        );
+    } else {
+      // When document is a multi type (i.e. ["PCR", "SER"])
+      const supportedMultiTypes = [[PdtTypes.Pcr, PdtTypes.Ser]]; // For now, only ["PCR", "SER"] is supported
+      const isValidMultiType = supportedMultiTypes.some((t) =>
+        // Sort each multi type before comparing array equality
+        _.isEqual(_.sortBy(t), _.sortBy(data.type))
+      );
+
+      if (!isValidMultiType)
+        throw new CodedError(
+          "INVALID_DOCUMENT",
+          `Document type of ${JSON.stringify(
+            data.type
+          )} is invalid. Only ${supportedMultiTypes.map((mt) =>
+            JSON.stringify(mt)
+          )} is supported.`
+        );
+    }
+
     /* 3. Check against issuer domain whitelist [api-authorized-issuers] */
     const issuerDomain: string | undefined = issuer.data[0]?.location;
     if (!issuerDomain)
@@ -102,7 +141,7 @@ export const validateV2Document = async (
     const whitelistType =
       _.isString(data.type) && data.type === PdtTypes.Art
         ? PdtTypes.Art // Only when HealthCert is a single type `"ART"`, check against ART whitelist
-        : PdtTypes.Pcr; // Else, default to PCR whitelist for all other types (e.g. `"PCR"`, `"SER"`, `"LAMP"`, `["PCR", "SER"]`)
+        : PdtTypes.Pcr; // Else, default to PCR whitelist for all other types (e.g. `"PCR"`, `"SER"`, `["PCR", "SER"]`)
 
     const validDomain = await isAuthorizedIssuer(issuerDomain, whitelistType);
     if (!validDomain)
