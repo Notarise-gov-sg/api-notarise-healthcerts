@@ -65,7 +65,7 @@ provider:
     - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
   usagePlan:
     quota:
-      limit: 10000
+      limit: 100000
       offset: 0
       period: DAY
     throttle:
