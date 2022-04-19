@@ -64,7 +64,7 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@govtechsg/serverless-selective-functions": "^0.1.2",
-    "@types/aws-lambda": "^8.10.91",
+    "@types/aws-lambda": "^8.10.93",
     "@types/debug": "^4.1.7",
     "@types/dotenv": "^8.2.0",
     "@types/he": "^1.1.2",
