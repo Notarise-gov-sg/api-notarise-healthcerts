@@ -218,7 +218,7 @@ custom:
     includeModules: true
   slicWatchEnable:
     production: true
-    stg: true
+    stg: false
     other:  false
   slicWatch:
     topicArn: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier" 
