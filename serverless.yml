@@ -216,87 +216,45 @@ custom:
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:
     includeModules: true
-  alerts:
-    nameTemplate: $[functionName]-$[metricName]
-    definitions:
-      functionErrors:
-        treatMissingData: notBreaching
-        threshold: 1
-        datapointsToAlarm: 4
-        evaluationPeriods: 4
-        period: 900
-      functionDuration:
-        treatMissingData: notBreaching
-        threshold: 30000
-        datapointsToAlarm: 4
-        evaluationPeriods: 4
-        period: 900
-    dashboards: true
-    stages:
-      - production
-    topics:
-      alarm:
-        topic: arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier
+  slicWatchEnable:
+    production: true
+    stg: true
+    other:  false
+  slicWatch:
+    topicArn: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier" 
+    enabled: ${self:custom.slicWatchEnable.${self:provider.stage}, self:custom.slicWatchEnable.other}
     alarms:
-      - functionErrors
-      - functionDuration
+      enabled: true
+      Period: 60
+      EvaluationPeriods: 5
+      TreatMissingData: notBreaching
+      ComparisonOperator: GreaterThanThreshold
+      Lambda:
+        enabled: false
+      ApiGateway:
+        5XXError:
+          Statistic: Average
+          Threshold: 0.15
+        4XXError:
+          Statistic: Average
+          Threshold: 0.15
+        Latency:
+          Period: 300
+          EvaluationPeriods: 2
+          Statistic: Average
+          ExtendedStatistic: null
 
 # breaking update to serverless>=2.26.0 to use .env files
 # https://www.serverless.com/framework/docs/environment-variables/
 useDotenv: true
 
 plugins:
+  - serverless-slic-watch-plugin
   - serverless-webpack
   - serverless-s3-local
   - serverless-offline
   - serverless-offline-ses
   - serverless-domain-manager
   - serverless-attach-permission-boundary
-  - serverless-plugin-aws-alerts
   - "@govtechsg/serverless-selective-functions"
   - serverless-vpc-discovery
-
-resources:
-  Resources:
-    ApiGatewayAlarm4xx:
-      Type: AWS::CloudWatch::Alarm
-      Properties:
-        AlarmName: "${self:provider.stackName}-apiGateway-4XX"
-        AlarmDescription: 4xx errors detected at API Gateway
-        AlarmActions:
-          [
-            "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier",
-          ]
-        Namespace: AWS/ApiGateway
-        MetricName: 4XXError
-        Statistic: Sum
-        Threshold: 1
-        ComparisonOperator: GreaterThanOrEqualToThreshold
-        TreatMissingData: notBreaching
-        DatapointsToAlarm: 4
-        EvaluationPeriods: 4
-        Period: 900
-        Dimensions:
-          - Name: ApiName
-            Value: "${self:provider.stage}-${self:service}"
-    ApiGatewayAlarm5xx:
-      Type: AWS::CloudWatch::Alarm
-      Properties:
-        AlarmName: "${self:provider.stackName}-apiGateway-5XX"
-        AlarmDescription: 5xx errors detected at API Gateway
-        AlarmActions:
-          [
-            "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier",
-          ]
-        Namespace: AWS/ApiGateway
-        MetricName: 5XXError
-        Statistic: Sum
-        Threshold: 1
-        ComparisonOperator: GreaterThanOrEqualToThreshold
-        TreatMissingData: notBreaching
-        DatapointsToAlarm: 4
-        EvaluationPeriods: 4
-        Period: 900
-        Dimensions:
-          - Name: ApiName
-            Value: "${self:provider.stage}-${self:service}"
