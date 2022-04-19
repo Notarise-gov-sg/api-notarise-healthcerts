@@ -3,6 +3,7 @@ import _examplePcrHealthCertV1Wrapped from "../../../../test/fixtures/v1/example
 import _examplePcrHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_with_nric_wrapped.json";
 import _exampleArtHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_art_with_nric_wrapped.json";
 import _examplePcrSerHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_pcr_ser_multi_result_wrapped.json";
+import _exampleLampHealthCertV2Wrapped from "../../../../test/fixtures/v2/pdt_lamp_wrapped.json";
 import { validateV2Document } from "./validateDocument";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { CodedError } from "../../../common/error";
@@ -21,6 +22,7 @@ const examplePcrHealthCertV2Wrapped = _examplePcrHealthCertV2Wrapped as any;
 const exampleArtHealthCertV2Wrapped = _exampleArtHealthCertV2Wrapped as any;
 const examplePcrSerHealthCertV2Wrapped =
   _examplePcrSerHealthCertV2Wrapped as any;
+const exampleLampHealthCertV2Wrapped = _exampleLampHealthCertV2Wrapped as any;
 
 const validFragments = [
   {
@@ -127,6 +129,13 @@ it("should not throw on valid PCR+SER v2 document", async () => {
   ).resolves.not.toThrow();
 });
 
+it("should not throw on valid LAMP v2 document", async () => {
+  whenFragmentsAreValid();
+  await expect(
+    validateV2Document(exampleLampHealthCertV2Wrapped)
+  ).resolves.not.toThrow();
+});
+
 it("should throw on v2 document failing when pass v1 document data", async () => {
   whenFragmentsAreValid();
   await expect(
@@ -215,7 +224,7 @@ it("should throw on v2 document failing when document data type invalid", async 
     },
   } as any;
   await expect(validateV2Document(sampleDocumentV2InvalidType)).rejects.toThrow(
-    `Document type of "Other" is invalid. Only "PCR", "ART" or "SER" is supported`
+    `Document type of "Other" is invalid. Only "PCR", "ART", "SER" or "LAMP" is supported`
   );
 });
 

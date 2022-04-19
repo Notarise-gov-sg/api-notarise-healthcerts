@@ -103,8 +103,13 @@ export const validateV2Document = async (
 
     const { PdtTypes } = pdtHealthCertV2;
     if (_.isString(data.type)) {
-      // When document is a single type (i.e. Just "PCR" | "ART" | "SER")
-      const supportedSingleTypes = [PdtTypes.Pcr, PdtTypes.Art, PdtTypes.Ser];
+      // When document is a single type (i.e. Just "PCR" | "ART" | "SER"| "LAMP")
+      const supportedSingleTypes = [
+        PdtTypes.Pcr,
+        PdtTypes.Art,
+        PdtTypes.Ser,
+        PdtTypes.Lamp,
+      ];
       const isValidSingleType = supportedSingleTypes.some(
         (t) => t === data.type
       );
@@ -112,7 +117,7 @@ export const validateV2Document = async (
       if (!isValidSingleType)
         throw new CodedError(
           "INVALID_DOCUMENT",
-          `Document type of "${data.type}" is invalid. Only "PCR", "ART" or "SER" is supported`
+          `Document type of "${data.type}" is invalid. Only "PCR", "ART", "SER" or "LAMP" is supported`
         );
     } else {
       // When document is a multi type (i.e. ["PCR", "SER"])
@@ -141,7 +146,7 @@ export const validateV2Document = async (
     const whitelistType =
       _.isString(data.type) && data.type === PdtTypes.Art
         ? PdtTypes.Art // Only when HealthCert is a single type `"ART"`, check against ART whitelist
-        : PdtTypes.Pcr; // Else, default to PCR whitelist for all other types (e.g. `"PCR"`, `"SER"`, `["PCR", "SER"]`)
+        : PdtTypes.Pcr; // Else, default to PCR whitelist for all other types (e.g. `"PCR"`, `"SER"`, `"LAMP"`, `["PCR", "SER"]`)
 
     const validDomain = await isAuthorizedIssuer(issuerDomain, whitelistType);
     if (!validDomain)
