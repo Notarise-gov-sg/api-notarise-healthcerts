@@ -82,7 +82,6 @@ describe("single type oa-doc notification", () => {
   });
 
   it("trigger notifyHealthCert for single valid SER test cert", async () => {
-    process.env.STAGE = "stg";
     // set test type code to SER
     certificateData.type = "SER" as any;
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
@@ -128,7 +127,27 @@ describe("single type oa-doc notification", () => {
     });
   });
 
-  it("should not trigger notifyHealthCert for single valid LAMP test cert", async () => {
+  it("should trigger notifyHealthCert for single valid LAMP test cert in Staging", async () => {
+    process.env.STAGE = "stg";
+    // set test type code to LAMP
+    certificateData.type = "LAMP" as any;
+    parsedFhirBundleMock.observations[0].observation.testType = {
+      code: "96986-5",
+      display: "LUCIRA Test",
+    };
+    await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
+    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledWith({
+      expiry: resultMock.ttl,
+      type: "LAMP",
+      uin: parsedFhirBundleMock.patient.nricFin,
+      url: resultMock.url,
+      version: "2.0",
+    });
+  });
+
+  it("should not trigger notifyHealthCert for single valid LAMP test cert in Prod", async () => {
+    process.env.STAGE = "production";
     // set test type code to LAMP
     certificateData.type = "LAMP" as any;
     parsedFhirBundleMock.observations[0].observation.testType = {
@@ -243,7 +262,6 @@ describe("multi type oa-doc notification", () => {
   });
 
   it("trigger notifyHealthCert for valid [PCR, SER] test cert", async () => {
-    process.env.STAGE = "stg";
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
     expect(notifyHealthCert).toBeCalledTimes(1);
     expect(notifyHealthCert).toHaveBeenCalledWith({

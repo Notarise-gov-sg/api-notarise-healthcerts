@@ -26,7 +26,8 @@ export const sendNotification = async (
      */
     if (
       config.healthCertNotification.enabled &&
-      certificateData.type !== PdtTypes.Lamp
+      (process.env.STAGE !== "production" ||
+        certificateData.type !== PdtTypes.Lamp)
     ) {
       const certificateType = _.isString(certificateData.type)
         ? certificateData.type
