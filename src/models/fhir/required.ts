@@ -4,10 +4,7 @@ import { ParsedBundle } from "./types";
 import { getRequiredConstraints, Type } from "./constraints";
 
 export const hasRequiredFields = (type: Type, parsedBundle: ParsedBundle) => {
-  const constraints = getRequiredConstraints(
-    type,
-    parsedBundle.observations.length
-  );
+  const constraints = getRequiredConstraints(type);
 
   const errors = validate(parsedBundle, constraints, {
     fullMessages: false,

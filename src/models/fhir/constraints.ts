@@ -210,10 +210,7 @@ const generateRequiredGroupedConstraints = (
 };
 
 export type Type = pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[];
-export const getRequiredConstraints = (
-  type: Type,
-  observationCount: number
-) => {
+export const getRequiredConstraints = (type: Type) => {
   const { PdtTypes } = pdtHealthCertV2;
 
   const supportedMultiType = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
@@ -222,39 +219,42 @@ export const getRequiredConstraints = (
     _.sortBy(type)
   );
 
-  if (type === PdtTypes.Art) {
-    // ART HealthCert
+  if (Array.isArray(type) && isValidMultiType) {
+    /**
+     * PCR+SER HealthCert (Multi type)
+     */
     return {
       ...generateRequiredConstraints(commonFhirKeys),
-      ...generateRequiredGroupedConstraints(
-        commonGroupedFhirKeys,
-        observationCount
-      ),
-      ...generateRequiredGroupedConstraints(
-        artGroupedFhirKeys,
-        observationCount
-      ),
+      ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 2),
+      ...generateRequiredGroupedConstraints(pcrSerLampGroupedFhirKeys, 2),
+    };
+  } else if (type === PdtTypes.Art) {
+    /**
+     * ART HealthCert
+     */
+    return {
+      ...generateRequiredConstraints(commonFhirKeys),
+      ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 1),
+      ...generateRequiredGroupedConstraints(artGroupedFhirKeys, 1),
     };
   } else if (
-    type === PdtTypes.Lamp ||
     type === PdtTypes.Pcr ||
     type === PdtTypes.Ser ||
-    isValidMultiType
+    type === PdtTypes.Lamp
   ) {
-    // LAMP, PCR, SER or PCR + SER HealthCert
-    // Currently PCR and SER have the same validation constraint
+    /**
+     * PCR, SER or LAMP HealthCert
+     * Currently they all have the same validation constraint
+     */
     return {
       ...generateRequiredConstraints(commonFhirKeys),
-      ...generateRequiredGroupedConstraints(
-        commonGroupedFhirKeys,
-        observationCount
-      ),
-      ...generateRequiredGroupedConstraints(
-        pcrSerLampGroupedFhirKeys,
-        observationCount
-      ),
+      ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 1),
+      ...generateRequiredGroupedConstraints(pcrSerLampGroupedFhirKeys, 1),
     };
   } else {
+    /**
+     * Invalid HealthCert type
+     */
     throw new CodedError(
       "INVALID_HEALTHCERT_TYPE",
       `Notarise does not support endorsement of this HealthCert Type: ${JSON.stringify(
