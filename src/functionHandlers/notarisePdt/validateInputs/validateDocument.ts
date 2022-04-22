@@ -143,10 +143,15 @@ export const validateV2Document = async (
     if (!issuerDomain)
       throw new CodedError("INVALID_DOCUMENT", `Issuer's domain is not found`);
 
-    const whitelistType =
-      _.isString(data.type) && data.type === PdtTypes.Art
-        ? PdtTypes.Art // Only when HealthCert is a single type `"ART"`, check against ART whitelist
-        : PdtTypes.Pcr; // Else, default to PCR whitelist for all other types (e.g. `"PCR"`, `"SER"`, `"LAMP"`, `["PCR", "SER"]`)
+    // Default to PCR whitelist for all other types (e.g. `"PCR"`, `"SER"`, `["PCR", "SER"]`)
+    let whitelistType = PdtTypes.Pcr;
+    if (_.isString(data.type) && data.type === PdtTypes.Art) {
+      // single type `"ART"`, check against ART whitelist
+      whitelistType = PdtTypes.Art;
+    } else if (_.isString(data.type) && data.type === PdtTypes.Lamp) {
+      // single type `"LAMP"`, check against LAMP whitelist
+      whitelistType = PdtTypes.Lamp;
+    }
 
     const validDomain = await isAuthorizedIssuer(issuerDomain, whitelistType);
     if (!validDomain)
