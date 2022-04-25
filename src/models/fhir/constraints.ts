@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
+import { isNRICValid } from "@notarise-gov-sg/sns-notify-recipients/dist/services/validateNRIC";
 import { CodedError } from "../../common/error";
 import euDccTestResultMapping from "../../static/EU-DCC-test-result.mapping.json";
 
@@ -128,6 +129,10 @@ const artGroupedFhirKeys = {
   "observations._.device.type.system": "_.Device.type.coding[0].system",
   "observations._.device.type.code": "_.Device.type.coding[0].code",
   "observations._.device.type.display": "_.Device.type.coding[0].display",
+
+  // Modality(s)
+  "observations._.observation.modality":
+    "_.Observation.note[n].{ id=MODALITY, text }",
 };
 
 /**
@@ -162,6 +167,9 @@ const pcrSerLampGroupedFhirKeys = {
     "_.Organization.contact[0].address.text",
 };
 
+/**
+ * Individual constraints of required fields for all HealthCert types
+ */
 const generateRequiredConstraints = (mapping: Record<string, string>) => {
   const allKeys = Object.keys(mapping);
   const constraints: Record<string, any> = {};
@@ -178,6 +186,9 @@ const generateRequiredConstraints = (mapping: Record<string, string>) => {
   return constraints;
 };
 
+/**
+ * Grouped constraints of required fields for all HealthCert types
+ */
 const generateRequiredGroupedConstraints = (
   mapping: Record<string, string>,
   observationCount: number
@@ -198,31 +209,8 @@ const generateRequiredGroupedConstraints = (
   return constraints;
 };
 
-const generateArtModalityConstraints = (
-  observationCount: number
-): Record<string, any> => {
-  const constraints: Record<string, any> = {};
-  for (let i = 0; i < observationCount; i += 1) {
-    constraints[`observations.${i}.observation.modality`] = {
-      presence: {
-        message: `"_.Observation.note[n].{ id=MODALITY, text }"' is required`,
-        allowEmpty: false,
-      },
-      inclusion: {
-        within: ["Administered", "Supervised", "Remotely Supervised"],
-        message:
-          "_.Observation.note[n].text must be of one of the values ['Administered', 'Supervised', 'Remotely Supervised']",
-      },
-    };
-  }
-  return constraints;
-};
-
 export type Type = pdtHealthCertV2.PdtTypes | pdtHealthCertV2.PdtTypes[];
-export const getRequiredConstraints = (
-  type: Type,
-  observationCount: number
-) => {
+export const getRequiredConstraints = (type: Type) => {
   const { PdtTypes } = pdtHealthCertV2;
 
   const supportedMultiType = [PdtTypes.Pcr, PdtTypes.Ser]; // For now, only ["PCR", "SER"] is supported
@@ -231,40 +219,42 @@ export const getRequiredConstraints = (
     _.sortBy(type)
   );
 
-  if (type === PdtTypes.Art) {
-    // ART HealthCert
+  if (Array.isArray(type) && isValidMultiType) {
+    /**
+     * PCR+SER HealthCert (Multi type)
+     */
     return {
       ...generateRequiredConstraints(commonFhirKeys),
-      ...generateRequiredGroupedConstraints(
-        commonGroupedFhirKeys,
-        observationCount
-      ),
-      ...generateRequiredGroupedConstraints(
-        artGroupedFhirKeys,
-        observationCount
-      ),
-      ...generateArtModalityConstraints(observationCount),
+      ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 2),
+      ...generateRequiredGroupedConstraints(pcrSerLampGroupedFhirKeys, 2),
+    };
+  } else if (type === PdtTypes.Art) {
+    /**
+     * ART HealthCert
+     */
+    return {
+      ...generateRequiredConstraints(commonFhirKeys),
+      ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 1),
+      ...generateRequiredGroupedConstraints(artGroupedFhirKeys, 1),
     };
   } else if (
-    type === PdtTypes.Lamp ||
     type === PdtTypes.Pcr ||
     type === PdtTypes.Ser ||
-    isValidMultiType
+    type === PdtTypes.Lamp
   ) {
-    // LAMP, PCR, SER or PCR + SER HealthCert
-    // Currently PCR and SER have the same validation constraint
+    /**
+     * PCR, SER or LAMP HealthCert
+     * Currently they all have the same validation constraint
+     */
     return {
       ...generateRequiredConstraints(commonFhirKeys),
-      ...generateRequiredGroupedConstraints(
-        commonGroupedFhirKeys,
-        observationCount
-      ),
-      ...generateRequiredGroupedConstraints(
-        pcrSerLampGroupedFhirKeys,
-        observationCount
-      ),
+      ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 1),
+      ...generateRequiredGroupedConstraints(pcrSerLampGroupedFhirKeys, 1),
     };
   } else {
+    /**
+     * Invalid HealthCert type
+     */
     throw new CodedError(
       "INVALID_HEALTHCERT_TYPE",
       `Notarise does not support endorsement of this HealthCert Type: ${JSON.stringify(
@@ -274,28 +264,80 @@ export const getRequiredConstraints = (
   }
 };
 
+/**
+ * Constraints of recognised/accepted values according to HealthCert type
+ */
 export const getRecognisedConstraints = (
-  _type: Type,
+  type: Type,
   observationCount: number
 ) => {
   const constraints: Record<string, any> = {};
 
-  /* Inclusion validation: Limit to 2 sets of Test Result Codes */
+  /* 1. NRIC-FIN validation: Must produce a valid checksum */
+  constraints["patient.nricFin"] = { nricFin: { allowEmpty: true } };
+
+  /* 2. Inclusion validation: For each Observation, limit to 2 sets of Test Result Codes */
   const recognisedTestResultCodes = [
     ...Object.keys(euDccTestResultMapping),
     ...Object.values(euDccTestResultMapping),
   ];
   for (let i = 0; i < observationCount; i += 1) {
-    const k = `observations._.observation.result.code`;
-    const parsedKey = k.replace("_", i.toString());
-    const fhirKey = commonGroupedFhirKeys[k].replace("_", i.toString());
-    constraints[parsedKey] = {
+    const key = `observations._.observation.result.code`;
+    const friendlyKey = commonGroupedFhirKeys[key];
+
+    const numKey = key.replace("_", i.toString());
+    const numFriendlyKey = friendlyKey.replace("_", i.toString());
+
+    constraints[numKey] = {
       inclusion: {
         within: recognisedTestResultCodes,
-        message: `'${fhirKey}' is an unrecognised code - please use one of the following codes: ${recognisedTestResultCodes}`,
+        message: `'${numFriendlyKey}' is an unrecognised test result code - please use one of the following codes: ${recognisedTestResultCodes}`,
       },
     };
   }
 
+  /* 3. ART Modality field: Limit to "Administered", "Supervised" or "Remotely Supervised" */
+  const recongisedArtModalityValues = [
+    "Administered",
+    "Supervised",
+    "Remotely Supervised",
+  ];
+  if (type === pdtHealthCertV2.PdtTypes.Art) {
+    for (let i = 0; i < observationCount; i += 1) {
+      const key = `observations._.observation.modality`;
+      const friendlyKey = artGroupedFhirKeys[key];
+
+      const numKey = key.replace("_", i.toString());
+      const numFriendlyKey = friendlyKey.replace("_", i.toString());
+
+      constraints[numKey] = {
+        inclusion: {
+          within: recongisedArtModalityValues,
+          message: `'${numFriendlyKey}' is an unrecognised modality value - please use one of the following values: ${recongisedArtModalityValues}`,
+        },
+      };
+    }
+  }
+
   return constraints;
+};
+
+/**
+ * Introduce custom NRIC-FIN validator
+ * Used by getRecognisedConstraints() in "src/models/fhir/constraints.ts"
+ */
+export const customNricFinValidation = (
+  value: unknown,
+  options: { allowEmpty: boolean }
+) => {
+  if (options.allowEmpty && !value) {
+    return null; // Pass
+  }
+
+  const friendlyKey = `Patient.identifier[1].{ id=NRIC-FIN, value }`;
+  if (typeof value !== "string")
+    return `'${friendlyKey}' value should be a valid string type`;
+  else if (!isNRICValid(value))
+    return `'${friendlyKey}' value has an invalid NRIC-FIN checksum`;
+  else return null; // Pass
 };

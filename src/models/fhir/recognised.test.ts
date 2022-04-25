@@ -2,16 +2,55 @@ import { R4 } from "@ahryman40k/ts-fhir-types";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
 import { CodedError } from "../../common/error";
 import fhirHelper from "./index";
-import exampleSingleTypeHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
+import exampleArtHealthCertWithNric from "../../../test/fixtures/v2/pdt_art_with_nric_unwrapped.json";
+import examplePcrHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_with_nric_unwrapped.json";
 import exampleMultiTypeHealthCertWithNric from "../../../test/fixtures/v2/pdt_pcr_ser_multi_result_unwrapped.json";
 
 const { PdtTypes } = pdtHealthCertV2;
 
-describe("recognised fields", () => {
-  test("should throw error if single type HealthCert has an invalid NRIC-FIN", () => {
+describe("PCR: Recognised/accepted values", () => {
+  test("should pass if single type HealthCert has missing NRIC-FIN", () => {
     let thrownError;
     const parsedFhirBundle = fhirHelper.parse(
-      exampleSingleTypeHealthCertWithNric.fhirBundle as R4.IBundle
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+
+    try {
+      parsedFhirBundle.patient.nricFin = "";
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+      delete parsedFhirBundle.patient.nricFin;
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toBe(undefined);
+  });
+
+  test("should pass if multi type HealthCert has missing NRIC-FIN", () => {
+    let thrownError;
+    const parsedFhirBundle = fhirHelper.parse(
+      exampleMultiTypeHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+
+    try {
+      parsedFhirBundle.patient.nricFin = "";
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+      delete parsedFhirBundle.patient.nricFin;
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toBe(undefined);
+  });
+
+  test("should throw error if single type HealthCert has an invalid NRIC-FIN checksum", () => {
+    let thrownError;
+    const parsedFhirBundle = fhirHelper.parse(
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
     );
     parsedFhirBundle.patient.nricFin = "S9098989Z";
     try {
@@ -22,14 +61,14 @@ describe("recognised fields", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the patient NRIC-FIN value in fhirBundle has an invalid checksum."`
+      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'Patient.identifier[1].{ id=NRIC-FIN, value }' value has an invalid NRIC-FIN checksum\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 
   test("should throw error if single type HealthCert has an invalid test result code", () => {
     let thrownError;
     const parsedFhirBundle = fhirHelper.parse(
-      exampleSingleTypeHealthCertWithNric.fhirBundle as R4.IBundle
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
     );
     parsedFhirBundle.observations[0].observation.result.code = "foobar";
     try {
@@ -40,7 +79,7 @@ describe("recognised fields", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'0.Observation.valueCodeableConcept.coding[0].code' is an unrecognised code - please use one of the following codes: 10828004,260385009,260373001,260415000\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'0.Observation.valueCodeableConcept.coding[0].code' is an unrecognised test result code - please use one of the following codes: 10828004,260385009,260373001,260415000\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 
@@ -58,7 +97,29 @@ describe("recognised fields", () => {
       }
     }
     expect(thrownError).toMatchInlineSnapshot(
-      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'1.Observation.valueCodeableConcept.coding[0].code' is an unrecognised code - please use one of the following codes: 10828004,260385009,260373001,260415000\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'1.Observation.valueCodeableConcept.coding[0].code' is an unrecognised test result code - please use one of the following codes: 10828004,260385009,260373001,260415000\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+    );
+  });
+});
+
+describe("ART: Recognised/accepted values", () => {
+  test("should throw error if ART healthcert has unrecognised modality", () => {
+    let thrownError;
+
+    const parsedFhirBundle = fhirHelper.parse(
+      exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+    parsedFhirBundle.observations[0].observation.modality = "foobar";
+
+    try {
+      fhirHelper.hasRecognisedFields(PdtTypes.Art, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toMatchInlineSnapshot(
+      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'0.Observation.note[n].{ id=MODALITY, text }' is an unrecognised modality value - please use one of the following values: Administered,Supervised,Remotely Supervised\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 });
