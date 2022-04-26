@@ -18,6 +18,7 @@
     "lint:fix": "npm run lint -- --fix",
     "typecheck": "tsc --noEmit",
     "gen:input": "npx ts-node -r dotenv/config scripts/generateInputHealthCert.ts",
+    "preinstall": "npx force-resolutions",
     "setup": "cross-env ./scripts/setup.sh",
     "teardown": "cross-env docker-compose down"
   },
@@ -45,6 +46,7 @@
     "fhir": "^4.11.1",
     "file-loader": "^6.2.0",
     "file-type": "16.5.3",
+    "force-resolutions": "^1.0.10",
     "he": "1.2.0",
     "http-errors": "1.8.1",
     "lodash": "^4.17.21",
@@ -65,7 +67,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
-    "@govtechsg/serverless-selective-functions": "^0.1.2",
+    "@govtechsg/serverless-selective-functions": "^1.1.0",
     "@types/aws-lambda": "^8.10.91",
     "@types/debug": "^4.1.7",
     "@types/dotenv": "^8.2.0",
@@ -102,5 +104,8 @@
     "typescript": "^4.5.5",
     "webpack": "^5.67.0",
     "webpack-node-externals": "^3.0.0"
+  },
+  "resolutions": {
+    "simple-git": "^3.3.0"
   }
 }
