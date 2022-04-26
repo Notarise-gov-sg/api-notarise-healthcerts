@@ -26,10 +26,10 @@ const { trace, error } = getLogger(
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2>>
 ): Promise<APIGatewayProxyResult> => {
-  trace("config", config);
   const reference = uuid();
   const wrappedDocument = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
+  const traceWithRef = trace.extend(`reference:${reference}`);
 
   try {
     /* 1. Validation */
@@ -65,16 +65,16 @@ export const main: Handler = async (
         if (personalData) {
           const isDobInVault =
             personalData.dateofbirth === parsedFhirBundle.patient.birthDate;
-          trace(`Is dateofbirth in vault : ${isDobInVault}`);
+          traceWithRef(`Is dateofbirth in vault : ${isDobInVault}`);
           const isGenderInVault =
             personalData.gender ===
             parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
-          trace(`Is gender in vault : ${isGenderInVault}`);
+          traceWithRef(`Is gender in vault : ${isGenderInVault}`);
           const isNameInVault = checkValidPatientName(
             parsedFhirBundle.patient.fullName,
             personalData.principalname
           );
-          trace(`Is name in vault : ${isNameInVault}`);
+          traceWithRef(`Is name in vault : ${isNameInVault}`);
         }
       }
     } catch (e) {
@@ -86,7 +86,7 @@ export const main: Handler = async (
               "Error while validating with vault data",
               JSON.stringify(serializeError(e))
             );
-      trace(codedError.toJSON());
+      traceWithRef(codedError.toJSON());
     }
 
     /* 2. Endorsement */
