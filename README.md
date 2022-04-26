@@ -104,7 +104,72 @@ Copy .env.example into .env and replace the values needed:
 - `GPAY_COVID_CARD_ISSUER_ID`: Issuer ID
 - `GPAY_COVID_CARD_PRIVATE_KEY`: Private key for signing JWT
 - `WHITELIST_NRICS`: Comma-separated NRICs to enable features only for whitelisted users. Other feature flags will be ignored when oaDoc patient's nricfin is matched from this list.
+- `HASH_SALT`: Hash salt value
 
 ## Change port
 
 - Use the `port` option from serverless offline: `npm run dev -- --port 3001`
+
+## Setup DynamoDB with sample valut Data
+
+You will need to setup a local DynamoDB service first by running:
+
+```bash
+npm run setup
+```
+
+```txt
+$ ./scripts/setup.sh
+[+] Running 2/2
+ ⠿ Network api-notarise-healthcerts_default         Created                        0.0s
+ ⠿ Container api-notarise-healthcerts-localstack-1  Started                        0.4s
+{
+    "TableDescription": {
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "uin",
+                "AttributeType": "S"
+            }
+        ],
+        "TableName": "resident-demographics-dev",
+        "KeySchema": [
+            {
+                "AttributeName": "uin",
+                "KeyType": "HASH"
+            }
+        ],
+        "TableStatus": "ACTIVE",
+        "CreationDateTime": "2022-04-26T11:54:08.193000+08:00",
+        "ProvisionedThroughput": {
+            "ReadCapacityUnits": 10,
+            "WriteCapacityUnits": 5
+        },
+        "TableSizeBytes": 0,
+        "ItemCount": 0,
+        "TableArn": "arn:aws:dynamodb:ap-southeast-1:000000000000:table/resident-demographics-dev",
+        "TableId": "03fb63da-ef95-4bda-964d-17d33c1286d6"
+    }
+}
+(END)
+{
+    "UnprocessedItems": {},
+    "ConsumedCapacity": [
+        {
+            "TableName": "resident-demographics-dev",
+            "CapacityUnits": 5.0,
+            "Table": {
+                "CapacityUnits": 5.0
+            }
+        }
+    ]
+}
+(END)
+```
+
+This will spin up a docker container running localstack with DynamoDB on port 8002. It will also setup the necessary data to seed into DynamoDB.
+
+To teardown the docker-compose, run `npm run teardown`.
+
+---
+
+Note that you will have to wait for the DynamoDB to be in ready state. If you see an error when running the serverless function about connection refused, it could be that the localstack is not ready yet.

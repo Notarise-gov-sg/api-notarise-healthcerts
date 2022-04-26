@@ -14,6 +14,10 @@ import { config } from "../../../config";
 import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
+import {
+  getPersonalDataFromVault,
+  checkValidPatientName,
+} from "../../../services/vault";
 
 const { trace, error } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
@@ -49,6 +53,40 @@ export const main: Handler = async (
             "Error while validating certificate",
             JSON.stringify(serializeError(e))
           );
+    }
+
+    try {
+      /* 1.1 Soft Validation with vault data */
+      if (parsedFhirBundle.patient.nricFin) {
+        const personalData = await getPersonalDataFromVault(
+          parsedFhirBundle.patient.nricFin,
+          reference
+        );
+        if (personalData) {
+          const isDobInVault =
+            personalData.dateofbirth === parsedFhirBundle.patient.birthDate;
+          trace(`Is dateofbirth in vault : ${isDobInVault}`);
+          const isGenderInVault =
+            personalData.gender ===
+            parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
+          trace(`Is gender in vault : ${isGenderInVault}`);
+          const isNameInVault = checkValidPatientName(
+            parsedFhirBundle.patient.fullName,
+            personalData.principalname
+          );
+          trace(`Is name in vault : ${isNameInVault}`);
+        }
+      }
+    } catch (e) {
+      const codedError =
+        e instanceof CodedError
+          ? e
+          : new CodedError(
+              "VAULT_DATA_ERROR",
+              "Error while validating with vault data",
+              JSON.stringify(serializeError(e))
+            );
+      trace(codedError.toJSON());
     }
 
     /* 2. Endorsement */

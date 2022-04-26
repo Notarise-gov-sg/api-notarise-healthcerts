@@ -61,6 +61,10 @@ const getGPayCovidCardSigner = () => ({
   ),
 });
 
+const getDynamoDbConfig = () => ({
+  residentDemographicsTable: process.env.RESIDENT_DEMOGRAPHICS_TABLE as string,
+});
+
 const generateConfig = () => ({
   documentName: "HealthCert",
   isOffline: isTruthy(process.env.IS_OFFLINE),
@@ -94,6 +98,8 @@ const generateConfig = () => ({
     SER: "94661-6",
     LAMP: "96986-5",
   },
+  dynamoDB: getDynamoDbConfig(),
+  salt: getDefaultIfUndefined(process.env.HASH_SALT, "dev-salt"),
 });
 
 export const config = generateConfig();
