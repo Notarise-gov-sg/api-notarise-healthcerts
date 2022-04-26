@@ -104,13 +104,13 @@ Copy .env.example into .env and replace the values needed:
 - `GPAY_COVID_CARD_ISSUER_ID`: Issuer ID
 - `GPAY_COVID_CARD_PRIVATE_KEY`: Private key for signing JWT
 - `WHITELIST_NRICS`: Comma-separated NRICs to enable features only for whitelisted users. Other feature flags will be ignored when oaDoc patient's nricfin is matched from this list.
-- `HASH_SALT`: Hash salt value
+- `VAULT_UIN_SALT`: The value of string, which append before hashing oaDoc patient's nricfin for retrieving vault data from dynamoDB.
 
 ## Change port
 
 - Use the `port` option from serverless offline: `npm run dev -- --port 3001`
 
-## Setup DynamoDB with sample valut Data
+## Setup DynamoDB with sample vault Data
 
 You will need to setup a local DynamoDB service first by running:
 

@@ -112,7 +112,7 @@ functions:
       HEALTH_CERT_NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_ENABLED}
       HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_TOPIC_ARN}
       WHITELIST_NRICS: ${self:custom.${self:custom.envSource}.WHITELIST_NRICS}
-      HASH_SALT: ${self:custom.${self:custom.envSource}.HASH_SALT}
+      VAULT_UIN_SALT: ${self:custom.${self:custom.envSource}.VAULT_UIN_SALT}
     handler: src/functionHandlers/notarisePdt/v2/handler.handler
     events:
       - http:
@@ -220,7 +220,7 @@ custom:
     HEALTH_CERT_NOTIFICATION_ENABLED: ${env:HEALTH_CERT_NOTIFICATION_ENABLED, ""}
     HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${env:HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
     WHITELIST_NRICS: ${env:WHITELIST_NRICS, ""}
-    HASH_SALT: ${env:HASH_SALT, ""}
+    VAULT_UIN_SALT: ${env:VAULT_UIN_SALT, ""}
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:

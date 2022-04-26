@@ -65,16 +65,20 @@ export const main: Handler = async (
         if (personalData) {
           const isDobInVault =
             personalData.dateofbirth === parsedFhirBundle.patient.birthDate;
-          traceWithRef(`Is dateofbirth in vault : ${isDobInVault}`);
           const isGenderInVault =
             personalData.gender ===
             parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
-          traceWithRef(`Is gender in vault : ${isGenderInVault}`);
           const isNameInVault = checkValidPatientName(
             parsedFhirBundle.patient.fullName,
             personalData.principalname
           );
-          traceWithRef(`Is name in vault : ${isNameInVault}`);
+          traceWithRef(
+            `Vault Data Result : ${JSON.stringify({
+              isDobInVault,
+              isGenderInVault,
+              isNameInVault,
+            })}`
+          );
         }
       }
     } catch (e) {

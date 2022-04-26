@@ -20,7 +20,7 @@ const ssmOptions: ISSMOptions = {
     GPAY_COVID_CARD_PRIVATE_KEY:
       "/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY",
     WHITELIST_NRICS: "/serverless/WHITELIST_NRICS",
-    HASH_SALT: "serverless/api-resident/HASH_SALT",
+    VAULT_UIN_SALT: "serverless/api-resident/HASH_SALT",
   },
   cacheExpiry: 15 * 60 * 1000, // set 15 mins cache
   cacheKey: "ssm-cache-secrets",

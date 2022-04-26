@@ -99,7 +99,7 @@ const generateConfig = () => ({
     LAMP: "96986-5",
   },
   dynamoDB: getDynamoDbConfig(),
-  salt: getDefaultIfUndefined(process.env.HASH_SALT, "dev-salt"),
+  vaultUinSalt: getDefaultIfUndefined(process.env.VAULT_UIN_SALT, "dev-salt"),
 });
 
 export const config = generateConfig();
