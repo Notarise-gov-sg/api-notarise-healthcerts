@@ -1,4 +1,4 @@
-import * as dynamoDbService from "../dynamoDB/dynamoDB";
+import * as dynamoDbService from "../dynamoDB";
 import { getPersonalDataFromVault, checkValidPatientName } from "./index";
 
 const mockData: any = {
