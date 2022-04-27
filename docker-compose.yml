@@ -1,0 +1,13 @@
+version: "3.5"
+services:
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      - SERVICES=dynamodb
+      - EDGE_PORT=8002
+      - KINESIS_PROVIDER=kinesalite
+    ports:
+      - '8002:8002'
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
