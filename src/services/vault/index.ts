@@ -1,5 +1,6 @@
 import { config } from "../../config";
 import { getItem } from "../dynamoDB";
+import { hashIC } from "../../common/hash";
 import { getLogger } from "../../common/logger";
 
 const { trace } = getLogger("src/services/vault");
@@ -12,14 +13,14 @@ interface personalData {
 }
 
 export const getPersonalDataFromVault = async (
-  hashUin: string,
+  uin: string,
   reference: string
 ): Promise<personalData | null> => {
   const traceWithRef = trace.extend(`reference:${reference}`);
   const param: any = {
     TableName: config.dynamoDB.residentDemographicsTable,
     Key: {
-      uin: hashUin,
+      uin: hashIC(uin),
     },
   };
   traceWithRef(`Uin Hash : ${param.Key.uin}`);
