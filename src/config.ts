@@ -70,6 +70,7 @@ const generateConfig = () => ({
   isOffline: isTruthy(process.env.IS_OFFLINE),
   transientStorage: getTransientStorageConfig(),
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
+  revocationOcsp: getDefaultIfUndefined(process.env.REVOCATION_OCSP, ""),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
   gpaySigner: getGPayCovidCardSigner(),
