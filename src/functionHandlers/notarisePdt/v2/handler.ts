@@ -10,7 +10,7 @@ import { getLogger } from "../../../common/logger";
 import { PDTHealthCertV2, NotarisationResult } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
-import { config, getDefaultIfUndefined } from "../../../config";
+import { config } from "../../../config";
 import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
@@ -58,10 +58,6 @@ export const main: Handler = async (
     try {
       /* 1.1 Soft Validation with vault data */
       if (parsedFhirBundle.patient.nricFin) {
-        traceWithRef(
-          "vaultUinSalt : ",
-          getDefaultIfUndefined(process.env.VAULT_UIN_SALT, "")
-        );
         const personalData = await getPersonalDataFromVault(
           parsedFhirBundle.patient.nricFin,
           reference
