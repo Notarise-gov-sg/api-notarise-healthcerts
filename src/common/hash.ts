@@ -1,12 +1,18 @@
 import { createHmac } from "crypto";
-import { config } from "../config";
+import { getDefaultIfUndefined } from "../config";
 import { getLogger } from "./logger";
 
 const { trace } = getLogger("src/common/hash");
 
 const saltAndHash = (id: string) => {
-  trace("vaultUinSalt : ", config.vaultUinSalt);
-  const hasher = createHmac("sha256", config.vaultUinSalt);
+  trace(
+    "vaultUinSalt : ",
+    getDefaultIfUndefined(process.env.VAULT_UIN_SALT, "")
+  );
+  const hasher = createHmac(
+    "sha256",
+    getDefaultIfUndefined(process.env.VAULT_UIN_SALT, "")
+  );
   return hasher.update(id).digest("hex");
 };
 
