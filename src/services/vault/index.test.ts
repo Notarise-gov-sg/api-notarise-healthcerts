@@ -10,10 +10,11 @@ const mockData: any = {
 
 describe("test vaultService", () => {
   it("should return vault data for valid uin", async () => {
-    const mockFIN = "S3001470G";
+    const mockHashFIN =
+      "e44f2ee89027d641659f23f9d6188d16cc576bcfd57d21caa032b50e75758657";
     jest.spyOn(dynamoDbService, "getItem").mockResolvedValue(mockData);
     await expect(
-      getPersonalDataFromVault(mockFIN, "abc")
+      getPersonalDataFromVault(mockHashFIN, "abc")
     ).resolves.toMatchObject({
       uin: "e44f2ee89027d641659f23f9d6188d16cc576bcfd57d21caa032b50e75758657",
       dateofbirth: "1990-01-15",

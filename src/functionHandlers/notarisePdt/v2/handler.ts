@@ -7,6 +7,7 @@ import { sendNotification } from "../../../services/spmNotification";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
 import { getLogger } from "../../../common/logger";
+import { hashIC } from "../../../common/hash";
 import { PDTHealthCertV2, NotarisationResult } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
@@ -59,7 +60,7 @@ export const main: Handler = async (
       /* 1.1 Soft Validation with vault data */
       if (parsedFhirBundle.patient.nricFin) {
         const personalData = await getPersonalDataFromVault(
-          parsedFhirBundle.patient.nricFin,
+          hashIC(parsedFhirBundle.patient.nricFin, config.vaultUinSalt),
           reference
         );
         if (personalData) {
