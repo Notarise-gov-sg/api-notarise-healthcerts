@@ -5,7 +5,7 @@ import { ParsedBundle } from "../../fhir/types";
 import { config } from "../../../config";
 import { PDTHealthCertV2, EndorsedPDTHealthCertV2 } from "../../../types";
 
-const { didSigner, revocationOcsp } = config;
+const { didSigner } = config;
 
 export const createUnwrappedDocument = (
   certificate: WrappedDocument<PDTHealthCertV2>,
@@ -50,14 +50,9 @@ export const createUnwrappedDocument = (
     {
       name: didSigner.name,
       id: didSigner.id,
-      revocation: revocationOcsp
-        ? {
-            type: v2.RevocationType.OcspResponder,
-            location: revocationOcsp,
-          }
-        : {
-            type: v2.RevocationType.None,
-          },
+      revocation: {
+        type: v2.RevocationType.None,
+      },
       identityProof: {
         type: v2.IdentityProofType.DNSDid,
         location: didSigner.dns,
