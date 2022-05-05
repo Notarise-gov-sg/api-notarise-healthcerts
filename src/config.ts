@@ -61,16 +61,11 @@ const getGPayCovidCardSigner = () => ({
   ),
 });
 
-const getDynamoDbConfig = () => ({
-  residentDemographicsTable: process.env.RESIDENT_DEMOGRAPHICS_TABLE as string,
-});
-
 const generateConfig = () => ({
   documentName: "HealthCert",
   isOffline: isTruthy(process.env.IS_OFFLINE),
   transientStorage: getTransientStorageConfig(),
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
-  revocationOcsp: getDefaultIfUndefined(process.env.REVOCATION_OCSP, ""),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
   gpaySigner: getGPayCovidCardSigner(),
@@ -99,7 +94,6 @@ const generateConfig = () => ({
     SER: "94661-6",
     LAMP: "96986-5",
   },
-  dynamoDB: getDynamoDbConfig(),
 });
 
 export const config = generateConfig();

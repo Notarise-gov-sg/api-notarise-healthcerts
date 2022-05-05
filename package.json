@@ -18,9 +18,7 @@
     "lint:fix": "npm run lint -- --fix",
     "typecheck": "tsc --noEmit",
     "gen:input": "npx ts-node -r dotenv/config scripts/generateInputHealthCert.ts",
-    "preinstall": "npx force-resolutions",
-    "setup": "cross-env ./scripts/setup.sh",
-    "teardown": "cross-env docker-compose down"
+    "preinstall": "npx force-resolutions"
   },
   "keywords": [],
   "author": "",
