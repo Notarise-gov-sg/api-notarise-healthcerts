@@ -74,6 +74,7 @@ provider:
       rateLimit: 100
 functions:
   notarisePdtV2:
+    provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
     environment:
       STAGE: ${self:provider.stage}
       DEBUG: "*,-follow-redirects"
@@ -120,7 +121,10 @@ custom:
   # right now, when developing with api-transient-storage, there is a clash as both repos use serverless-s3-local, defaulting to port 4569
   s3:
     port: 4701
-
+  concurrency:
+    production: 1
+    stg: 1
+    other: 0
   # Stupid hack to get conditionals on the env
   # Please duplicate environment variables in the `ssm` and `dotenv` section
   # default value for ${ssm:xxx, "default"} and ${env:xxx, "default"} does not work
