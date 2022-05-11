@@ -232,7 +232,6 @@ custom:
       enabled: true
       Period: 60
       EvaluationPeriods: 5
-      TreatMissingData: notBreaching
       ComparisonOperator: GreaterThanThreshold
       Lambda:
         enabled: false
@@ -244,8 +243,8 @@ custom:
           Statistic: Average
           Threshold: 0.15
         Latency:
-          Period: 300
-          EvaluationPeriods: 2
+          Period: 60
+          EvaluationPeriods: 10
           Statistic: Average
           ExtendedStatistic: null
 
