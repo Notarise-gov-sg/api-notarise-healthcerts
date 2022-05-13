@@ -7,7 +7,7 @@ import _ from "lodash";
 import { serializeError } from "serialize-error";
 import { Type } from "../fhir/constraints";
 import { GroupedObservation, ParsedBundle } from "../../models/fhir/types";
-import { isoToDateOnlyString, isoToLocaleString } from "../../common/datetime";
+import { isoToLocaleString } from "../../common/datetime";
 import { config, getDefaultIfUndefined } from "../../config";
 import { getLogger } from "../../common/logger";
 import { CodedError } from "../../common/error";
@@ -74,7 +74,7 @@ const genEuDccCertificates = async (
       expiryDays: euSigner.expiryDays,
       patientDetails: {
         name: parsedFhirBundle.patient.fullName,
-        dateOfBirth: isoToDateOnlyString(parsedFhirBundle.patient.birthDate),
+        dateOfBirth: parsedFhirBundle.patient.birthDate,
         meta: {
           reference: uuid,
           notarisedOn: new Date().toISOString(),
