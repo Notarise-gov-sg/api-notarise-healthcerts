@@ -77,7 +77,7 @@ functions:
     provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
     environment:
       STAGE: ${self:provider.stage}
-      DEBUG: "*,-follow-redirects"
+      # DEBUG: "*,-follow-redirects"
       INFURA_API_KEY: ${self:custom.${self:custom.envSource}.INFURA_API_KEY}
       SIGNING_DID_NAME: ${self:custom.${self:custom.envSource}.SIGNING_DID_NAME}
       SIGNING_DNS_DID_LOCATION: ${self:custom.${self:custom.envSource}.SIGNING_DNS_DID_LOCATION}
