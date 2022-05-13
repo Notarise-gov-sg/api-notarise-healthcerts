@@ -22,7 +22,6 @@ const { trace, error } = getLogger(
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2>>
 ): Promise<APIGatewayProxyResult> => {
-  trace("config", config);
   const reference = uuid();
   const wrappedDocument = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
