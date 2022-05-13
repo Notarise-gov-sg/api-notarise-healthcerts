@@ -15,9 +15,7 @@ import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
 
-const { trace, error } = getLogger(
-  "src/functionHandlers/notarisePdt/v2/handler"
-);
+const { error } = getLogger("src/functionHandlers/notarisePdt/v2/handler");
 
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2>>
