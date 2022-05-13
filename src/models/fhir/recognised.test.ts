@@ -65,6 +65,56 @@ describe("PCR: Recognised/accepted values", () => {
     );
   });
 
+  test("should pass if single type HealthCert has an valid iso birthDate", () => {
+    let thrownError;
+    const parsedFhirBundle = fhirHelper.parse(
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+    parsedFhirBundle.patient.birthDate = "2018-04-04T16:00:00.000Z";
+    try {
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toBe(undefined);
+  });
+
+  test("should pass if single type HealthCert has an valid YYYY-MM birthDate", () => {
+    let thrownError;
+    const parsedFhirBundle = fhirHelper.parse(
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+    parsedFhirBundle.patient.birthDate = "2018-04";
+    try {
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toBe(undefined);
+  });
+
+  test("should throw error if single type HealthCert has an invalid birthDate", () => {
+    let thrownError;
+    const parsedFhirBundle = fhirHelper.parse(
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+    parsedFhirBundle.patient.birthDate = "17 Feb 2021";
+    try {
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toMatchInlineSnapshot(
+      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'Patient.birthDate' value is invalid. Use YYYY-MM-DD or YYYY-MM or YYYY or ISO-8601 format\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+    );
+  });
+
   test("should throw error if single type HealthCert has an invalid test result code", () => {
     let thrownError;
     const parsedFhirBundle = fhirHelper.parse(

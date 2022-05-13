@@ -74,7 +74,7 @@ const genEuDccCertificates = async (
       expiryDays: euSigner.expiryDays,
       patientDetails: {
         name: parsedFhirBundle.patient.fullName,
-        dateOfBirth: parsedFhirBundle.patient.birthDate,
+        dateOfBirth: parsedFhirBundle.patient.birthDate.split("T")[0], // validated birthDate format can be only YYYY-MM-DD or YYYY-MM or YYYY or ISO-8601 format.
         meta: {
           reference: uuid,
           notarisedOn: new Date().toISOString(),

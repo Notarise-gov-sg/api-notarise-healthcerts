@@ -11,7 +11,6 @@ import euDccTestResultMapping from "../../static/EU-DCC-test-result.mapping.json
 const commonFhirKeys = {
   // Patient
   "patient.fullName": "Patient.name[0].text",
-  "patient.birthDate": "Patient.birthDate",
 
   "patient.nationality.system":
     "Patient.extension[0].extension[url=code].valueCodeableConcept.coding[0].system",
@@ -276,6 +275,9 @@ export const getRecognisedConstraints = (
   /* 1. NRIC-FIN validation: Must produce a valid checksum */
   constraints["patient.nricFin"] = { nricFin: { allowEmpty: true } };
 
+  /* 1.1 birthDate validation: Not allow empty and Must produce a valid format */
+  constraints["patient.birthDate"] = { birthDate: { allowEmpty: false } };
+
   /* 2. Inclusion validation: For each Observation, limit to 2 sets of Test Result Codes */
   const recognisedTestResultCodes = [
     ...Object.keys(euDccTestResultMapping),
@@ -339,5 +341,25 @@ export const customNricFinValidation = (
     return `'${friendlyKey}' value should be a valid string type`;
   else if (!isNRICValid(value))
     return `'${friendlyKey}' value has an invalid NRIC-FIN checksum`;
+  else return null; // Pass
+};
+
+/**
+ * Introduce custom birthDate validator
+ * Used by getRecognisedConstraints() in "src/models/fhir/constraints.ts"
+ */
+export const customBirthDateValidation = (
+  value: unknown,
+  options: { allowEmpty: boolean }
+) => {
+  if (options.allowEmpty && !value) {
+    return null; // Pass
+  }
+  const dateValue = (value as string).split("T")[0]; // take only date value if ISO-8601 format
+  const friendlyKey = `Patient.birthDate`;
+  if (typeof value !== "string")
+    return `'${friendlyKey}' value should be a valid string type`;
+  else if (dateValue && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(dateValue) === false)
+    return `'${friendlyKey}' value is invalid. Use YYYY-MM-DD or YYYY-MM or YYYY or ISO-8601 format`;
   else return null; // Pass
 };

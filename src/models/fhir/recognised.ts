@@ -4,6 +4,7 @@ import { ParsedBundle } from "./types";
 import {
   getRecognisedConstraints,
   customNricFinValidation,
+  customBirthDateValidation,
   Type,
 } from "./constraints";
 
@@ -14,6 +15,8 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
   );
 
   validate.validators.nricFin = customNricFinValidation;
+
+  validate.validators.birthDate = customBirthDateValidation;
 
   const errors = validate(parsedBundle, constraints, {
     fullMessages: false,
