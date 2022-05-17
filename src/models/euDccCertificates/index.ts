@@ -7,7 +7,6 @@ import _ from "lodash";
 import { serializeError } from "serialize-error";
 import { Type } from "../fhir/constraints";
 import { GroupedObservation, ParsedBundle } from "../../models/fhir/types";
-import { isoToLocaleString } from "../../common/datetime";
 import { config, getDefaultIfUndefined } from "../../config";
 import { getLogger } from "../../common/logger";
 import { CodedError } from "../../common/error";
@@ -34,9 +33,7 @@ const buildEuDccTestRecord = (
     testTypeCode: (documentType === PdtTypes.Art
       ? testTypes.ART
       : testTypes.PCR) as TestingRecord["testTypeCode"], // both PCR and LAMP use same test type code for EU DCC
-    collectionDateTime: isoToLocaleString(
-      groupedObservation.specimen.collectionDateTime
-    ), // I.e. Specimen collection datetime;
+    collectionDateTime: groupedObservation.specimen.collectionDateTime, // I.e. Specimen collection datetime;
     testResultCode: groupedObservation.observation.result
       .code as TestingRecord["testResultCode"], // E.g. "260385009";
     testCenter: groupedObservation.organization.lhp.fullName, // E.g. "MacRitchie Medical Clinic"
@@ -74,7 +71,7 @@ const genEuDccCertificates = async (
       expiryDays: euSigner.expiryDays,
       patientDetails: {
         name: parsedFhirBundle.patient.fullName,
-        dateOfBirth: parsedFhirBundle.patient.birthDate.split("T")[0], // validated birthDate format can be only YYYY-MM-DD or YYYY-MM or YYYY or ISO-8601 format.
+        dateOfBirth: parsedFhirBundle.patient.birthDate,
         meta: {
           reference: uuid,
           notarisedOn: new Date().toISOString(),

@@ -15,14 +15,11 @@ import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
 
-const { trace, error } = getLogger(
-  "src/functionHandlers/notarisePdt/v2/handler"
-);
+const { error } = getLogger("src/functionHandlers/notarisePdt/v2/handler");
 
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2>>
 ): Promise<APIGatewayProxyResult> => {
-  trace("config", config);
   const reference = uuid();
   const wrappedDocument = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
