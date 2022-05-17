@@ -68,7 +68,7 @@ const genEuDccCertificates = async (
     const basicDetails: BasicDetails = {
       reference: uuid,
       issuerName: euSigner.issuer,
-      expiryDays: euSigner.expiryDays,
+      expiryDaysOrDate: euSigner.expiryDays,
       patientDetails: {
         name: parsedFhirBundle.patient.fullName,
         dateOfBirth: parsedFhirBundle.patient.birthDate,
