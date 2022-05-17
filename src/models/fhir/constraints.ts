@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
-import { isNRICValid } from "@notarise-gov-sg/sns-notify-recipients/dist/services/validateNRIC";
 import { CodedError } from "../../common/error";
 import euDccTestResultMapping from "../../static/EU-DCC-test-result.mapping.json";
 
@@ -166,6 +165,15 @@ const pcrSerLampGroupedFhirKeys = {
     "_.Organization.contact[0].address.text",
 };
 
+const getSingleObservationKeyAndFriendlyKey = (
+  key: string,
+  friendlyKey: string,
+  index: number
+) => ({
+  numKey: key.replace("_", index.toString()),
+  numFriendlyKey: friendlyKey.replace("_", index.toString()),
+});
+
 /**
  * Individual constraints of required fields for all HealthCert types
  */
@@ -304,13 +312,14 @@ export const getRecognisedConstraints = (
     "Supervised",
     "Remotely Supervised",
   ];
-  if (type === pdtHealthCertV2.PdtTypes.Art) {
-    for (let i = 0; i < observationCount; i += 1) {
+  for (let i = 0; i < observationCount; i += 1) {
+    if (type === pdtHealthCertV2.PdtTypes.Art) {
       const key = `observations._.observation.modality`;
-      const friendlyKey = artGroupedFhirKeys[key];
-
-      const numKey = key.replace("_", i.toString());
-      const numFriendlyKey = friendlyKey.replace("_", i.toString());
+      const { numKey, numFriendlyKey } = getSingleObservationKeyAndFriendlyKey(
+        key,
+        artGroupedFhirKeys[key],
+        i
+      );
 
       constraints[numKey] = {
         inclusion: {
@@ -319,47 +328,19 @@ export const getRecognisedConstraints = (
         },
       };
     }
+    /* 3.1 isoDateTime validation for observations effectiveDateTime : Must produce a valid ISO-8601 date format */
+    const key = `observations._.observation.effectiveDateTime`;
+    const { numKey, numFriendlyKey } = getSingleObservationKeyAndFriendlyKey(
+      key,
+      commonGroupedFhirKeys[key],
+      i
+    );
+    constraints[numKey] = {
+      isoDateTime: {
+        friendlyKey: numFriendlyKey,
+      },
+    };
   }
 
   return constraints;
-};
-
-/**
- * Introduce custom NRIC-FIN validator
- * Used by getRecognisedConstraints() in "src/models/fhir/constraints.ts"
- */
-export const customNricFinValidation = (
-  value: unknown,
-  options: { allowEmpty: boolean }
-) => {
-  if (options.allowEmpty && !value) {
-    return null; // Pass
-  }
-
-  const friendlyKey = `Patient.identifier[1].{ id=NRIC-FIN, value }`;
-  if (typeof value !== "string")
-    return `'${friendlyKey}' value should be a valid string type`;
-  else if (!isNRICValid(value))
-    return `'${friendlyKey}' value has an invalid NRIC-FIN checksum`;
-  else return null; // Pass
-};
-
-/**
- * Introduce custom birthDate validator
- * Used by getRecognisedConstraints() in "src/models/fhir/constraints.ts"
- */
-export const customBirthDateValidation = (
-  value: unknown,
-  options: { allowEmpty: boolean }
-) => {
-  if (options.allowEmpty && !value) {
-    return null; // Pass
-  }
-  const dateValue = (value as string).split("T")[0]; // take only date value if ISO-8601 format
-  const friendlyKey = `Patient.birthDate`;
-  if (typeof value !== "string")
-    return `'${friendlyKey}' value should be a valid string type`;
-  else if (dateValue && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(dateValue) === false)
-    return `'${friendlyKey}' value is invalid. Use YYYY-MM-DD or YYYY-MM or YYYY or ISO-8601 format`;
-  else return null; // Pass
 };

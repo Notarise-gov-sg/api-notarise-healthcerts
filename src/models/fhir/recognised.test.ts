@@ -97,6 +97,23 @@ describe("PCR: Recognised/accepted values", () => {
     expect(thrownError).toBe(undefined);
   });
 
+  test("should pass if single type HealthCert has an valid YYYY-MM-DD effectiveDateTime", () => {
+    let thrownError;
+    const parsedFhirBundle = fhirHelper.parse(
+      examplePcrHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+    parsedFhirBundle.observations[0].observation.effectiveDateTime =
+      "2018-04-12";
+    try {
+      fhirHelper.hasRecognisedFields(PdtTypes.Pcr, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toBe(undefined);
+  });
+
   test("should throw error if single type HealthCert has an invalid birthDate", () => {
     let thrownError;
     const parsedFhirBundle = fhirHelper.parse(
@@ -170,6 +187,26 @@ describe("ART: Recognised/accepted values", () => {
     }
     expect(thrownError).toMatchInlineSnapshot(
       `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'0.Observation.note[n].{ id=MODALITY, text }' is an unrecognised modality value - please use one of the following values: Administered,Supervised,Remotely Supervised\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
+    );
+  });
+  test("should throw error if ART healthcert has unrecognised test effectiveDateTime", () => {
+    let thrownError;
+
+    const parsedFhirBundle = fhirHelper.parse(
+      exampleArtHealthCertWithNric.fhirBundle as R4.IBundle
+    );
+    parsedFhirBundle.observations[0].observation.effectiveDateTime =
+      "12 Feb 2022";
+
+    try {
+      fhirHelper.hasRecognisedFields(PdtTypes.Art, parsedFhirBundle);
+    } catch (e) {
+      if (e instanceof CodedError) {
+        thrownError = `${e.message}`;
+      }
+    }
+    expect(thrownError).toMatchInlineSnapshot(
+      `"Submitted HealthCert is invalid, the following fields in fhirBundle are not recognised: [\\"'0.Observation.effectiveDateTime' value is invalid. Use YYYY-MM-DD or ISO-8601 format\\"]. For more info, refer to the documentation here: https://github.com/Notarise-gov-sg/api-notarise-healthcerts/wiki"`
     );
   });
 });

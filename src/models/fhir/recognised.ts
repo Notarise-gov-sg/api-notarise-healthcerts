@@ -1,12 +1,12 @@
 import validate from "validate.js";
 import { CodedError } from "../../common/error";
 import { ParsedBundle } from "./types";
+import { getRecognisedConstraints, Type } from "./constraints";
 import {
-  getRecognisedConstraints,
   customNricFinValidation,
   customBirthDateValidation,
-  Type,
-} from "./constraints";
+  customIsoDateTimeValidation,
+} from "./validator";
 
 export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
   const constraints = getRecognisedConstraints(
@@ -17,6 +17,8 @@ export const hasRecognisedFields = (type: Type, parsedBundle: ParsedBundle) => {
   validate.validators.nricFin = customNricFinValidation;
 
   validate.validators.birthDate = customBirthDateValidation;
+
+  validate.validators.isoDateTime = customIsoDateTimeValidation;
 
   const errors = validate(parsedBundle, constraints, {
     fullMessages: false,
