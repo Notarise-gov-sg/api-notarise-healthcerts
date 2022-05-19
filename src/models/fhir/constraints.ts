@@ -165,11 +165,7 @@ const pcrSerLampGroupedFhirKeys = {
     "_.Organization.contact[0].address.text",
 };
 
-const getSingleObservationKeyAndFriendlyKey = (
-  key: string,
-  friendlyKey: string,
-  index: number
-) => ({
+const enumerateKeys = (key: string, friendlyKey: string, index: number) => ({
   numKey: key.replace("_", index.toString()),
   numFriendlyKey: friendlyKey.replace("_", index.toString()),
 });
@@ -315,7 +311,7 @@ export const getRecognisedConstraints = (
   for (let i = 0; i < observationCount; i += 1) {
     if (type === pdtHealthCertV2.PdtTypes.Art) {
       const key = `observations._.observation.modality`;
-      const { numKey, numFriendlyKey } = getSingleObservationKeyAndFriendlyKey(
+      const { numKey, numFriendlyKey } = enumerateKeys(
         key,
         artGroupedFhirKeys[key],
         i
@@ -328,16 +324,34 @@ export const getRecognisedConstraints = (
         },
       };
     }
-    /* 3.1 isoDateTime validation for observations effectiveDateTime : Must produce a valid ISO-8601 date format */
-    const key = `observations._.observation.effectiveDateTime`;
-    const { numKey, numFriendlyKey } = getSingleObservationKeyAndFriendlyKey(
-      key,
-      commonGroupedFhirKeys[key],
+    /* 3.1 isoDateTime validation for observations specimen.collectionDateTime : Must produce a valid ISO-8601 date format */
+    const collectionDateTimeKey = `observations._.specimen.collectionDateTime`;
+    const {
+      numKey: collectionDateTimeNumKey,
+      numFriendlyKey: collectionDateTimeNumFriendlyKey,
+    } = enumerateKeys(
+      collectionDateTimeKey,
+      commonGroupedFhirKeys[collectionDateTimeKey],
       i
     );
-    constraints[numKey] = {
+    constraints[collectionDateTimeNumKey] = {
       isoDateTime: {
-        friendlyKey: numFriendlyKey,
+        friendlyKey: collectionDateTimeNumFriendlyKey,
+      },
+    };
+    /* 3.2 isoDateTime validation for observations effectiveDateTime : Must produce a valid ISO-8601 date format */
+    const effectiveDateTimeKey = `observations._.observation.effectiveDateTime`;
+    const {
+      numKey: effectiveDateTimeNumKey,
+      numFriendlyKey: effectiveDateTimeNumFriendlyKey,
+    } = enumerateKeys(
+      effectiveDateTimeKey,
+      commonGroupedFhirKeys[effectiveDateTimeKey],
+      i
+    );
+    constraints[effectiveDateTimeNumKey] = {
+      isoDateTime: {
+        friendlyKey: effectiveDateTimeNumFriendlyKey,
       },
     };
   }

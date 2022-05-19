@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import {
   ParsedBundle,
@@ -9,6 +12,10 @@ import {
   GroupedObservation,
   ParsedDevice,
 } from "./types";
+
+dayjs.locale("en-sg");
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Fhir } = require("fhir");
@@ -42,7 +49,15 @@ export const parsers = (resource: R4.IResourceList | undefined) => {
       return {
         fullName: resource.name?.[0].text,
         gender: resource.gender,
-        birthDate: resource.birthDate,
+        birthDate: dayjs(
+          resource.birthDate,
+          ["YYYY", "YYYY-MM", "YYYY-MM-DD"],
+          true
+        ).isValid()
+          ? resource.birthDate
+          : dayjs(resource.birthDate).isValid()
+          ? dayjs.utc(resource.birthDate).format("YYYY-MM-DD")
+          : dayjs.utc(resource.birthDate?.split("T")[0]).format("YYYY-MM-DD"),
         nationality: resource.extension?.[0].extension?.find(
           (e) => e.url === "code"
         )?.valueCodeableConcept?.coding?.[0],
@@ -53,7 +68,15 @@ export const parsers = (resource: R4.IResourceList | undefined) => {
     case "Specimen":
       return {
         swabType: resource.type?.coding?.[0],
-        collectionDateTime: resource.collection?.collectedDateTime,
+        collectionDateTime: dayjs(
+          resource.collection?.collectedDateTime
+        ).isValid()
+          ? dayjs
+              .utc(resource.collection?.collectedDateTime)
+              .format("YYYY-MM-DDTHH:mm:ss[Z]")
+          : dayjs
+              .utc(resource.collection?.collectedDateTime?.split("T")[0])
+              .format("YYYY-MM-DDTHH:mm:ss[Z]"),
         deviceResourceUuid: resource.subject?.reference, // Only for ART
       } as ParsedSpecimen;
 
@@ -73,7 +96,13 @@ export const parsers = (resource: R4.IResourceList | undefined) => {
         targetDisease: resource.category?.[0].coding?.[0],
         testType: resource.code?.coding?.[0],
         result: resource.valueCodeableConcept?.coding?.[0],
-        effectiveDateTime: resource.effectiveDateTime,
+        effectiveDateTime: dayjs(resource.effectiveDateTime).isValid()
+          ? dayjs
+              .utc(resource.effectiveDateTime)
+              .format("YYYY-MM-DDTHH:mm:ss[Z]")
+          : dayjs
+              .utc(resource.effectiveDateTime?.split("T")[0])
+              .format("YYYY-MM-DDTHH:mm:ss[Z]"),
         status: resource.status,
         modality: resource.note?.find((n) => n.id === "MODALITY")?.text,
       } as ParsedObservation;

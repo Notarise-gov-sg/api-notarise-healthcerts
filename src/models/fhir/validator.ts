@@ -40,9 +40,7 @@ export const customBirthDateValidation = (
   }
   const dateValue = (value as string).split("T")[0]; // take only date value if ISO-8601 format
   const friendlyKey = `Patient.birthDate`;
-  if (typeof value !== "string")
-    return `'${friendlyKey}' value should be a valid string type`;
-  else if (dateValue && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(dateValue) === false)
+  if (dateValue && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(dateValue) === false)
     return `'${friendlyKey}' value is invalid. Use YYYY-MM-DD or YYYY-MM or YYYY or ISO-8601 format`;
   else return null; // Pass
 };
@@ -56,9 +54,7 @@ export const customIsoDateTimeValidation = (
   options: { friendlyKey: "Date Time" }
 ) => {
   const dateValue = (value as string).split("T")[0]; // take only date value if ISO-8601 format
-  if (typeof value !== "string")
-    return `'${options.friendlyKey}' value should be a valid string type`;
-  else if (dateValue && !dayjs(dateValue, ["YYYY-MM-DD"], true).isValid())
+  if (dateValue && !dayjs(dateValue, ["YYYY-MM-DD"], true).isValid())
     return `'${options.friendlyKey}' value is invalid. Use YYYY-MM-DD or ISO-8601 format`;
   else return null; // Pass
 };
