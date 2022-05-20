@@ -19,7 +19,9 @@ import {
   checkValidPatientName,
 } from "../../../services/vault";
 
-const { error } = getLogger("src/functionHandlers/notarisePdt/v2/handler");
+const { error, trace } = getLogger(
+  "src/functionHandlers/notarisePdt/v2/handler"
+);
 
 export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2>>
