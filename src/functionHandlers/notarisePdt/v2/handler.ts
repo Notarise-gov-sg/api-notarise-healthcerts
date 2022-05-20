@@ -14,6 +14,10 @@ import { config } from "../../../config";
 import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
+import {
+  getPersonalDataFromVault,
+  checkValidPatientName,
+} from "../../../services/vault";
 
 const { error } = getLogger("src/functionHandlers/notarisePdt/v2/handler");
 
@@ -23,6 +27,7 @@ export const main: Handler = async (
   const reference = uuid();
   const wrappedDocument = event.body;
   const errorWithRef = error.extend(`reference:${reference}`);
+  const traceWithRef = trace.extend(`reference:${reference}`);
 
   try {
     /* 1. Validation */
@@ -46,6 +51,44 @@ export const main: Handler = async (
             "Error while validating certificate",
             JSON.stringify(serializeError(e))
           );
+    }
+
+    try {
+      /* 1.1 Soft Validation with vault data */
+      if (parsedFhirBundle.patient.nricFin) {
+        const personalData = await getPersonalDataFromVault(
+          parsedFhirBundle.patient.nricFin,
+          reference
+        );
+        if (personalData) {
+          const isDobInVault =
+            personalData.dateofbirth === parsedFhirBundle.patient.birthDate;
+          const isGenderInVault =
+            personalData.gender ===
+            parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
+          const isNameInVault = checkValidPatientName(
+            parsedFhirBundle.patient.fullName,
+            personalData.principalname
+          );
+          traceWithRef(
+            `Vault Data Result : ${JSON.stringify({
+              isDobInVault,
+              isGenderInVault,
+              isNameInVault,
+            })}`
+          );
+        }
+      }
+    } catch (e) {
+      const codedError =
+        e instanceof CodedError
+          ? e
+          : new CodedError(
+              "VAULT_DATA_ERROR",
+              "Error while validating with vault data",
+              JSON.stringify(serializeError(e))
+            );
+      traceWithRef(codedError.toJSON());
     }
 
     /* 2. Endorsement */

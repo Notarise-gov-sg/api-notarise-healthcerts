@@ -1,0 +1,94 @@
+{
+    "resident-demographics-dev": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "uin": {
+                        "S": "e44f2ee89027d641659f23f9d6188d16cc576bcfd57d21caa032b50e75758657"
+                    },
+                    "dateofbirth": {
+                        "S": "1990-01-15"
+                    },
+                    "gender": {
+                        "S": "F"
+                    },
+                    "principalname": {
+                        "S": "Tan Chen Chen"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "uin": {
+                        "S": "a1d4e2b190c5df63851bbd94ef35ef8f250ff55bbe9d6646b65281e17d9be29b"
+                    },
+                    "dateofbirth": {
+                        "S": "2014-11-22"
+                    },
+                    "gender": {
+                        "S": "M"
+                    },
+                    "principalname": {
+                        "S": "Local Child One"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "uin": {
+                        "S": "16a6aa78f41835b61f2b5925cc79ed36c0309a00145af5124b29e1bbdeec486a"
+                    },
+                    "dateofbirth": {
+                        "S": "2010-03"
+                    },
+                    "gender": {
+                        "S": "F"
+                    },
+                    "principalname": {
+                        "S": "Child ONE"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "uin": {
+                        "S": "fca28ea084614effb27a78710b0ac7f6802769933c18ae22f5a7bf8cc8831a68"
+                    },
+                    "dateofbirth": {
+                        "S": "2010-03-17"
+                    },
+                    "gender": {
+                        "S": "F"
+                    },
+                    "principalname": {
+                        "S": "Child TWO"
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "uin": {
+                        "S": "84b11d7c9e74fbd4a91f33cf9af9e68a0502238ed92f9e8851327dedfe5a7774"
+                    },
+                    "dateofbirth": {
+                        "S": "2010-03-17"
+                    },
+                    "gender": {
+                        "S": "F"
+                    },
+                    "principalname": {
+                        "S": "SPONSORED CHILD ONE"
+                    }
+                }
+            }
+        }
+    ]
+}
