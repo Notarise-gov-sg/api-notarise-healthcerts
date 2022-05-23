@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { pdtHealthCertV2 } from "@govtechsg/oa-schemata";
-import { isNRICValid } from "@notarise-gov-sg/sns-notify-recipients/dist/services/validateNRIC";
 import { CodedError } from "../../common/error";
 import euDccTestResultMapping from "../../static/EU-DCC-test-result.mapping.json";
 
@@ -11,7 +10,6 @@ import euDccTestResultMapping from "../../static/EU-DCC-test-result.mapping.json
 const commonFhirKeys = {
   // Patient
   "patient.fullName": "Patient.name[0].text",
-  "patient.birthDate": "Patient.birthDate",
 
   "patient.nationality.system":
     "Patient.extension[0].extension[url=code].valueCodeableConcept.coding[0].system",
@@ -167,6 +165,11 @@ const pcrSerLampGroupedFhirKeys = {
     "_.Organization.contact[0].address.text",
 };
 
+const enumerateKeys = (key: string, friendlyKey: string, index: number) => ({
+  numKey: key.replace("_", index.toString()),
+  numFriendlyKey: friendlyKey.replace("_", index.toString()),
+});
+
 /**
  * Individual constraints of required fields for all HealthCert types
  */
@@ -276,6 +279,9 @@ export const getRecognisedConstraints = (
   /* 1. NRIC-FIN validation: Must produce a valid checksum */
   constraints["patient.nricFin"] = { nricFin: { allowEmpty: true } };
 
+  /* 1.1 birthDate validation: Not allow empty and Must produce a valid format */
+  constraints["patient.birthDate"] = { birthDate: { allowEmpty: false } };
+
   /* 2. Inclusion validation: For each Observation, limit to 2 sets of Test Result Codes */
   const recognisedTestResultCodes = [
     ...Object.keys(euDccTestResultMapping),
@@ -302,13 +308,14 @@ export const getRecognisedConstraints = (
     "Supervised",
     "Remotely Supervised",
   ];
-  if (type === pdtHealthCertV2.PdtTypes.Art) {
-    for (let i = 0; i < observationCount; i += 1) {
+  for (let i = 0; i < observationCount; i += 1) {
+    if (type === pdtHealthCertV2.PdtTypes.Art) {
       const key = `observations._.observation.modality`;
-      const friendlyKey = artGroupedFhirKeys[key];
-
-      const numKey = key.replace("_", i.toString());
-      const numFriendlyKey = friendlyKey.replace("_", i.toString());
+      const { numKey, numFriendlyKey } = enumerateKeys(
+        key,
+        artGroupedFhirKeys[key],
+        i
+      );
 
       constraints[numKey] = {
         inclusion: {
@@ -317,27 +324,37 @@ export const getRecognisedConstraints = (
         },
       };
     }
+    /* 3.1 isoDateTime validation for observations specimen.collectionDateTime : Must produce a valid ISO-8601 date format */
+    const collectionDateTimeKey = `observations._.specimen.collectionDateTime`;
+    const {
+      numKey: collectionDateTimeNumKey,
+      numFriendlyKey: collectionDateTimeNumFriendlyKey,
+    } = enumerateKeys(
+      collectionDateTimeKey,
+      commonGroupedFhirKeys[collectionDateTimeKey],
+      i
+    );
+    constraints[collectionDateTimeNumKey] = {
+      isoDateTime: {
+        friendlyKey: collectionDateTimeNumFriendlyKey,
+      },
+    };
+    /* 3.2 isoDateTime validation for observations effectiveDateTime : Must produce a valid ISO-8601 date format */
+    const effectiveDateTimeKey = `observations._.observation.effectiveDateTime`;
+    const {
+      numKey: effectiveDateTimeNumKey,
+      numFriendlyKey: effectiveDateTimeNumFriendlyKey,
+    } = enumerateKeys(
+      effectiveDateTimeKey,
+      commonGroupedFhirKeys[effectiveDateTimeKey],
+      i
+    );
+    constraints[effectiveDateTimeNumKey] = {
+      isoDateTime: {
+        friendlyKey: effectiveDateTimeNumFriendlyKey,
+      },
+    };
   }
 
   return constraints;
-};
-
-/**
- * Introduce custom NRIC-FIN validator
- * Used by getRecognisedConstraints() in "src/models/fhir/constraints.ts"
- */
-export const customNricFinValidation = (
-  value: unknown,
-  options: { allowEmpty: boolean }
-) => {
-  if (options.allowEmpty && !value) {
-    return null; // Pass
-  }
-
-  const friendlyKey = `Patient.identifier[1].{ id=NRIC-FIN, value }`;
-  if (typeof value !== "string")
-    return `'${friendlyKey}' value should be a valid string type`;
-  else if (!isNRICValid(value))
-    return `'${friendlyKey}' value has an invalid NRIC-FIN checksum`;
-  else return null; // Pass
 };
