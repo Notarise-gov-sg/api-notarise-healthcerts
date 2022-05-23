@@ -39,15 +39,16 @@ export const getPersonalDataFromVault = async (
 
 export const checkValidPatientName = (
   fullName: string,
-  principalName: string
+  vaultFullName: string
 ): boolean => {
-  const parsePrincipalName = principalName
+  const parseVaultFullName = vaultFullName
     .replace(/[^a-zA-Z0-9 ]+/g, "")
     .split(" ");
   const parseFullName = fullName.replace(/[^a-zA-Z0-9 ]+/g, "").split(" ");
-  return (
-    parsePrincipalName.filter(
-      (parseName) => parseFullName.indexOf(parseName) !== -1
-    ).length >= parseFullName.length
-  );
+  const fullNameMatchedCount = parseFullName.filter(
+    (parseName) => parseVaultFullName.indexOf(parseName) !== -1
+  ).length;
+  return parseFullName.length < parseVaultFullName.length
+    ? fullNameMatchedCount < parseVaultFullName.length
+    : fullNameMatchedCount >= parseVaultFullName.length;
 };

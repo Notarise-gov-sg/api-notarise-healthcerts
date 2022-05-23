@@ -28,5 +28,11 @@ describe("test vaultService", () => {
     expect(checkValidPatientName("Chen Chen", "Tan Chen Chen")).toBe(true);
     expect(checkValidPatientName("Tan", "Tan Chen Chen")).toBe(true);
     expect(checkValidPatientName("Chen", "Tan Chen Chen")).toBe(true);
+    expect(checkValidPatientName("Tan Chen Chen Harry", "Tan Chen Chen")).toBe(
+      true
+    );
+    expect(checkValidPatientName("Tan Chen Harry", "Tan Chen Chen")).toBe(
+      false
+    );
   });
 });
