@@ -17,6 +17,7 @@ export enum ErrorType {
   GPAY_COVID_CARD_ERROR = 500,
   UNKNOWN_ERROR = 500,
   EU_QR_ERROR = 500,
+  VAULT_DATA_ERROR = 500,
 }
 
 /* eslint-enable no-unused-vars, no-shadow */
