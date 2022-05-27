@@ -8,6 +8,7 @@ provider:
   stage: ${opt:stage, "dev"}
   region: ${opt:region, "ap-southeast-1"}
   stackName: ${self:service}-${self:provider.stage}
+  versionFunctions: false
   environment:
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
     RESIDENT_DEMOGRAPHICS_TABLE: resident-demographics-${self:provider.stage}
@@ -16,6 +17,33 @@ provider:
     apiGateway: true
   apiGateway:
     metrics: true
+    usagePlan:
+      quota:
+        limit: 100000
+        offset: 0
+        period: DAY
+      throttle:
+        burstLimit: 200
+        rateLimit: 100
+    apiKeys:
+      - ${opt:stage, "dev"}-notariseHealthcertKey-notarise
+      # generate API keys for other healthcert providers
+      # https://www.healthcerts.gov.sg/list-of-providers/
+      - ${opt:stage, "dev"}-notariseHealthcertKey-1Pass
+      - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
+      - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
+      - ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
+      - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Edufied
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Jedtrade
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
+      - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
   permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
   iamRoleStatements:
     - Effect: "Allow"
@@ -51,33 +79,6 @@ provider:
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESIDENT_DEMOGRAPHICS_TABLE}"
   deploymentBucket:
     name: notarise-serverless-deployment
-  apiKeys:
-    - ${opt:stage, "dev"}-notariseHealthcertKey-notarise
-    # generate API keys for other healthcert providers
-    # https://www.healthcerts.gov.sg/list-of-providers/
-    - ${opt:stage, "dev"}-notariseHealthcertKey-1Pass
-    - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
-    - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
-    - ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
-    - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Edufied
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Jedtrade
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
-    - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
-  usagePlan:
-    quota:
-      limit: 100000
-      offset: 0
-      period: DAY
-    throttle:
-      burstLimit: 200
-      rateLimit: 100
 functions:
   notarisePdtV2:
     provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
