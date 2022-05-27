@@ -1,4 +1,5 @@
 service: api-notarise-healthcerts
+configValidationMode: error
 
 provider:
   name: aws
@@ -8,6 +9,7 @@ provider:
   stage: ${opt:stage, "dev"}
   region: ${opt:region, "ap-southeast-1"}
   stackName: ${self:service}-${self:provider.stage}
+  versionFunctions: false
   environment:
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
     RESIDENT_DEMOGRAPHICS_TABLE: resident-demographics-${self:provider.stage}
@@ -16,68 +18,70 @@ provider:
     apiGateway: true
   apiGateway:
     metrics: true
-  permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - kms:Decrypt
-      Resource: ${self:custom.KMS_ARN}
-    - Effect: Allow
-      Action:
-        - xray:PutTraceSegments
-        - xray:PutTelemetryRecords
-      Resource: "*"
-    - Effect: Allow
-      Action: ["kms:GenerateDataKey"]
-      Resource: "arn:aws:kms:${self:provider.region}:${self:custom.accountId}:key/${env:SNS_KMS_KEY_ID, 'PLACEHOLDER'}"
-    - Effect: "Allow"
-      Action:
-        - ssm:GetParameters
-      Resource:
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/SIGNING_EU_QR_PRIVATE_KEY"
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/SIGNING_EU_QR_PUBLIC_KEY"
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY"
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/WHITELIST_NRICS"
-        - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/api-resident/HASH_SALT"
-    - Effect: Allow
-      Action: ["sns:Publish"]
-      Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:healthcert"
-    - Effect: Allow
-      Action: ["sns:Publish"]
-      Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:api-spm-${self:provider.stage}-spm-healthcert-topic"
-    - Effect: Allow
-      Action:
-        - dynamodb:GetItem
-      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESIDENT_DEMOGRAPHICS_TABLE}"
+    usagePlan:
+      quota:
+        limit: 100000
+        offset: 0
+        period: DAY
+      throttle:
+        burstLimit: 200
+        rateLimit: 100
+    apiKeys:
+      - ${opt:stage, "dev"}-notariseHealthcertKey-notarise
+      # generate API keys for other healthcert providers
+      # https://www.healthcerts.gov.sg/list-of-providers/
+      - ${opt:stage, "dev"}-notariseHealthcertKey-1Pass
+      - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
+      - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
+      - ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
+      - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Edufied
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Jedtrade
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
+      - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
+      - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
+  iam:
+    role:
+      permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
+      statements:
+        - Effect: "Allow"
+          Action:
+            - kms:Decrypt
+          Resource: ${self:custom.KMS_ARN}
+        - Effect: Allow
+          Action:
+            - xray:PutTraceSegments
+            - xray:PutTelemetryRecords
+          Resource: "*"
+        - Effect: Allow
+          Action: ["kms:GenerateDataKey"]
+          Resource: "arn:aws:kms:${self:provider.region}:${self:custom.accountId}:key/${env:SNS_KMS_KEY_ID, 'PLACEHOLDER'}"
+        - Effect: "Allow"
+          Action:
+            - ssm:GetParameters
+          Resource:
+            - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/SIGNING_EU_QR_PRIVATE_KEY"
+            - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/SIGNING_EU_QR_PUBLIC_KEY"
+            - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY"
+            - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/WHITELIST_NRICS"
+            - "arn:aws:ssm:${self:provider.region}:${self:custom.accountId}:parameter/serverless/api-resident/HASH_SALT"
+        - Effect: Allow
+          Action: ["sns:Publish"]
+          Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:healthcert"
+        - Effect: Allow
+          Action: ["sns:Publish"]
+          Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:api-spm-${self:provider.stage}-spm-healthcert-topic"
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+          Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESIDENT_DEMOGRAPHICS_TABLE}"
   deploymentBucket:
     name: notarise-serverless-deployment
-  apiKeys:
-    - ${opt:stage, "dev"}-notariseHealthcertKey-notarise
-    # generate API keys for other healthcert providers
-    # https://www.healthcerts.gov.sg/list-of-providers/
-    - ${opt:stage, "dev"}-notariseHealthcertKey-1Pass
-    - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
-    - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
-    - ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
-    - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Edufied
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Jedtrade
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
-    - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
-    - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
-  usagePlan:
-    quota:
-      limit: 100000
-      offset: 0
-      period: DAY
-    throttle:
-      burstLimit: 200
-      rateLimit: 100
 functions:
   notarisePdtV2:
     provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
@@ -172,15 +176,15 @@ custom:
     stg: "ropsten"
     production: "homestead"
   ssm:
-    INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY~true, ""}
+    INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY, ""}
     SIGNING_DID_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_NAME, ""}
     SIGNING_DNS_DID_LOCATION: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DNS_DID_LOCATION, ""}
-    SIGNING_DID: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID~true, ""}
-    SIGNING_DID_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_KEY~true, ""}
-    SIGNING_DID_PRIVATE_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_PRIVATE_KEY~true, ""}
+    SIGNING_DID: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID, ""}
+    SIGNING_DID_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_KEY, ""}
+    SIGNING_DID_PRIVATE_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_PRIVATE_KEY, ""}
     REVOCATION_OCSP: ${ssm:/serverless/api-notarise-healthcerts/REVOCATION_OCSP, ""}
     TRANSIENT_STORAGE_URL: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_URL, ""}
-    TRANSIENT_STORAGE_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_API_KEY~true, ""}
+    TRANSIENT_STORAGE_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_API_KEY, ""}
     NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_ENABLED, ""}
     NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TOPIC_ARN, ""}
     NOTIFICATION_SENDER_NAME: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_SENDER_NAME, ""}
@@ -189,7 +193,7 @@ custom:
     AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
     USE_API_AUTHORISED_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/USE_API_AUTHORISED_ISSUER, ""}
     AUTHORIZED_ISSUERS_API_URL: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_URL, ""}
-    AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY~true, ""}
+    AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY, ""}
     OFFLINE_QR_ENABLED: ${ssm:/serverless/OFFLINE_QR_ENABLED, ""}
     GPAY_COVID_CARD_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ENABLED, ""}
     GPAY_COVID_CARD_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER, ""}
@@ -197,6 +201,14 @@ custom:
     SIGNING_EU_QR_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_NAME, ""}
     HEALTH_CERT_NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_ENABLED, ""}
     HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
+    # reason why its empty because in sls3 it throw error if the variable does not exist
+    # but these vars is loaded from withSSm.ts file dynamically
+    # so just empty placeholder
+    GPAY_COVID_CARD_PRIVATE_KEY: ""
+    SIGNING_EU_QR_PUBLIC_KEY: ""
+    SIGNING_EU_QR_PRIVATE_KEY: ""
+    WHITELIST_NRICS: ""
+    VAULT_UIN_SALT: ""
   dotenv:
     INFURA_API_KEY: ${env:INFURA_API_KEY, ""}
     SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
