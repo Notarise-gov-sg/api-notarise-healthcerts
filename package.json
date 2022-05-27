@@ -106,7 +106,5 @@
     "webpack": "^5.72.1",
     "webpack-node-externals": "^3.0.0"
   },
-  "resolutions": {
-    "simple-git": "^3.3.0"
-  }
+  "resolutions": {}
 }
