@@ -134,10 +134,10 @@ const artGroupedFhirKeys = {
 };
 
 /**
- * PCR/SER/LAMP constraints:
+ * PCR/SER constraints:
  * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
  */
-const pcrSerLampGroupedFhirKeys = {
+const pcrSerGroupedFhirKeys = {
   // Observation(s)
   "observations._.observation.organizationAlResourceUuid":
     "Observation.performer[2].{ id=AL, type=Organization, reference }",
@@ -229,7 +229,7 @@ export const getRequiredConstraints = (type: Type) => {
     return {
       ...generateRequiredConstraints(commonFhirKeys),
       ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 2),
-      ...generateRequiredGroupedConstraints(pcrSerLampGroupedFhirKeys, 2),
+      ...generateRequiredGroupedConstraints(pcrSerGroupedFhirKeys, 2),
     };
   } else if (type === PdtTypes.Art) {
     /**
@@ -240,19 +240,23 @@ export const getRequiredConstraints = (type: Type) => {
       ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 1),
       ...generateRequiredGroupedConstraints(artGroupedFhirKeys, 1),
     };
-  } else if (
-    type === PdtTypes.Pcr ||
-    type === PdtTypes.Ser ||
-    type === PdtTypes.Lamp
-  ) {
+  } else if (type === PdtTypes.Pcr || type === PdtTypes.Ser) {
     /**
-     * PCR, SER or LAMP HealthCert
-     * Currently they all have the same validation constraint
+     * PCR or SER HealthCert
+     * They currently have the same validation constraint
      */
     return {
       ...generateRequiredConstraints(commonFhirKeys),
       ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 1),
-      ...generateRequiredGroupedConstraints(pcrSerLampGroupedFhirKeys, 1),
+      ...generateRequiredGroupedConstraints(pcrSerGroupedFhirKeys, 1),
+    };
+  } else if (type === PdtTypes.Lamp) {
+    /**
+     * LAMP HealthCert
+     */
+    return {
+      ...generateRequiredConstraints(commonFhirKeys),
+      ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 1),
     };
   } else {
     /**
