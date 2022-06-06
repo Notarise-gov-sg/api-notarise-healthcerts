@@ -27,7 +27,7 @@ provider:
         burstLimit: 200
         rateLimit: 100
     apiKeys:
-      - ${opt:stage, "dev"}-nexus
+      - ${self:service}-${self:provider.stage}-nexus
       - ${opt:stage, "dev"}-notariseHealthcertKey-notarise
       # generate API keys for other healthcert providers
       # https://www.healthcerts.gov.sg/list-of-providers/
