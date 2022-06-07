@@ -27,7 +27,6 @@ provider:
         burstLimit: 200
         rateLimit: 100
     apiKeys:
-      - ${self:service}-${self:provider.stage}-nexus
       - ${opt:stage, "dev"}-notariseHealthcertKey-notarise
       # generate API keys for other healthcert providers
       # https://www.healthcerts.gov.sg/list-of-providers/
@@ -46,6 +45,7 @@ provider:
       - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
       - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
       - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
+      - ${self:service}-${self:provider.stage}-nexus
   iam:
     role:
       permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
