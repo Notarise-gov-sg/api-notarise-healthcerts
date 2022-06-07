@@ -248,6 +248,10 @@ custom:
     production: true
     stg: false
     other: false
+  serverless-offline-ssm:
+    stages:
+      - offline
+      - dev
   slicWatch:
     topicArn: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier"
     enabled: ${self:custom.slicWatchEnable.${self:provider.stage}, self:custom.slicWatchEnable.other}
@@ -279,9 +283,10 @@ plugins:
   - serverless-slic-watch-plugin
   - serverless-webpack
   - serverless-s3-local
-  - serverless-offline
+  - serverless-offline-ssm
   - serverless-offline-ses
   - serverless-domain-manager
   - serverless-attach-permission-boundary
   - "@govtechsg/serverless-selective-functions"
   - serverless-vpc-discovery
+  - serverless-offline
