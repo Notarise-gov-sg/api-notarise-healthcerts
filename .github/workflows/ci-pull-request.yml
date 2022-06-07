@@ -36,4 +36,4 @@ jobs:
         SIGNING_DID: ${{ secrets.SIGNING_DID }}
         SIGNING_DID_KEY: ${{ secrets.SIGNING_DID_KEY }}
         SIGNING_DID_PRIVATE_KEY: ${{ secrets.SIGNING_DID_PRIVATE_KEY }}
-    - run: npm run sls-config-check
+    # - run: npm run sls-config-check
