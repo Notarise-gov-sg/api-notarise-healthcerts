@@ -45,6 +45,7 @@ provider:
       - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
       - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
       - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
+      - ${self:service}-${self:provider.stage}-nexus
   iam:
     role:
       permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
