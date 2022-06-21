@@ -33,7 +33,7 @@
     "@middy/core": "^2.5.7",
     "@middy/http-error-handler": "^2.5.7",
     "@middy/http-json-body-parser": "^2.5.7",
-    "@middy/ssm": "^2.5.7",
+    "@middy/ssm": "^3.1.0",
     "@notarise-gov-sg/eu-dcc-generator": "^1.4.0",
     "@notarise-gov-sg/gpay-covid-cards": "^1.0.5",
     "@notarise-gov-sg/sns-notify-recipients": "^1.5.3",
