@@ -52,9 +52,10 @@ jobs:
     name: trigger deploy
     runs-on: ubuntu-latest
     steps:
-    - uses: benc-uk/workflow-dispatch@v1
-      with:
-        workflow: ${{ secrets.DEPLOYER_WORKFLOW }}
-        repo: ${{ secrets.DEPLOYER_REPO }}
-        token: ${{ secrets.BOT_GITHUB_TOKEN_PRIVATE }}
-        inputs: '{ "ref": "${{ github.ref }}", "ENABLE_PROD_DEPLOY": "${{ secrets.ENABLE_PROD_DEPLOY }}" }'
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          repo: ${{ secrets.DEPLOYER_REPO }}
+          event-type: ${{ secrets.DEPLOYER_WORKFLOW }}
+          client-payload: '{"ref": "${{ github.ref }}"}'
