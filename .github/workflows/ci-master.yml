@@ -56,6 +56,6 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.BOT_GITHUB_TOKEN }}
-          repo: ${{ secrets.DEPLOYER_REPO }}
+          repository: ${{ secrets.DEPLOYER_REPO }}
           event-type: ${{ secrets.DEPLOYER_WORKFLOW }}
           client-payload: '{"ref": "${{ github.ref }}"}'
