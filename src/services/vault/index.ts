@@ -42,9 +42,13 @@ export const checkValidPatientName = (
   vaultFullName: string
 ): boolean => {
   const parseVaultFullName = vaultFullName
+    .toLowerCase()
     .replace(/[^a-zA-Z0-9 ]+/g, "")
     .split(" ");
-  const parseFullName = fullName.replace(/[^a-zA-Z0-9 ]+/g, "").split(" ");
+  const parseFullName = fullName
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9 ]+/g, "")
+    .split(" ");
   const fullNameMatchedCount = parseFullName.filter(
     (parseName) => parseVaultFullName.indexOf(parseName) !== -1
   ).length;
