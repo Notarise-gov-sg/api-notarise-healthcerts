@@ -165,6 +165,15 @@ const pcrSerGroupedFhirKeys = {
     "_.Organization.contact[0].address.text",
 };
 
+/**
+ * LAMP constraints:
+ * To convert parsed format -> original FHIR Bundle format (to aid in custom error message)
+ */
+const lampGroupedFhirKeys: Partial<typeof commonGroupedFhirKeys> = {
+  ...commonGroupedFhirKeys,
+};
+delete lampGroupedFhirKeys["observations._.observation.acsn"];
+
 const enumerateKeys = (key: string, friendlyKey: string, index: number) => ({
   numKey: key.replace("_", index.toString()),
   numFriendlyKey: friendlyKey.replace("_", index.toString()),
@@ -256,7 +265,7 @@ export const getRequiredConstraints = (type: Type) => {
      */
     return {
       ...generateRequiredConstraints(commonFhirKeys),
-      ...generateRequiredGroupedConstraints(commonGroupedFhirKeys, 1),
+      ...generateRequiredGroupedConstraints(lampGroupedFhirKeys, 1),
     };
   } else {
     /**
