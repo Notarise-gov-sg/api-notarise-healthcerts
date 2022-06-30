@@ -21,7 +21,7 @@ export const isAuthorizedIssuerAPI = async (
     };
     const getAuthorizedIssuerUrl = urljoin(
       `${config.authorizedIssuers.endpoint}`,
-      "authorized-issuer",
+      "authorized-issuer/v2",
       domain.toLowerCase(),
       type.toLocaleLowerCase()
     );
