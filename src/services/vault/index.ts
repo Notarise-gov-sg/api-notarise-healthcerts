@@ -23,9 +23,9 @@ export const getPersonalDataFromVault = async (
       "x-api-key": `${config.apiResident.apiKey}`,
       "Content-Type": "application/json",
     };
-    const getDemographicsUrl = `${config.apiResident}/demographics/${hashIC(
-      uin
-    )}`;
+    const getDemographicsUrl = `${
+      config.apiResident.endpoint
+    }/demographics/${hashIC(uin)}`;
     const response = await axios.get(getDemographicsUrl, {
       headers,
     });
