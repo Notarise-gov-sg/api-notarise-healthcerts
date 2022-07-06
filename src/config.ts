@@ -18,8 +18,8 @@ const getAuthorizedIssuersApiConfig = () => ({
 });
 
 const getResidentApiConfig = () => ({
-  endpoint: getDefaultIfUndefined(process.env.API_RESIDENT_API_URL, ""),
-  apiKey: getDefaultIfUndefined(process.env.API_RESIDENT_API_KEY, ""),
+  endpoint: getDefaultIfUndefined(process.env.RESIDENT_API_URL, ""),
+  apiKey: getDefaultIfUndefined(process.env.RESIDENT_API_KEY, ""),
 });
 
 // Sample keys below are not used in any environments other than tests
