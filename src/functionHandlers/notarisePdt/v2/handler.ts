@@ -15,7 +15,7 @@ import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
 import {
-  getPersonalDataFromVault,
+  getDemographics,
   checkValidPatientName,
 } from "../../../services/vault";
 
@@ -58,7 +58,7 @@ export const main: Handler = async (
     try {
       /* 1.1 Soft Validation with vault data */
       if (parsedFhirBundle.patient.nricFin) {
-        const personalData = await getPersonalDataFromVault(
+        const personalData = await getDemographics(
           parsedFhirBundle.patient.nricFin,
           reference
         );

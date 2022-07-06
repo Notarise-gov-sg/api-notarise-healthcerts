@@ -12,7 +12,7 @@ interface personalData {
   principalname: string;
 }
 
-export const getPersonalDataFromVault = async (
+export const getDemographics = async (
   uin: string,
   reference: string
 ): Promise<personalData | null> => {
@@ -23,16 +23,14 @@ export const getPersonalDataFromVault = async (
       "x-api-key": `${config.apiResident.apiKey}`,
       "Content-Type": "application/json",
     };
-    const getDemographicsUrl = `${
-      config.apiResident.endpoint
-    }/demographics/${hashIC(uin)}`;
+    const hashedUin = hashIC(uin);
+    const getDemographicsUrl = `${config.apiResident.endpoint}/demographics/${hashedUin}`;
     const response = await axios.get(getDemographicsUrl, {
       headers,
     });
     traceWithRef(
-      `Retrieved demographics for ${uin.slice(0, 5)}: ${JSON.stringify(
-        response.data
-      )}`
+      `Retrieved demographics for ${uin.slice(0, 5)}, 
+      hashed ${hashedUin.slice(0, 5)}: ${JSON.stringify(response.data)}`
     );
     return {
       uin: "",
