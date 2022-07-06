@@ -1,9 +1,9 @@
+import axios from "axios";
 import { config } from "../../config";
-import { getItem } from "../dynamoDB";
 import { hashIC } from "../../common/hash";
 import { getLogger } from "../../common/logger";
 
-const { trace } = getLogger("src/services/vault");
+const { trace, error } = getLogger("src/services/vault");
 
 interface personalData {
   uin: string;
@@ -17,24 +17,52 @@ export const getPersonalDataFromVault = async (
   reference: string
 ): Promise<personalData | null> => {
   const traceWithRef = trace.extend(`reference:${reference}`);
-  const param: any = {
-    TableName: config.dynamoDB.residentDemographicsTable,
-    Key: {
-      uin: hashIC(uin),
-    },
-  };
-  traceWithRef(`Uin Hash : ${param.Key.uin}`);
-  const item = await getItem(param);
-  const isUinInVault = !!item;
-  traceWithRef(`Is uin in vault : ${isUinInVault}`);
-  return isUinInVault
-    ? {
-        uin: item?.uin as string,
-        dateofbirth: item?.dateofbirth as string,
-        gender: item?.gender as string,
-        principalname: item?.principalname as string,
-      }
-    : null;
+  const errorWithRef = error.extend(`reference:${reference}`);
+  try {
+    const headers = {
+      "x-api-key": `${config.apiResident.apiKey}`,
+      "Content-Type": "application/json",
+    };
+    const getDemographicsUrl = `${config.apiResident}/demographics/${hashIC(
+      uin
+    )}`;
+    const response = await axios.get(getDemographicsUrl, {
+      headers,
+    });
+    traceWithRef(
+      `Retrieved demographics for ${uin.slice(0, 5)}: ${JSON.stringify(
+        response.data
+      )}`
+    );
+    return {
+      uin: "",
+      dateofbirth: "",
+      gender: "",
+      principalname: "",
+    };
+  } catch (e) {
+    errorWithRef(`Error retrieving demographics for ${uin.slice(0, 5)}`);
+    errorWithRef(e);
+    return null;
+  }
+  // const param: any = {
+  //   TableName: config.dynamoDB.residentDemographicsTable,
+  //   Key: {
+  //     uin: hashIC(uin),
+  //   },
+  // };
+  // traceWithRef(`Uin Hash : ${param.Key.uin}`);
+  // const item = await getItem(param);
+  // const isUinInVault = !!item;
+  // traceWithRef(`Is uin in vault : ${isUinInVault}`);
+  // return isUinInVault
+  //   ? {
+  //       uin: item?.uin as string,
+  //       dateofbirth: item?.dateofbirth as string,
+  //       gender: item?.gender as string,
+  //       principalname: item?.principalname as string,
+  //     }
+  //   : null;
 };
 
 export const checkValidPatientName = (
