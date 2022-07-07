@@ -62,24 +62,50 @@ export const main: Handler = async (
           parsedFhirBundle.patient.nricFin,
           reference
         );
-        if (personalData) {
-          const isDobInVault =
-            personalData.dateofbirth === parsedFhirBundle.patient.birthDate;
-          const isGenderInVault =
-            personalData.gender ===
-            parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
-          const isNameInVault = checkValidPatientName(
-            parsedFhirBundle.patient.fullName,
-            personalData.principalname
-          );
-          traceWithRef(
-            `Vault Data Result : ${JSON.stringify({
-              isDobInVault,
-              isGenderInVault,
-              isNameInVault,
-            })}`
+        const dob = parsedFhirBundle.patient.birthDate;
+        const gender = parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
+        let isDobAndGenderInVault = false;
+
+        personalData?.vaultData.forEach((data) => {
+          if (data.dateofbirth === dob && data.gender === gender) {
+            isDobAndGenderInVault = true;
+            traceWithRef(`Dob and gender match with vault data`);
+          }
+        });
+
+        personalData?.manualData.forEach((data) => {
+          if (data.dateofbirth === dob && data.gender === gender) {
+            isDobAndGenderInVault = true;
+            traceWithRef(`Dob and gender match with notarise manual data`);
+          }
+        });
+
+        if (!isDobAndGenderInVault) {
+          throw new CodedError(
+            "VAULT_DATA_ERROR",
+            "Date of birth or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
+            `Input dob: ${dob}, input gender: ${gender}`
           );
         }
+
+        // if (personalData) {
+        //   const isDobInVault =
+        //     personalData.dateofbirth === parsedFhirBundle.patient.birthDate;
+        //   const isGenderInVault =
+        //     personalData.gender ===
+        //     parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
+        //   const isNameInVault = checkValidPatientName(
+        //     parsedFhirBundle.patient.fullName,
+        //     personalData.principalname
+        //   );
+        //   traceWithRef(
+        //     `Vault Data Result : ${JSON.stringify({
+        //       isDobInVault,
+        //       isGenderInVault,
+        //       isNameInVault,
+        //     })}`
+        //   );
+        // }
       }
     } catch (e) {
       const codedError =

@@ -4,6 +4,11 @@ import { getLogger } from "../../common/logger";
 
 const { trace, error } = getLogger("src/services/vault");
 
+interface demographicsResponse {
+  vaultData: personalData[];
+  manualData: personalData[];
+}
+
 interface personalData {
   uin: string;
   dateofbirth: string;
@@ -14,7 +19,7 @@ interface personalData {
 export const getDemographics = async (
   uin: string,
   reference: string
-): Promise<personalData | null> => {
+): Promise<demographicsResponse | null> => {
   const traceWithRef = trace.extend(`reference:${reference}`);
   const errorWithRef = error.extend(`reference:${reference}`);
   try {
@@ -31,12 +36,7 @@ export const getDemographics = async (
         response.data
       )}`
     );
-    return {
-      uin: "",
-      dateofbirth: "",
-      gender: "",
-      principalname: "",
-    };
+    return response.data;
   } catch (e) {
     errorWithRef(`Error retrieving demographics for ${uin.slice(0, 5)}`);
     errorWithRef(e);
