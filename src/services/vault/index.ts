@@ -1,6 +1,5 @@
 import axios from "axios";
 import { config } from "../../config";
-import { hashIC } from "../../common/hash";
 import { getLogger } from "../../common/logger";
 
 const { trace, error } = getLogger("src/services/vault");
@@ -23,14 +22,14 @@ export const getDemographics = async (
       "x-api-key": `${config.apiResident.apiKey}`,
       "Content-Type": "application/json",
     };
-    const hashedUin = hashIC(uin);
-    const getDemographicsUrl = `${config.apiResident.endpoint}/demographics/${hashedUin}`;
+    const getDemographicsUrl = `${config.apiResident.endpoint}/demographics/${uin}`;
     const response = await axios.get(getDemographicsUrl, {
       headers,
     });
     traceWithRef(
-      `Retrieved demographics for ${uin.slice(0, 5)}, 
-      hashed ${hashedUin.slice(0, 5)}: ${JSON.stringify(response.data)}`
+      `Retrieved demographics for ${uin.slice(0, 5)}: ${JSON.stringify(
+        response.data
+      )}`
     );
     return {
       uin: "",
