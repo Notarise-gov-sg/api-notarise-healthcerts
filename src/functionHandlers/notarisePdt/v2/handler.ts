@@ -7,7 +7,12 @@ import { sendNotification } from "../../../services/spmNotification";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
 import { getLogger } from "../../../common/logger";
-import { PDTHealthCertV2, NotarisationResult } from "../../../types";
+import {
+  PDTHealthCertV2,
+  NotarisationResult,
+  WorkflowReferenceData,
+  WorkflowContextData,
+} from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
 import { config } from "../../../config";
@@ -15,6 +20,7 @@ import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
 import { getDemographics } from "../../../services/vault";
+import { sendSlackNotification } from "src/models/sendSlackNotification";
 
 const { error, trace } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
@@ -52,6 +58,23 @@ export const main: Handler = async (
           );
     }
 
+    const dateFormatter = new Intl.DateTimeFormat("en-SG", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      timeZone: "Asia/Singapore",
+    });
+    const currentDateEpoch = Date.now();
+    const currentDateStr = dateFormatter.format(currentDateEpoch);
+    const context = {
+      reference,
+      receivedTimestamp: currentDateStr,
+    } as WorkflowContextData & WorkflowReferenceData;
+
     try {
       /* 1.1 Soft Validation with vault data */
       if (parsedFhirBundle.patient.nricFin) {
@@ -78,11 +101,14 @@ export const main: Handler = async (
         });
 
         if (!isDobAndGenderInVault) {
-          throw new CodedError(
+          const clinicName = parsedFhirBundle.observations[0].organization.al;
+          const vaultErr = new CodedError(
             "VAULT_DATA_ERROR",
             "Date of birth or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
-            `Input dob: ${dob}, input gender: ${gender}`
+            `Clinic Name: ${clinicName},Input dob: ${dob}, input gender: ${gender}`
           );
+          sendSlackNotification(vaultErr, context);
+          throw vaultErr;
         }
 
         // if (personalData) {

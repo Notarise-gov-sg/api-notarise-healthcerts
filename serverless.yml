@@ -110,6 +110,7 @@ functions:
       AUTHORIZED_ISSUERS_API_KEY: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_KEY}
       RESIDENT_API_URL: ${self:custom.${self:custom.envSource}.RESIDENT_API_URL}
       RESIDENT_API_KEY: ${self:custom.${self:custom.envSource}.RESIDENT_API_KEY}
+      SLACK_WEBHOOK_URL: ${self:custom.${self:custom.envSource}.SLACK_WEBHOOK_URL}
       OFFLINE_QR_ENABLED: ${self:custom.${self:custom.envSource}.OFFLINE_QR_ENABLED}
       GPAY_COVID_CARD_ENABLED: ${self:custom.${self:custom.envSource}.GPAY_COVID_CARD_ENABLED}
       GPAY_COVID_CARD_ISSUER: ${self:custom.${self:custom.envSource}.GPAY_COVID_CARD_ISSUER}
@@ -199,6 +200,7 @@ custom:
     AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY, ""}
     RESIDENT_API_URL: ${ssm:/serverless/api-notarise-healthcerts/RESIDENT_API_URL, ""}
     RESIDENT_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/RESIDENT_API_KEY, ""}
+    SLACK_WEBHOOK_URL: ${ssm:/serverless/SLACK_WEBHOOK_URL, ""}
     OFFLINE_QR_ENABLED: ${ssm:/serverless/OFFLINE_QR_ENABLED, ""}
     GPAY_COVID_CARD_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ENABLED, ""}
     GPAY_COVID_CARD_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER, ""}
@@ -235,6 +237,7 @@ custom:
     AUTHORIZED_ISSUERS_API_KEY: ${env:AUTHORIZED_ISSUERS_API_KEY, ""}
     RESIDENT_API_URL: ${env:RESIDENT_API_URL, ""}
     RESIDENT_API_KEY: ${env:RESIDENT_API_KEY, ""}
+    SLACK_WEBHOOK_URL: ${env:SLACK_WEBHOOK_URL, ""}
     OFFLINE_QR_ENABLED: ${env:OFFLINE_QR_ENABLED, ""}
     GPAY_COVID_CARD_ENABLED: ${env:GPAY_COVID_CARD_ENABLED, ""}
     GPAY_COVID_CARD_ISSUER: ${env:GPAY_COVID_CARD_ISSUER, ""}

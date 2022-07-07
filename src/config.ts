@@ -89,6 +89,9 @@ const generateConfig = () => ({
     process.env.AUTHORIZED_ISSUERS_MAP,
     "development"
   ),
+  slack: {
+    webhookUrl: getDefaultIfUndefined(process.env.SLACK_WEBHOOK_URL, ""),
+  },
   notification: {
     enabled: isTruthy(process.env.NOTIFICATION_ENABLED),
   },
