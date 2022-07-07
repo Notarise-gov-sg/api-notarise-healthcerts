@@ -4,16 +4,16 @@ import { getLogger } from "../../common/logger";
 
 const { trace, error } = getLogger("src/services/vault");
 
-interface demographicsResponse {
-  vaultData: personalData[];
-  manualData: personalData[];
-}
-
 interface personalData {
   uin: string;
   dateofbirth: string;
   gender: string;
   principalname: string;
+}
+
+interface demographicsResponse {
+  vaultData: personalData[];
+  manualData: personalData[];
 }
 
 export const getDemographics = async (

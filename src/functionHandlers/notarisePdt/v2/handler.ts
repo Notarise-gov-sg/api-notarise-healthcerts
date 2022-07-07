@@ -14,10 +14,7 @@ import { config } from "../../../config";
 import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
-import {
-  getDemographics,
-  checkValidPatientName,
-} from "../../../services/vault";
+import { getDemographics } from "../../../services/vault";
 
 const { error, trace } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
@@ -66,15 +63,15 @@ export const main: Handler = async (
         const gender = parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
         let isDobAndGenderInVault = false;
 
-        personalData?.vaultData.forEach((data) => {
-          if (data.dateofbirth === dob && data.gender === gender) {
+        personalData?.vaultData.forEach((vault) => {
+          if (vault.dateofbirth === dob && vault.gender === gender) {
             isDobAndGenderInVault = true;
             traceWithRef(`Dob and gender match with vault data`);
           }
         });
 
-        personalData?.manualData.forEach((data) => {
-          if (data.dateofbirth === dob && data.gender === gender) {
+        personalData?.manualData.forEach((manual) => {
+          if (manual.dateofbirth === dob && manual.gender === gender) {
             isDobAndGenderInVault = true;
             traceWithRef(`Dob and gender match with notarise manual data`);
           }
