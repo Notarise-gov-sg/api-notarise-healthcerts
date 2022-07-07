@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { serializeError } from "serialize-error";
-import { sendSlackNotification } from "src/models/sendSlackNotification";
+import { sendSlackNotification } from "../../../models/sendSlackNotification";
 import { sendNotification } from "../../../services/spmNotification";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
