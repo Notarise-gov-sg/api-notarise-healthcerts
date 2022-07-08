@@ -140,6 +140,7 @@ export const main: Handler = async (
               JSON.stringify(serializeError(e))
             );
       traceWithRef(codedError.toJSON());
+      throw e;
     }
 
     /* 2. Endorsement */
