@@ -1,8 +1,8 @@
-import { getLogger } from "src/common/logger";
-import { CodedError } from "src/common/error";
-import { WorkflowContextData } from "src/types";
-import { config } from "src/config";
 import { IncomingWebhook } from "@slack/webhook";
+import { getLogger } from "../../common/logger";
+import { CodedError } from "../../common/error";
+import { WorkflowContextData } from "../../types";
+import { config } from "../../config";
 import { payloadTemplate } from "./sendSlackNotificationTemplate";
 
 const { info, error } = getLogger("src/models/sendSlackNotification");

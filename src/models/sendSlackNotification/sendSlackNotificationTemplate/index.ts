@@ -1,6 +1,6 @@
 import { IncomingWebhookSendArguments } from "@slack/webhook";
-import { WorkflowContextData } from "src/types";
-import { CodedError } from "src/common/error";
+import { WorkflowContextData } from "../../../types";
+import { CodedError } from "../../../common/error";
 
 export const payloadTemplate = (
   codedError: CodedError,
