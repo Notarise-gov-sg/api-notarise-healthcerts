@@ -42,24 +42,6 @@ export const getDemographics = async (
     errorWithRef(e);
     return null;
   }
-  // const param: any = {
-  //   TableName: config.dynamoDB.residentDemographicsTable,
-  //   Key: {
-  //     uin: hashIC(uin),
-  //   },
-  // };
-  // traceWithRef(`Uin Hash : ${param.Key.uin}`);
-  // const item = await getItem(param);
-  // const isUinInVault = !!item;
-  // traceWithRef(`Is uin in vault : ${isUinInVault}`);
-  // return isUinInVault
-  //   ? {
-  //       uin: item?.uin as string,
-  //       dateofbirth: item?.dateofbirth as string,
-  //       gender: item?.gender as string,
-  //       principalname: item?.principalname as string,
-  //     }
-  //   : null;
 };
 
 export const checkValidPatientName = (

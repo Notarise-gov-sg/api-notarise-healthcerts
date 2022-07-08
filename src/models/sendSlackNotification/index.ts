@@ -34,6 +34,6 @@ export const sendSlackNotification = async (
       "Unable to send Slack notification",
       `${JSON.stringify(context)} - ${e instanceof Error ? e.message : e}`
     );
-    errorWithRef(codedErr.toString()); // Log without throwing again
+    errorWithRef(codedErr.toString()); // Log without throwing
   }
 };

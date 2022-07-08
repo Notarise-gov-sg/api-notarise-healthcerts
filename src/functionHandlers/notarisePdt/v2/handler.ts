@@ -76,7 +76,7 @@ export const main: Handler = async (
     } as WorkflowContextData & WorkflowReferenceData;
 
     try {
-      /* 1.1 Soft Validation with vault data */
+      /* 1.1 Validation with vault data via api-resident */
       if (parsedFhirBundle.patient.nricFin) {
         const personalData = await getDemographics(
           parsedFhirBundle.patient.nricFin,
@@ -101,34 +101,16 @@ export const main: Handler = async (
         });
 
         if (!isDobAndGenderInVault) {
-          const clinicName = parsedFhirBundle.observations[0].organization.al;
+          const clinicName =
+            parsedFhirBundle.observations[0].organization.al?.fullName;
           const vaultErr = new CodedError(
             "VAULT_DATA_ERROR",
-            "Date of birth or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
-            `Clinic Name: ${clinicName},Input dob: ${dob}, input gender: ${gender}`
+            "Date of birth and/or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
+            `Clinic Name: ${clinicName}, Input dob: ${dob}, input gender: ${gender}`
           );
           sendSlackNotification(vaultErr, context);
           throw vaultErr;
         }
-
-        // if (personalData) {
-        //   const isDobInVault =
-        //     personalData.dateofbirth === parsedFhirBundle.patient.birthDate;
-        //   const isGenderInVault =
-        //     personalData.gender ===
-        //     parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
-        //   const isNameInVault = checkValidPatientName(
-        //     parsedFhirBundle.patient.fullName,
-        //     personalData.principalname
-        //   );
-        //   traceWithRef(
-        //     `Vault Data Result : ${JSON.stringify({
-        //       isDobInVault,
-        //       isGenderInVault,
-        //       isNameInVault,
-        //     })}`
-        //   );
-        // }
       }
     } catch (e) {
       const codedError =
