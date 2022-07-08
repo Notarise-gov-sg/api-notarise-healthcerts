@@ -84,7 +84,10 @@ export const main: Handler = async (
         );
         const dob = parsedFhirBundle.patient.birthDate;
         const gender = parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
-        let isDobAndGenderInVault = false;
+        let isDobAndGenderInVault =
+          (personalData?.vaultData.length === 0 &&
+            personalData?.manualData.length === 0) ||
+          personalData === null;
 
         personalData?.vaultData.forEach((vault) => {
           if (vault.dateofbirth === dob && vault.gender === gender) {
@@ -102,7 +105,7 @@ export const main: Handler = async (
 
         if (!isDobAndGenderInVault) {
           const clinicName =
-            parsedFhirBundle.observations[0].organization.al?.fullName;
+            parsedFhirBundle.observations[0].organization.lhp.fullName;
           const vaultErr = new CodedError(
             "VAULT_DATA_ERROR",
             "Date of birth and/or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
