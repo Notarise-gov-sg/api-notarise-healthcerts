@@ -104,8 +104,9 @@ Copy .env.example into .env and replace the values needed:
 - `GPAY_COVID_CARD_ISSUER_ID`: Issuer ID
 - `GPAY_COVID_CARD_PRIVATE_KEY`: Private key for signing JWT
 - `WHITELIST_NRICS`: Comma-separated NRICs to enable features only for whitelisted users. Other feature flags will be ignored when oaDoc patient's nricfin is matched from this list.
-- `VAULT_UIN_SALT`: The value of string, which append before hashing oaDoc patient's nricfin for retrieving vault data from dynamoDB.
 - `SLACK_WEBHOOK_URL`: The url of the corresponding slack app to send notifications
+- `RESIDENT_API_URL`: To local or staging api-resident
+- `RESIDENT_API_KEY`: Api key for api-resident
 
 ## Change port
 

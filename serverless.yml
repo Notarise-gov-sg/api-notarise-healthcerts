@@ -12,7 +12,6 @@ provider:
   versionFunctions: false
   environment:
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
-    RESIDENT_DEMOGRAPHICS_TABLE: resident-demographics-${self:provider.stage}
   tracing:
     lambda: true
     apiGateway: true
@@ -77,10 +76,6 @@ provider:
         - Effect: Allow
           Action: ["sns:Publish"]
           Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:api-spm-${self:provider.stage}-spm-healthcert-topic"
-        - Effect: Allow
-          Action:
-            - dynamodb:GetItem
-          Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RESIDENT_DEMOGRAPHICS_TABLE}"
   deploymentBucket:
     name: notarise-serverless-deployment
 functions:
@@ -122,7 +117,6 @@ functions:
       HEALTH_CERT_NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_ENABLED}
       HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_TOPIC_ARN}
       WHITELIST_NRICS: ${self:custom.${self:custom.envSource}.WHITELIST_NRICS}
-      VAULT_UIN_SALT: ${self:custom.${self:custom.envSource}.VAULT_UIN_SALT}
     handler: src/functionHandlers/notarisePdt/v2/handler.handler
     events:
       - http:
@@ -215,7 +209,6 @@ custom:
     SIGNING_EU_QR_PUBLIC_KEY: ""
     SIGNING_EU_QR_PRIVATE_KEY: ""
     WHITELIST_NRICS: ""
-    VAULT_UIN_SALT: ""
   dotenv:
     INFURA_API_KEY: ${env:INFURA_API_KEY, ""}
     SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
@@ -249,7 +242,6 @@ custom:
     HEALTH_CERT_NOTIFICATION_ENABLED: ${env:HEALTH_CERT_NOTIFICATION_ENABLED, ""}
     HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${env:HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
     WHITELIST_NRICS: ${env:WHITELIST_NRICS, ""}
-    VAULT_UIN_SALT: ${env:VAULT_UIN_SALT, ""}
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:
