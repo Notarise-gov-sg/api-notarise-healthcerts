@@ -111,7 +111,7 @@ export const main: Handler = async (
             "Date of birth and/or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
             `Clinic Name: ${clinicName}, Input dob: ${dob}, input gender: ${gender}`
           );
-          sendSlackNotification(vaultErr, context);
+          await sendSlackNotification(vaultErr, context);
           throw vaultErr;
         }
       }
