@@ -3,21 +3,24 @@ import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { serializeError } from "serialize-error";
+import { sendSlackNotification } from "../../../models/sendSlackNotification";
 import { sendNotification } from "../../../services/spmNotification";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
 import { getLogger } from "../../../common/logger";
-import { PDTHealthCertV2, NotarisationResult } from "../../../types";
+import {
+  PDTHealthCertV2,
+  NotarisationResult,
+  WorkflowReferenceData,
+  WorkflowContextData,
+} from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
 import { config } from "../../../config";
 import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
-import {
-  getPersonalDataFromVault,
-  checkValidPatientName,
-} from "../../../services/vault";
+import { getDemographics } from "../../../services/vault";
 
 const { error, trace } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
@@ -55,30 +58,61 @@ export const main: Handler = async (
           );
     }
 
+    const dateFormatter = new Intl.DateTimeFormat("en-SG", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      timeZone: "Asia/Singapore",
+    });
+    const currentDateEpoch = Date.now();
+    const currentDateStr = dateFormatter.format(currentDateEpoch);
+    const context = {
+      reference,
+      receivedTimestamp: currentDateStr,
+    } as WorkflowContextData & WorkflowReferenceData;
+
     try {
-      /* 1.1 Soft Validation with vault data */
+      /* 1.1 Validation with vault data via api-resident */
       if (parsedFhirBundle.patient.nricFin) {
-        const personalData = await getPersonalDataFromVault(
+        const personalData = await getDemographics(
           parsedFhirBundle.patient.nricFin,
           reference
         );
-        if (personalData) {
-          const isDobInVault =
-            personalData.dateofbirth === parsedFhirBundle.patient.birthDate;
-          const isGenderInVault =
-            personalData.gender ===
-            parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
-          const isNameInVault = checkValidPatientName(
-            parsedFhirBundle.patient.fullName,
-            personalData.principalname
+        const dob = parsedFhirBundle.patient.birthDate;
+        const gender = parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
+        let isDobAndGenderInVault =
+          (personalData?.vaultData.length === 0 &&
+            personalData?.manualData.length === 0) ||
+          personalData === null;
+
+        personalData?.vaultData.forEach((vault) => {
+          if (vault.dateofbirth === dob && vault.gender === gender) {
+            isDobAndGenderInVault = true;
+            traceWithRef(`Dob and gender match with vault data`);
+          }
+        });
+
+        personalData?.manualData.forEach((manual) => {
+          if (manual.dateofbirth === dob && manual.gender === gender) {
+            isDobAndGenderInVault = true;
+            traceWithRef(`Dob and gender match with notarise manual data`);
+          }
+        });
+
+        if (!isDobAndGenderInVault) {
+          const clinicName =
+            parsedFhirBundle.observations[0].organization.lhp.fullName;
+          const vaultErr = new CodedError(
+            "VAULT_DATA_ERROR",
+            "Date of birth and/or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
+            `Clinic Name: ${clinicName}, Input dob: ${dob}, input gender: ${gender}`
           );
-          traceWithRef(
-            `Vault Data Result : ${JSON.stringify({
-              isDobInVault,
-              isGenderInVault,
-              isNameInVault,
-            })}`
-          );
+          await sendSlackNotification(vaultErr, context);
+          throw vaultErr;
         }
       }
     } catch (e) {
@@ -91,6 +125,7 @@ export const main: Handler = async (
               JSON.stringify(serializeError(e))
             );
       traceWithRef(codedError.toJSON());
+      throw e;
     }
 
     /* 2. Endorsement */
