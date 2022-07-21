@@ -17,6 +17,11 @@ const getAuthorizedIssuersApiConfig = () => ({
   apiKey: getDefaultIfUndefined(process.env.AUTHORIZED_ISSUERS_API_KEY, ""),
 });
 
+const getOcspResponderApiConfig = () => ({
+  endpoint: getDefaultIfUndefined(process.env.REVOCATION_OCSP, ""),
+  apiKey: getDefaultIfUndefined(process.env.REVOCATION_OCSP_API_KEY, ""),
+});
+
 // Sample keys below are not used in any environments other than tests
 const sampleSigningDidName = "Ministry of Health (Singapore)";
 const sampleSigningDnsDidLocation = "moh.gov.sg";
@@ -70,7 +75,7 @@ const generateConfig = () => ({
   isOffline: isTruthy(process.env.IS_OFFLINE),
   transientStorage: getTransientStorageConfig(),
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
-  revocationOcsp: getDefaultIfUndefined(process.env.REVOCATION_OCSP, ""),
+  revocationOcsp: getOcspResponderApiConfig(),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
   gpaySigner: getGPayCovidCardSigner(),

@@ -126,6 +126,17 @@ functions:
           path: /v2/notarise/pdt
           method: post
           private: true
+  revokePdtHealthCert:
+    provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
+    environment:
+      REVOCATION_OCSP: ${self:custom.${self:custom.envSource}.REVOCATION_OCSP}
+      DEBUG: "*,-follow-redirects"
+    handler: src/functionHandlers/revokePdtHealthCert/handler.handler
+    events:
+      - http:
+          path: /v2/notarise/revoke
+          method: post
+          private: true
 
 custom:
   serverless-offline:

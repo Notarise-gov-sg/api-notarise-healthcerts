@@ -87,3 +87,9 @@ export interface NotarisationResult {
   url: string;
   gpayCovidCardUrl?: string;
 }
+
+export interface RevocationResult {
+  success: boolean;
+  documentHash: string;
+  message: string;
+}
