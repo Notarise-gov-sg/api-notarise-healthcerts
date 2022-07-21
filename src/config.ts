@@ -77,7 +77,7 @@ const generateConfig = () => ({
   transientStorage: getTransientStorageConfig(),
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
   apiResident: getResidentApiConfig(),
-  revocationOcsp: getDefaultIfUndefined(process.env.REVOCATION_OCSP, ""),
+  revocationOcsp: getOcspResponderApiConfig(),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
   gpaySigner: getGPayCovidCardSigner(),
