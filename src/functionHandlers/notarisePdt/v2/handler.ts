@@ -3,17 +3,11 @@ import { v4 as uuid } from "uuid";
 import { getData, WrappedDocument } from "@govtechsg/open-attestation";
 import { R4 } from "@ahryman40k/ts-fhir-types";
 import { serializeError } from "serialize-error";
-import { sendSlackNotification } from "../../../models/sendSlackNotification";
 import { sendNotification } from "../../../services/spmNotification";
 import fhirHelper from "../../../models/fhir";
 import { ParsedBundle } from "../../../models/fhir/types";
 import { getLogger } from "../../../common/logger";
-import {
-  PDTHealthCertV2,
-  NotarisationResult,
-  WorkflowReferenceData,
-  WorkflowContextData,
-} from "../../../types";
+import { PDTHealthCertV2, NotarisationResult } from "../../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../../middyfy";
 import { validateV2Inputs } from "../validateInputs";
 import { config } from "../../../config";
@@ -58,22 +52,22 @@ export const main: Handler = async (
           );
     }
 
-    const dateFormatter = new Intl.DateTimeFormat("en-SG", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      timeZone: "Asia/Singapore",
-    });
-    const currentDateEpoch = Date.now();
-    const currentDateStr = dateFormatter.format(currentDateEpoch);
-    const context = {
-      reference,
-      receivedTimestamp: currentDateStr,
-    } as WorkflowContextData & WorkflowReferenceData;
+    // const dateFormatter = new Intl.DateTimeFormat("en-SG", {
+    //   weekday: "short",
+    //   day: "numeric",
+    //   month: "short",
+    //   year: "numeric",
+    //   hour: "numeric",
+    //   minute: "numeric",
+    //   second: "numeric",
+    //   timeZone: "Asia/Singapore",
+    // });
+    // const currentDateEpoch = Date.now();
+    // const currentDateStr = dateFormatter.format(currentDateEpoch);
+    // const context = {
+    //   reference,
+    //   receivedTimestamp: currentDateStr,
+    // } as WorkflowContextData & WorkflowReferenceData;
 
     try {
       /* 1.1 Validation with vault data via api-resident */
@@ -111,7 +105,7 @@ export const main: Handler = async (
             "Date of birth and/or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
             `Clinic Name: ${clinicName}, Input dob: ${dob}, input gender: ${gender}`
           );
-          await sendSlackNotification(vaultErr, context);
+          // await sendSlackNotification(vaultErr, context);
           throw vaultErr;
         }
       }
