@@ -22,6 +22,11 @@ const getOcspResponderApiConfig = () => ({
   apiKey: getDefaultIfUndefined(process.env.REVOCATION_OCSP_API_KEY, ""),
 });
 
+const getResidentApiConfig = () => ({
+  endpoint: getDefaultIfUndefined(process.env.RESIDENT_API_URL, ""),
+  apiKey: getDefaultIfUndefined(process.env.RESIDENT_API_KEY, ""),
+});
+
 // Sample keys below are not used in any environments other than tests
 const sampleSigningDidName = "Ministry of Health (Singapore)";
 const sampleSigningDnsDidLocation = "moh.gov.sg";
@@ -66,16 +71,13 @@ const getGPayCovidCardSigner = () => ({
   ),
 });
 
-const getDynamoDbConfig = () => ({
-  residentDemographicsTable: process.env.RESIDENT_DEMOGRAPHICS_TABLE as string,
-});
-
 const generateConfig = () => ({
   documentName: "HealthCert",
   isOffline: isTruthy(process.env.IS_OFFLINE),
   transientStorage: getTransientStorageConfig(),
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
-  revocationOcsp: getOcspResponderApiConfig(),
+  apiResident: getResidentApiConfig(),
+  revocationOcsp: getDefaultIfUndefined(process.env.REVOCATION_OCSP, ""),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
   gpaySigner: getGPayCovidCardSigner(),
@@ -88,6 +90,9 @@ const generateConfig = () => ({
     process.env.AUTHORIZED_ISSUERS_MAP,
     "development"
   ),
+  slack: {
+    webhookUrl: getDefaultIfUndefined(process.env.SLACK_WEBHOOK_URL, ""),
+  },
   notification: {
     enabled: isTruthy(process.env.NOTIFICATION_ENABLED),
   },
@@ -104,7 +109,6 @@ const generateConfig = () => ({
     SER: "94661-6",
     LAMP: "96986-5",
   },
-  dynamoDB: getDynamoDbConfig(),
 });
 
 export const config = generateConfig();
