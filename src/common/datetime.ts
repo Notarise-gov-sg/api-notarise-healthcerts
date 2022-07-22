@@ -3,6 +3,7 @@
 import moment from "moment-timezone";
 
 const SG_LOCALE = "en-sg";
+const ZEROES = "00";
 
 // FIXME: "en-sg" locale may not be supported in user's browser
 
@@ -52,3 +53,17 @@ export const parseDateTime = (dateString: string | undefined): string =>
         .tz(dateString, "Asia/Singapore")
         .format("M/D/YY h:mm:ss A")} GMT+08:00`
     : "";
+
+export const parseDateTimeWithoutZeroes = (dateString: string): string => {
+  // To parse Vault dob which is always in YYYY-MM-DD format
+  const dayIsZero = dateString.slice(8, 10) === ZEROES;
+  const monthIsZero = dateString.slice(5, 7) === ZEROES;
+  let result = dateString;
+
+  if (dayIsZero && monthIsZero) {
+    result = result?.slice(0, 4);
+  } else if (dayIsZero) {
+    result = result?.slice(0, 7);
+  }
+  return result;
+};
