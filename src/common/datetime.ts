@@ -3,6 +3,7 @@
 import moment from "moment-timezone";
 
 const SG_LOCALE = "en-sg";
+const ZEROES = "00";
 
 // FIXME: "en-sg" locale may not be supported in user's browser
 
@@ -52,3 +53,22 @@ export const parseDateTime = (dateString: string | undefined): string =>
         .tz(dateString, "Asia/Singapore")
         .format("M/D/YY h:mm:ss A")} GMT+08:00`
     : "";
+
+/**
+ * Returns a date string ignoring fields with only zeroes
+ * @param "2020-00-00 or 2020-02-00"
+ * @returns "2020 or 2020-20"
+ */
+export const parseDateWithoutZeroes = (dateString: string): string => {
+  // To parse Vault dob which is always in YYYY-MM-DD format
+  const dayIsZero = dateString.split("-")[2] === ZEROES;
+  const monthIsZero = dateString.split("-")[1] === ZEROES;
+  let result = dateString;
+
+  if (dayIsZero && monthIsZero) {
+    result = result?.slice(0, 4);
+  } else if (dayIsZero) {
+    result = result?.slice(0, 7);
+  }
+  return result;
+};
