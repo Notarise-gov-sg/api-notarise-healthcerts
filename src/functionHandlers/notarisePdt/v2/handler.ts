@@ -15,7 +15,7 @@ import { genGPayCovidCardUrl } from "../../../models/gpayCovidCard";
 import { notarisePdt } from "./notarisePdt";
 import { CodedError } from "../../../common/error";
 import { getDemographics } from "../../../services/vault";
-import { parseDateTimeWithoutZeroes } from "../../../common/datetime";
+import { parseDateWithoutZeroes } from "../../../common/datetime";
 
 const { error, trace } = getLogger(
   "src/functionHandlers/notarisePdt/v2/handler"
@@ -86,7 +86,7 @@ export const main: Handler = async (
 
         personalData?.vaultData.forEach((vault) => {
           if (
-            parseDateTimeWithoutZeroes(vault.dateofbirth) === dob &&
+            parseDateWithoutZeroes(vault.dateofbirth) === dob &&
             vault.gender === gender
           ) {
             isDobAndGenderInVault = true;
@@ -96,7 +96,7 @@ export const main: Handler = async (
 
         personalData?.manualData.forEach((manual) => {
           if (
-            parseDateTimeWithoutZeroes(manual.dateofbirth) === dob &&
+            parseDateWithoutZeroes(manual.dateofbirth) === dob &&
             manual.gender === gender
           ) {
             isDobAndGenderInVault = true;
