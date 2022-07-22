@@ -21,6 +21,8 @@ if (params.length < 2) {
   throw new Error("Provider api key id path required");
 }
 
+/* eslint-disable func-names */
+/* eslint-disable prefer-arrow-callback */
 const apiKeyIdsPath = params[0];
 const apiKeyIdsEntries = fse.readFileSync(apiKeyIdsPath).toString();
 const apiKeyIds: apiKeyIdEntry[] = JSON.parse(apiKeyIdsEntries);
@@ -32,7 +34,7 @@ const domains: domainEntry[] = JSON.parse(domainsEntries);
 const merged: mergedEntry[] = [];
 const domainsDict: { [key: string]: string[] } = {};
 domains.forEach((entry) => {
-  if (domainsDict[entry.name] != undefined) {
+  if (domainsDict[entry.name] !== undefined) {
     domainsDict[entry.name].push(entry.domain);
   } else {
     domainsDict[entry.name] = [entry.domain];
@@ -40,7 +42,7 @@ domains.forEach((entry) => {
 });
 
 apiKeyIds.forEach((entry) => {
-  if (domainsDict[entry.name] != undefined) {
+  if (domainsDict[entry.name] !== undefined) {
     domainsDict[entry.name].forEach((domain) => {
       merged.push({ ...entry, domain });
     });
@@ -50,7 +52,7 @@ apiKeyIds.forEach((entry) => {
 });
 
 merged.sort(function (a, b) {
-  return a.hasOwnProperty("domain") ? -1 : b.hasOwnProperty("domain") ? 1 : 0;
+  return a.domain !== undefined ? -1 : b.domain !== undefined ? 1 : 0;
 });
 
 fse.outputFileSync(
