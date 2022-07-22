@@ -54,7 +54,12 @@ export const parseDateTime = (dateString: string | undefined): string =>
         .format("M/D/YY h:mm:ss A")} GMT+08:00`
     : "";
 
-export const parseDateTimeWithoutZeroes = (dateString: string): string => {
+/**
+ * Returns a date string ignoring fields with only zeroes
+ * @param "2020-00-00 or 2020-02-00"
+ * @returns "2020 or 2020-20"
+ */
+export const parseDateWithoutZeroes = (dateString: string): string => {
   // To parse Vault dob which is always in YYYY-MM-DD format
   const dayIsZero = dateString.slice(8, 10) === ZEROES;
   const monthIsZero = dateString.slice(5, 7) === ZEROES;
