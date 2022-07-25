@@ -1,6 +1,7 @@
 [
     {
         "id": "foobar",
-        "name": "stg-notariseHealthcertKey-HelloWorld"
+        "name": "stg-notariseHealthcertKey-HelloWorld",
+        "domain": ""
     }
 ]

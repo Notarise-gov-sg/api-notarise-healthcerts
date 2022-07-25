@@ -1,10 +1,10 @@
 import axios from "axios";
 import { main } from "./handler";
-import pdtPcrNotarizedWithNricUnrapped from "../../../test/fixtures/v2/pdt_pcr_notarized_with_nric_unwrapped.json";
+import pdtPcrNotarizedWithNricUnwrapped from "../../../test/fixtures/v2/pdt_pcr_notarized_with_nric_unwrapped.json";
 import pdtPcrNotarizedWithOcspValid from "../../../test/fixtures/v2/pdt_pcr_notarized_with_ocsp_valid.json";
 import pdtPcrNotarizedWithNricWrapped from "../../../test/fixtures/v2/pdt_pcr_notarized_with_nric_wrapped.json";
 
-jest.mock("../../static/provider_apikeyid.json", () => [
+jest.mock("../../static/provider_apikeyid.merged.json", () => [
   {
     id: "foobar1",
     name: "stg-notariseHealthcertKey-donotverify",
@@ -21,7 +21,7 @@ jest.mock("../../static/provider_apikeyid.json", () => [
   },
 ]);
 
-describe("test failing cases", () => {
+describe("revokePdtHealthCert", () => {
   it("should fail if document is missing", async () => {
     const result = await main(
       {
@@ -43,7 +43,7 @@ describe("test failing cases", () => {
   it("should fail if document is unwrapped", async () => {
     const result = await main(
       {
-        body: pdtPcrNotarizedWithNricUnrapped,
+        body: pdtPcrNotarizedWithNricUnwrapped,
         headers: {},
       },
       {} as any,
@@ -168,9 +168,7 @@ describe("test failing cases", () => {
       "Unable to revoke certificate - revocation fields missing in certificate"
     );
   });
-});
 
-describe("test success cases", () => {
   it("should revoke cert when validation passes", async () => {
     jest.spyOn(axios, "post").mockResolvedValueOnce({
       data: {
