@@ -46,7 +46,7 @@ export const createUnwrappedDocument = (
     },
   ];
 
-  const issuers = [
+  const issuers: any = [
     {
       name: didSigner.name,
       id: didSigner.id,
