@@ -152,7 +152,6 @@ export const main: Handler = async (
 
     const res = await revokePdtHealthcert(reference, wrappedDocument);
 
-    console.log(res);
     return {
       statusCode: 200,
       headers: {
