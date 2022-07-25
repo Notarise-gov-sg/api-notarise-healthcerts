@@ -20,7 +20,8 @@
     "gen:input": "npx ts-node -r dotenv/config scripts/generateInputHealthCert.ts",
     "preinstall": "npx force-resolutions",
     "setup": "cross-env ./scripts/setup.sh",
-    "teardown": "cross-env docker-compose down"
+    "teardown": "cross-env docker-compose down",
+    "script:merge": "npx ts-node scripts/mergeProviderJsons.ts"
   },
   "keywords": [],
   "author": "",
@@ -49,6 +50,7 @@
     "file-loader": "^6.2.0",
     "file-type": "16.5.3",
     "force-resolutions": "^1.0.10",
+    "fs-extra": "^10.1.0",
     "he": "1.2.0",
     "http-errors": "1.8.1",
     "lodash": "^4.17.21",
@@ -73,6 +75,7 @@
     "@types/aws-lambda": "^8.10.97",
     "@types/debug": "^4.1.7",
     "@types/dotenv": "^8.2.0",
+    "@types/fs-extra": "^9.0.13",
     "@types/he": "^1.1.2",
     "@types/http-errors": "^1.8.2",
     "@types/jest": "^27.5.1",
