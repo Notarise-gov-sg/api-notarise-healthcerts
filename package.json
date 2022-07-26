@@ -9,7 +9,7 @@
     "deploy": "sls deploy",
     "depcheck": "depcheck . --ignores=\"serverless-*\"",
     "sls-config-check": "sls print --account_id PLACEHOLDER",
-    "test": "cross-env IS_OFFLINE=true jest",
+    "test": "cross-env IS_OFFLINE=true jest --silent=false --coverage --collectCoverageFrom='./src/**'",
     "test:ci": "sls offline start --exec 'npm run test && npm run test:integration && npm run test:e2e'",
     "test:watch": "npm run test -- --watch",
     "test:integration": "cross-env IS_OFFLINE=true jest --testPathPattern=test/integration",
