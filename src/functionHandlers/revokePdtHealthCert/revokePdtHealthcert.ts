@@ -27,9 +27,6 @@ export const revokePdtHealthcert = async (
     headers,
   });
 
-  // TODO: Use private key to sign the OA when sending back for revocation ??? (Am I missing something?)
-
-  /* eslint-disable no-console */
   traceWithRef(`OCSP Revocation status ${response.data.message}`);
 
   return response.data;

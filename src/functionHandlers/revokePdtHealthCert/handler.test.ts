@@ -134,24 +134,7 @@ describe("revokePdtHealthCert", () => {
       "Unable to revoke certificate - caller clinic must match provider clinic in certificate"
     );
   });
-  it("should fail if document does not have valid revocation type field", async () => {
-    const result = await main(
-      {
-        body: pdtPcrNotarizedWithNricWrapped,
-        headers: { "clinic-api-key": "foobar1" },
-      },
-      {} as any,
-      () => undefined
-    );
-
-    expect(JSON.parse(result.body)).toHaveProperty("statusCode", 400);
-    expect(JSON.parse(result.body)).toHaveProperty("type", "INVALID_DOCUMENT");
-    expect(JSON.parse(result.body)).toHaveProperty(
-      "message",
-      "Unable to revoke certificate - revocation fields missing in certificate"
-    );
-  });
-  it("should fail if document does not have valid revocation location field", async () => {
+  it("should fail if document does not have valid revocation field", async () => {
     const result = await main(
       {
         body: pdtPcrNotarizedWithNricWrapped,
