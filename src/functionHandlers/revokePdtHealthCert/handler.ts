@@ -114,6 +114,11 @@ export const main: Handler = async (
       ) as WrappedDocument<PDTHealthCertV2>
     );
 
+    /* eslint-disable no-console */
+    console.log(
+      "preEndorsedHealthCert identityProof",
+      JSON.parse(JSON.stringify(preEndorsedHealthCert.issuers[0].identityProof))
+    );
     /* Revoke cert if caller is indeed the provider of the cert  */
     const healthCertClinicDomain =
       preEndorsedHealthCert.issuers[0].identityProof?.location;
@@ -124,6 +129,9 @@ export const main: Handler = async (
         "Unable to revoke certificate - missing domain in identity proof"
       );
     }
+
+    /* eslint-disable no-console */
+    console.log("healthCertClinicDomain", healthCertClinicDomain);
     if (providerApiKey === undefined) {
       throw new CodedError(
         "MISSING_CLINIC_API_KEY",
@@ -147,7 +155,10 @@ export const main: Handler = async (
         `Unable to revoke certificate - unable to find domain`
       );
     }
-
+    /* eslint-disable no-console */
+    console.log("healthCertClinicDomain", healthCertClinicDomain);
+    /* eslint-disable no-console */
+    console.log("caller.domain", caller.domain);
     if (!healthCertClinicDomain.includes(caller.domain)) {
       throw new CodedError(
         "INVALID_PROVIDER",
