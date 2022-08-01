@@ -115,9 +115,15 @@ export const main: Handler = async (
     );
 
     /* Revoke cert if caller is indeed the provider of the cert  */
-    const healthCertClinicDomain: string =
-      preEndorsedHealthCert.issuers[0].identityProof!.location!;
+    const healthCertClinicDomain =
+      preEndorsedHealthCert.issuers[0].identityProof?.location;
 
+    if (healthCertClinicDomain === undefined) {
+      throw new CodedError(
+        "INVALID_DOCUMENT",
+        "Unable to revoke certificate - missing domain in identity proof"
+      );
+    }
     if (providerApiKey === undefined) {
       throw new CodedError(
         "MISSING_CLINIC_API_KEY",
