@@ -115,8 +115,8 @@ export const main: Handler = async (
     );
 
     /* Revoke cert if caller is indeed the provider of the cert  */
-    const healthCertClinicDomain =
-      preEndorsedHealthCert.issuers[0].identityProof?.location;
+    const healthCertClinicDomain: string =
+      preEndorsedHealthCert.issuers[0].identityProof!.location!;
 
     if (providerApiKey === undefined) {
       throw new CodedError(
@@ -142,7 +142,7 @@ export const main: Handler = async (
       );
     }
 
-    if (caller.domain !== healthCertClinicDomain) {
+    if (healthCertClinicDomain.includes(caller.domain)) {
       throw new CodedError(
         "INVALID_PROVIDER",
         `Unable to revoke certificate - caller clinic must match provider clinic in certificate`,
