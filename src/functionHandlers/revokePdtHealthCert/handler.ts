@@ -24,7 +24,7 @@ export const main: Handler = async (
 ): Promise<APIGatewayProxyResult> => {
   const reference = uuid();
   const wrappedDocument = event.body;
-  const providerApiKey = event.headers["clinic-api-key"];
+  const providerApiKey = event.requestContext.identity.apiKeyId;
   const errorWithRef = error.extend(`reference:${reference}`);
 
   try {
