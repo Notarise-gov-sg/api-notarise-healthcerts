@@ -129,6 +129,7 @@ functions:
     provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
     environment:
       REVOCATION_OCSP: ${self:custom.${self:custom.envSource}.REVOCATION_OCSP}
+      REVOCATION_OCSP_API_KEY: ${self:custom.${self:custom.envSource}.REVOCATION_OCSP_API_KEY}
       DEBUG: "*,-follow-redirects"
     handler: src/functionHandlers/revokePdtHealthCert/handler.handler
     events:
@@ -194,6 +195,7 @@ custom:
     SIGNING_DID_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_KEY, ""}
     SIGNING_DID_PRIVATE_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_PRIVATE_KEY, ""}
     REVOCATION_OCSP: ${ssm:/serverless/api-notarise-healthcerts/REVOCATION_OCSP, ""}
+    REVOCATION_OCSP_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/REVOCATION_OCSP_API_KEY, ""}
     TRANSIENT_STORAGE_URL: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_URL, ""}
     TRANSIENT_STORAGE_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_API_KEY, ""}
     NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_ENABLED, ""}
@@ -230,6 +232,7 @@ custom:
     SIGNING_DID_KEY: ${env:SIGNING_DID_KEY, ""}
     SIGNING_DID_PRIVATE_KEY: ${env:SIGNING_DID_PRIVATE_KEY, ""}
     REVOCATION_OCSP: ${env:REVOCATION_OCSP, ""}
+    REVOCATION_OCSP_API_KEY: ${env:REVOCATION_OCSP_API_KEY, ""}
     TRANSIENT_STORAGE_URL: ${env:TRANSIENT_STORAGE_URL, ""}
     TRANSIENT_STORAGE_API_KEY: ${env:TRANSIENT_STORAGE_API_KEY, ""}
     NOTIFICATION_ENABLED: ${env:NOTIFICATION_ENABLED, ""}
