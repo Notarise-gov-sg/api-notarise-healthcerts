@@ -148,7 +148,7 @@ export const main: Handler = async (
       );
     }
 
-    if (healthCertClinicDomain.includes(caller.domain)) {
+    if (!healthCertClinicDomain.includes(caller.domain)) {
       throw new CodedError(
         "INVALID_PROVIDER",
         `Unable to revoke certificate - caller clinic must match provider clinic in certificate`,

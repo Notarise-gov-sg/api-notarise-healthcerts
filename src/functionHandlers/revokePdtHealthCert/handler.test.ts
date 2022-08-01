@@ -27,6 +27,7 @@ describe("revokePdtHealthCert", () => {
       {
         body: {},
         headers: {},
+        requestContext: { identity: { apiKeyId: "" } },
       },
       {} as any,
       () => undefined
@@ -45,6 +46,7 @@ describe("revokePdtHealthCert", () => {
       {
         body: pdtPcrNotarizedWithNricUnwrapped,
         headers: {},
+        requestContext: { identity: { apiKeyId: "" } },
       },
       {} as any,
       () => undefined
@@ -63,6 +65,7 @@ describe("revokePdtHealthCert", () => {
       {
         body: pdtPcrNotarizedWithOcspValid,
         headers: {},
+        requestContext: { identity: {} },
       },
       {} as any,
       () => undefined
@@ -83,7 +86,8 @@ describe("revokePdtHealthCert", () => {
     const result = await main(
       {
         body: pdtPcrNotarizedWithOcspValid,
-        headers: { "clinic-api-key": "dummy" },
+        headers: {},
+        requestContext: { identity: { apiKeyId: "dummy" } },
       },
       {} as any,
       () => undefined
@@ -101,7 +105,8 @@ describe("revokePdtHealthCert", () => {
     const result = await main(
       {
         body: pdtPcrNotarizedWithOcspValid,
-        headers: { "clinic-api-key": "testnodomain" },
+        headers: {},
+        requestContext: { identity: { apiKeyId: "testnodomain" } },
       },
       {} as any,
       () => undefined
@@ -121,7 +126,8 @@ describe("revokePdtHealthCert", () => {
     const result = await main(
       {
         body: pdtPcrNotarizedWithOcspValid,
-        headers: { "clinic-api-key": "foobar2" },
+        headers: {},
+        requestContext: { identity: { apiKeyId: "foobar2" } },
       },
       {} as any,
       () => undefined
@@ -138,7 +144,8 @@ describe("revokePdtHealthCert", () => {
     const result = await main(
       {
         body: pdtPcrNotarizedWithNricWrapped,
-        headers: { "clinic-api-key": "foobar1" },
+        headers: {},
+        requestContext: { identity: { apiKeyId: "foobar1" } },
       },
       {} as any,
       () => undefined
@@ -165,7 +172,8 @@ describe("revokePdtHealthCert", () => {
     const result = await main(
       {
         body: pdtPcrNotarizedWithOcspValid,
-        headers: { "clinic-api-key": "foobar1" },
+        headers: {},
+        requestContext: { identity: { apiKeyId: "foobar1" } },
       },
       {} as any,
       () => undefined
