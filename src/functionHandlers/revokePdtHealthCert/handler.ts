@@ -10,7 +10,7 @@ import {
   verify as defaultVerify,
 } from "@govtechsg/oa-verify";
 import { getLogger } from "../../common/logger";
-import { PDTHealthCertV2 } from "../../types";
+import { PDTHealthCertV2, RevocationResult } from "../../types";
 import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { config } from "../../config";
 import { CodedError } from "../../common/error";
@@ -114,12 +114,7 @@ export const main: Handler = async (
       ) as WrappedDocument<PDTHealthCertV2>
     );
 
-    /* eslint-disable no-console */
-    console.log(
-      "preEndorsedHealthCert identityProof",
-      JSON.parse(JSON.stringify(preEndorsedHealthCert.issuers[0].identityProof))
-    );
-    /* Revoke cert if caller is indeed the provider of the cert  */
+    /* 4. Revoke cert if caller is indeed the provider of the cert */
     const healthCertClinicDomain =
       preEndorsedHealthCert.issuers[0].identityProof?.location;
 
@@ -127,15 +122,6 @@ export const main: Handler = async (
       throw new CodedError(
         "INVALID_DOCUMENT",
         "Unable to revoke certificate - missing domain in identity proof"
-      );
-    }
-
-    /* eslint-disable no-console */
-    console.log("healthCertClinicDomain", healthCertClinicDomain);
-    if (providerApiKey === undefined) {
-      throw new CodedError(
-        "MISSING_CLINIC_API_KEY",
-        `Unable to revoke certificate - missing clinic API key`
       );
     }
 
@@ -155,10 +141,7 @@ export const main: Handler = async (
         `Unable to revoke certificate - unable to find domain`
       );
     }
-    /* eslint-disable no-console */
-    console.log("healthCertClinicDomain", healthCertClinicDomain);
-    /* eslint-disable no-console */
-    console.log("caller.domain", caller.domain);
+
     if (!healthCertClinicDomain.includes(caller.domain)) {
       throw new CodedError(
         "INVALID_PROVIDER",
@@ -167,14 +150,24 @@ export const main: Handler = async (
       );
     }
 
-    const res = await revokePdtHealthcert(reference, wrappedDocument);
-
+    let result: RevocationResult;
+    try {
+      result = await revokePdtHealthcert(reference, wrappedDocument);
+    } catch (e) {
+      throw e instanceof CodedError
+        ? e
+        : new CodedError(
+            "REVOKE_PDT_ERROR",
+            "Unable to revoke document",
+            JSON.stringify(serializeError(e))
+          );
+    }
     return {
       statusCode: 200,
       headers: {
         "x-trace-id": reference,
       },
-      body: JSON.stringify(res),
+      body: JSON.stringify(result),
     };
   } catch (e) {
     let codedError: CodedError;

@@ -60,29 +60,7 @@ describe("revokePdtHealthCert", () => {
     );
   });
 
-  it("should fail if caller provides does not provide clinic API key", async () => {
-    const result = await main(
-      {
-        body: pdtPcrNotarizedWithOcspValid,
-        headers: {},
-        requestContext: { identity: {} },
-      },
-      {} as any,
-      () => undefined
-    );
-
-    expect(JSON.parse(result.body)).toHaveProperty("statusCode", 400);
-    expect(JSON.parse(result.body)).toHaveProperty(
-      "type",
-      "MISSING_CLINIC_API_KEY"
-    );
-    expect(JSON.parse(result.body)).toHaveProperty(
-      "message",
-      "Unable to revoke certificate - missing clinic API key"
-    );
-  });
-
-  it("should fail if caller provides invalid clinic API key", async () => {
+  it("should fail if caller provides invalid API key", async () => {
     const result = await main(
       {
         body: pdtPcrNotarizedWithOcspValid,
@@ -164,7 +142,7 @@ describe("revokePdtHealthCert", () => {
       data: {
         success: true,
         documentHash:
-          "02040268f6f77bbc8d86797b49fc8193d827825644b715d68a37ac5deb2ff05b",
+          "0x02040268f6f77bbc8d86797b49fc8193d827825644b715d68a37ac5deb2ff05b",
         message: "documentHash inserted into revocation table",
       },
     });
@@ -183,7 +161,7 @@ describe("revokePdtHealthCert", () => {
       JSON.stringify({
         success: true,
         documentHash:
-          "02040268f6f77bbc8d86797b49fc8193d827825644b715d68a37ac5deb2ff05b",
+          "0x02040268f6f77bbc8d86797b49fc8193d827825644b715d68a37ac5deb2ff05b",
         message: "documentHash inserted into revocation table",
       })
     );
