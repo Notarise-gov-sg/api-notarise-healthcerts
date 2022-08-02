@@ -1,8 +1,9 @@
 import axios from "axios";
+import { verify, isValid } from "@govtechsg/oa-verify";
 import { main } from "./handler";
-import pdtPcrNotarizedWithNricUnwrapped from "../../../test/fixtures/v2/pdt_pcr_notarized_with_nric_unwrapped.json";
 import pdtPcrNotarizedWithOcspValid from "../../../test/fixtures/v2/pdt_pcr_notarized_with_ocsp_valid.json";
 import pdtPcrNotarizedWithNricWrapped from "../../../test/fixtures/v2/pdt_pcr_notarized_with_nric_wrapped.json";
+import { isAuthorizedIssuer } from "../notarisePdt/authorizedIssuers";
 
 jest.mock("../../static/provider_apikeyid.merged.json", () => [
   {
@@ -21,8 +22,99 @@ jest.mock("../../static/provider_apikeyid.merged.json", () => [
   },
 ]);
 
+jest.mock("@govtechsg/oa-verify");
+
+const mockVerify = verify as jest.Mock;
+const mockIsValid = isValid as jest.Mock;
+
+jest.mock("../notarisePdt/authorizedIssuers");
+const mockIsAuthorizedIssuer = isAuthorizedIssuer as jest.Mock;
+
+const validFragments = [
+  {
+    type: "DOCUMENT_INTEGRITY",
+    name: "OpenAttestationHash",
+    data: true,
+    status: "VALID",
+  },
+  {
+    status: "SKIPPED",
+    type: "DOCUMENT_STATUS",
+    name: "OpenAttestationEthereumTokenRegistryStatus",
+    reason: {
+      code: 4,
+      codeString: "SKIPPED",
+      message:
+        'Document issuers doesn\'t have "tokenRegistry" property or TOKEN_REGISTRY method',
+    },
+  },
+  {
+    status: "SKIPPED",
+    type: "DOCUMENT_STATUS",
+    name: "OpenAttestationEthereumDocumentStoreStatus",
+    reason: {
+      code: 4,
+      codeString: "SKIPPED",
+      message:
+        'Document issuers doesn\'t have "documentStore" or "certificateStore" property or DOCUMENT_STORE method',
+    },
+  },
+  {
+    status: "SKIPPED",
+    type: "ISSUER_IDENTITY",
+    name: "OpenAttestationDnsTxt",
+    reason: {
+      code: 2,
+      codeString: "SKIPPED",
+      message:
+        'Document issuers doesn\'t have "documentStore" / "tokenRegistry" property or doesn\'t use DNS-TXT type',
+    },
+  },
+  {
+    name: "OpenAttestationDnsDid",
+    type: "ISSUER_IDENTITY",
+    data: [
+      {
+        location: "donotverify.testing.verify.gov.sg",
+        key: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830#controller",
+        status: "VALID",
+      },
+    ],
+    status: "VALID",
+  },
+  {
+    name: "OpenAttestationDidSignedDocumentStatus",
+    type: "DOCUMENT_STATUS",
+    data: {
+      issuedOnAll: true,
+      revokedOnAny: false,
+      details: {
+        issuance: [
+          {
+            issued: true,
+            did: "did:ethr:0xE39479928Cc4EfFE50774488780B9f616bd4B830",
+          },
+        ],
+      },
+    },
+    status: "VALID",
+  },
+];
+
+const whenFragmentsAreValid = () => {
+  mockVerify.mockResolvedValue(validFragments);
+  mockIsValid.mockReturnValue(true);
+  mockIsAuthorizedIssuer.mockResolvedValue(true);
+};
+
 describe("revokePdtHealthCert", () => {
-  it("should fail if document is missing", async () => {
+  beforeEach(() => {
+    mockVerify.mockReset();
+    mockIsValid.mockReset();
+    mockIsAuthorizedIssuer.mockReset();
+  });
+
+  it("should fail if document fails verify", async () => {
     const result = await main(
       {
         body: {},
@@ -35,32 +127,14 @@ describe("revokePdtHealthCert", () => {
 
     expect(JSON.parse(result.body)).toHaveProperty("statusCode", 400);
     expect(JSON.parse(result.body)).toHaveProperty("type", "INVALID_DOCUMENT");
-    expect(JSON.parse(result.body)).toHaveProperty(
-      "message",
-      'Unable to validate document as document is invalid: [{"status":"SKIPPED","type":"DOCUMENT_INTEGRITY","name":"OpenAttestationHash","reason":{"code":2,"codeString":"SKIPPED","message":"Document does not have merkle root, target hash or data."}},{"status":"SKIPPED","type":"DOCUMENT_STATUS","name":"OpenAttestationEthereumTokenRegistryStatus","reason":{"code":4,"codeString":"SKIPPED","message":"Document issuers doesn\'t have \\"tokenRegistry\\" property or TOKEN_REGISTRY method"}},{"status":"SKIPPED","type":"DOCUMENT_STATUS","name":"OpenAttestationEthereumDocumentStoreStatus","reason":{"code":4,"codeString":"SKIPPED","message":"Document issuers doesn\'t have \\"documentStore\\" or \\"certificateStore\\" property or DOCUMENT_STORE method"}},{"status":"SKIPPED","type":"DOCUMENT_STATUS","name":"OpenAttestationDidSignedDocumentStatus","reason":{"code":0,"codeString":"SKIPPED","message":"Document was not signed by DID directly"}},{"status":"SKIPPED","type":"ISSUER_IDENTITY","name":"OpenAttestationDnsTxtIdentityProof","reason":{"code":2,"codeString":"SKIPPED","message":"Document issuers doesn\'t have \\"documentStore\\" / \\"tokenRegistry\\" property or doesn\'t use DNS-TXT type"}},{"status":"SKIPPED","type":"ISSUER_IDENTITY","name":"OpenAttestationDnsDidIdentityProof","reason":{"code":0,"codeString":"SKIPPED","message":"Document was not issued using DNS-DID"}}]'
-    );
-  });
-
-  it("should fail if document is unwrapped", async () => {
-    const result = await main(
-      {
-        body: pdtPcrNotarizedWithNricUnwrapped,
-        headers: {},
-        requestContext: { identity: { apiKeyId: "" } },
-      },
-      {} as any,
-      () => undefined
-    );
-
-    expect(JSON.parse(result.body)).toHaveProperty("statusCode", 400);
-    expect(JSON.parse(result.body)).toHaveProperty("type", "INVALID_DOCUMENT");
-    expect(JSON.parse(result.body)).toHaveProperty(
-      "message",
-      'Unable to validate document as document is invalid: [{"status":"SKIPPED","type":"DOCUMENT_INTEGRITY","name":"OpenAttestationHash","reason":{"code":2,"codeString":"SKIPPED","message":"Document does not have merkle root, target hash or data."}},{"status":"SKIPPED","type":"DOCUMENT_STATUS","name":"OpenAttestationEthereumTokenRegistryStatus","reason":{"code":4,"codeString":"SKIPPED","message":"Document issuers doesn\'t have \\"tokenRegistry\\" property or TOKEN_REGISTRY method"}},{"status":"SKIPPED","type":"DOCUMENT_STATUS","name":"OpenAttestationEthereumDocumentStoreStatus","reason":{"code":4,"codeString":"SKIPPED","message":"Document issuers doesn\'t have \\"documentStore\\" or \\"certificateStore\\" property or DOCUMENT_STORE method"}},{"status":"SKIPPED","type":"DOCUMENT_STATUS","name":"OpenAttestationDidSignedDocumentStatus","reason":{"code":0,"codeString":"SKIPPED","message":"Document was not signed by DID directly"}},{"status":"SKIPPED","type":"ISSUER_IDENTITY","name":"OpenAttestationDnsTxtIdentityProof","reason":{"code":2,"codeString":"SKIPPED","message":"Document issuers doesn\'t have \\"documentStore\\" / \\"tokenRegistry\\" property or doesn\'t use DNS-TXT type"}},{"status":"SKIPPED","type":"ISSUER_IDENTITY","name":"OpenAttestationDnsDidIdentityProof","reason":{"code":0,"codeString":"SKIPPED","message":"Document was not issued using DNS-DID"}}]'
+    expect(result.body).toMatch(
+      /(Unable to validate document as document is invalid:)/i
     );
   });
 
   it("should fail if caller provides invalid API key", async () => {
+    whenFragmentsAreValid();
+
     const result = await main(
       {
         body: pdtPcrNotarizedWithOcspValid,
@@ -80,6 +154,8 @@ describe("revokePdtHealthCert", () => {
   });
 
   it("should fail if caller provides valid clinic API key but does not have a mapped domain", async () => {
+    whenFragmentsAreValid();
+
     const result = await main(
       {
         body: pdtPcrNotarizedWithOcspValid,
@@ -100,7 +176,10 @@ describe("revokePdtHealthCert", () => {
       "Unable to revoke certificate - unable to find domain"
     );
   });
+
   it("should fail if caller domain does not match pre-endorsed healthcert's domain", async () => {
+    whenFragmentsAreValid();
+
     const result = await main(
       {
         body: pdtPcrNotarizedWithOcspValid,
@@ -118,7 +197,10 @@ describe("revokePdtHealthCert", () => {
       "Unable to revoke certificate - caller clinic must match provider clinic in certificate"
     );
   });
+
   it("should fail if document does not have valid revocation field", async () => {
+    whenFragmentsAreValid();
+
     const result = await main(
       {
         body: pdtPcrNotarizedWithNricWrapped,
@@ -138,6 +220,8 @@ describe("revokePdtHealthCert", () => {
   });
 
   it("should revoke cert when validation passes", async () => {
+    whenFragmentsAreValid();
+
     jest.spyOn(axios, "post").mockResolvedValueOnce({
       data: {
         success: true,

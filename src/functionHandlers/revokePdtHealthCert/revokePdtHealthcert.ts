@@ -21,7 +21,7 @@ export const revokePdtHealthcert = async (
   };
   const body = {
     documentHash: `0x${certificate.signature.targetHash}`,
-    reasonCode: reasonCode,
+    reasonCode,
   };
 
   const response = await axios.post(config.revocationOcsp.endpoint, body, {
