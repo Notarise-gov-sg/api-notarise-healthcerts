@@ -1,7 +1,7 @@
 [
-    {
-        "id": "foobar",
-        "name": "stg-notariseHealthcertKey-HelloWorld",
-        "domain": ""
-    }
+  {
+    "id": "this file is used as a placeholder",
+    "name": "it is not used like this",
+    "domain": "do not use this file as a reference in any way"
+  }
 ]

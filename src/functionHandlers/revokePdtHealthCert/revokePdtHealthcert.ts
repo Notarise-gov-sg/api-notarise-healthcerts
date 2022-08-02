@@ -10,7 +10,8 @@ const { trace } = getLogger(
 
 export const revokePdtHealthcert = async (
   reference: string,
-  certificate: WrappedDocument<PDTHealthCertV2>
+  certificate: WrappedDocument<PDTHealthCertV2>,
+  reasonCode = 3
 ): Promise<RevocationResult> => {
   const traceWithRef = trace.extend(`reference:${reference}`);
 
@@ -20,7 +21,7 @@ export const revokePdtHealthcert = async (
   };
   const body = {
     documentHash: `0x${certificate.signature.targetHash}`,
-    reasonCode: 3,
+    reasonCode: reasonCode,
   };
 
   const response = await axios.post(config.revocationOcsp.endpoint, body, {
