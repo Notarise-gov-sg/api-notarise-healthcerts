@@ -19,7 +19,7 @@ export const revokePdtHealthcert = async (
     "Content-Type": "application/json",
   };
   const body = {
-    documentHash: certificate.signature.targetHash,
+    documentHash: `0x${certificate.signature.targetHash}`,
     reasonCode: 3,
   };
 
