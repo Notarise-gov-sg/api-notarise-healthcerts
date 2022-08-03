@@ -73,6 +73,18 @@ curl -i -X POST \
 npm run invoke-local:notarisePdt
 ```
 
+To revoke a HealthCert in local environment, run the command in a separate terminal:
+
+```sh
+curl -i -X POST \
+  -H 'content-type: application/json' \
+  -H 'x-api-key: <api key>' \
+  -d '@example_notarized_healthcert_wrapped.oa' \
+  'http://localhost:4000/dev/v2/notarise/revoke'
+```
+
+> To check if your HealthCert is revoked on the staging or production OCSP Responder, go to [dev.verify.gov.sg](dev.verify.gov.sg) (for staging OCSP) or [verify.gov.sg](verify.gov.sg) (for production OCSP) to verify. The verifier should fail and show that the document has not been issued.
+
 To run tests:
 
 ```sh
