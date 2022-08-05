@@ -109,6 +109,11 @@ const generateConfig = () => ({
     SER: "94661-6",
     LAMP: "96986-5",
   },
+  // Revocation reasonCodes continues from OCSP responder `reasonCode`
+  hcProviderReasonCodes: {
+    11: "Wrong data input",
+    12: "Requested by MOP",
+  },
 });
 
 export const config = generateConfig();

@@ -11,21 +11,25 @@ import {
 } from "@govtechsg/oa-verify";
 import { getLogger } from "../../common/logger";
 import { PDTHealthCertV2, RevocationResult } from "../../types";
-import { middyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
+import { revokeMiddyfy, ValidatedAPIGatewayProxyEvent } from "../middyfy";
 import { config } from "../../config";
 import { CodedError } from "../../common/error";
 import { revokePdtHealthcert } from "./revokePdtHealthcert";
 import { getProvider } from "./apiKeyMapping";
 
-const { error } = getLogger("src/functionHandlers/revokePdtHealthcert/handler");
+const { error, trace } = getLogger(
+  "src/functionHandlers/revokePdtHealthcert/handler"
+);
 
 export const main: Handler = async (
-  event: ValidatedAPIGatewayProxyEvent<WrappedDocument<PDTHealthCertV2>>
+  event: ValidatedAPIGatewayProxyEvent<any>
 ): Promise<APIGatewayProxyResult> => {
   const reference = uuid();
-  const wrappedDocument = event.body;
+  const hcReasonCode: number = event.body.reasonCode;
+  const wrappedDocument: WrappedDocument<PDTHealthCertV2> = event.body.data;
   const providerApiKey = event.requestContext.identity.apiKeyId;
   const errorWithRef = error.extend(`reference:${reference}`);
+  const traceWithRef = trace.extend(`reference:${reference}`);
 
   try {
     try {
@@ -80,7 +84,7 @@ export const main: Handler = async (
     }
 
     /* 2. Ensure document has revocation.type and revocation.location */
-    const data: PDTHealthCertV2 = getData(wrappedDocument);
+    const data = getData(wrappedDocument);
     if (
       data.issuers[0].revocation?.type === undefined ||
       data.issuers[0].revocation?.location === undefined
@@ -162,6 +166,26 @@ export const main: Handler = async (
             JSON.stringify(serializeError(e))
           );
     }
+
+    // Log healthcert reason and revocation of cert
+    if (hcReasonCode !== undefined) {
+      const hcReason =
+        config.hcProviderReasonCodes[
+          hcReasonCode as keyof typeof config.hcProviderReasonCodes
+        ];
+
+      if (hcReason === undefined) {
+        throw new CodedError(
+          "INVALID_REVOCATION_REASON_CODE",
+          "Unable to revoke document - invalid reason code"
+        );
+      }
+
+      traceWithRef(
+        `certificate ${wrappedDocument.signature} revoked success ${hcReason}`
+      );
+    }
+
     return {
       statusCode: 200,
       headers: {
@@ -186,4 +210,4 @@ export const main: Handler = async (
   }
 };
 
-export const handler = middyfy(main);
+export const handler = revokeMiddyfy(main);

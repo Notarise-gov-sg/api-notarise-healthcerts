@@ -137,7 +137,7 @@ describe("revokePdtHealthCert", () => {
 
     const result = await main(
       {
-        body: pdtPcrNotarizedWithOcspValid,
+        body: { data: pdtPcrNotarizedWithOcspValid },
         headers: {},
         requestContext: { identity: { apiKeyId: "dummy" } },
       },
@@ -158,7 +158,7 @@ describe("revokePdtHealthCert", () => {
 
     const result = await main(
       {
-        body: pdtPcrNotarizedWithOcspValid,
+        body: { data: pdtPcrNotarizedWithOcspValid },
         headers: {},
         requestContext: { identity: { apiKeyId: "testnodomain" } },
       },
@@ -182,7 +182,7 @@ describe("revokePdtHealthCert", () => {
 
     const result = await main(
       {
-        body: pdtPcrNotarizedWithOcspValid,
+        body: { data: pdtPcrNotarizedWithOcspValid },
         headers: {},
         requestContext: { identity: { apiKeyId: "foobar2" } },
       },
@@ -203,7 +203,7 @@ describe("revokePdtHealthCert", () => {
 
     const result = await main(
       {
-        body: pdtPcrNotarizedWithNricWrapped,
+        body: { data: pdtPcrNotarizedWithNricWrapped },
         headers: {},
         requestContext: { identity: { apiKeyId: "foobar1" } },
       },
@@ -216,6 +216,71 @@ describe("revokePdtHealthCert", () => {
     expect(JSON.parse(result.body)).toHaveProperty(
       "message",
       "Unable to revoke certificate - revocation fields missing in certificate"
+    );
+  });
+
+  it("should fail if healthcert provider reason code is invalid", async () => {
+    whenFragmentsAreValid();
+
+    jest.spyOn(axios, "post").mockResolvedValueOnce({
+      data: {
+        success: true,
+        documentHash:
+          "0x02040268f6f77bbc8d86797b49fc8193d827825644b715d68a37ac5deb2ff05b",
+        message: "documentHash inserted into revocation table",
+      },
+    });
+
+    const result = await main(
+      {
+        body: { reasonCode: 1, data: pdtPcrNotarizedWithOcspValid },
+        headers: {},
+        requestContext: { identity: { apiKeyId: "foobar1" } },
+      },
+      {} as any,
+      () => undefined
+    );
+
+    expect(JSON.parse(result.body)).toHaveProperty("statusCode", 400);
+    expect(JSON.parse(result.body)).toHaveProperty(
+      "type",
+      "INVALID_REVOCATION_REASON_CODE"
+    );
+    expect(JSON.parse(result.body)).toHaveProperty(
+      "message",
+      "Unable to revoke document - invalid reason code"
+    );
+  });
+
+  it("should not throw when healthcert provider reason code is valid", async () => {
+    whenFragmentsAreValid();
+
+    jest.spyOn(axios, "post").mockResolvedValueOnce({
+      data: {
+        success: true,
+        documentHash:
+          "0x02040268f6f77bbc8d86797b49fc8193d827825644b715d68a37ac5deb2ff05b",
+        message: "documentHash inserted into revocation table",
+      },
+    });
+
+    const result = await main(
+      {
+        body: { reasonCode: 11, data: pdtPcrNotarizedWithOcspValid },
+        headers: {},
+        requestContext: { identity: { apiKeyId: "foobar1" } },
+      },
+      {} as any,
+      () => undefined
+    );
+
+    expect(JSON.parse(JSON.stringify(result.body))).toBe(
+      JSON.stringify({
+        success: true,
+        documentHash:
+          "0x02040268f6f77bbc8d86797b49fc8193d827825644b715d68a37ac5deb2ff05b",
+        message: "documentHash inserted into revocation table",
+      })
     );
   });
 
@@ -233,7 +298,7 @@ describe("revokePdtHealthCert", () => {
 
     const result = await main(
       {
-        body: pdtPcrNotarizedWithOcspValid,
+        body: { data: pdtPcrNotarizedWithOcspValid },
         headers: {},
         requestContext: { identity: { apiKeyId: "foobar1" } },
       },

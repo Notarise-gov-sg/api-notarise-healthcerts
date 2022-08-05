@@ -12,6 +12,7 @@ export enum ErrorType {
   UNRECOGNISED_CLINIC = 400,
   INVALID_PROVIDER = 400,
   INVALID_API_KEY = 400,
+  INVALID_REVOCATION_REASON_CODE = 400,
 
   // 5xx internal server error
   NOTARISE_PDT_ERROR = 500,
