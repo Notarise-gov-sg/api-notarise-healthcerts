@@ -11,7 +11,7 @@ const { trace } = getLogger(
 export const revokePdtHealthcert = async (
   reference: string,
   certificate: WrappedDocument<PDTHealthCertV2>,
-  reasonCode = 3
+  reasonCode = 0
 ): Promise<RevocationResult> => {
   const traceWithRef = trace.extend(`reference:${reference}`);
 
