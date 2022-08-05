@@ -99,7 +99,7 @@
     "prettier": "^2.6.2",
     "raw-loader": "^4.0.2",
     "serverless-attach-permission-boundary": "^0.1.0",
-    "serverless-domain-manager": "^5.8.0",
+    "serverless-domain-manager": "^6.0.4",
     "serverless-offline": "^8.8.0",
     "serverless-offline-ssm": "^6.2.0",
     "serverless-s3-local": "^0.6.22",
