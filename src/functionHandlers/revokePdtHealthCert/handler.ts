@@ -182,7 +182,7 @@ export const main: Handler = async (
       }
 
       traceWithRef(
-        `certificate ${wrappedDocument.signature} revoked success ${hcReason}`
+        `certificate ${wrappedDocument.signature.targetHash} revoked success ${hcReason}`
       );
     }
 
