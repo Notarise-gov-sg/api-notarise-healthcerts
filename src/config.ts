@@ -111,8 +111,8 @@ const generateConfig = () => ({
   },
   // Revocation reasonCodes continues from OCSP responder `reasonCode`
   hcProviderReasonCodes: {
-    11: "Wrong data input",
-    12: "Requested by MOP",
+    101: "Wrong data input",
+    102: "Requested by MOP",
   },
 });
 

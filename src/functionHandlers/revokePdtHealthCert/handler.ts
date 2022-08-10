@@ -25,7 +25,7 @@ export const main: Handler = async (
   event: ValidatedAPIGatewayProxyEvent<any>
 ): Promise<APIGatewayProxyResult> => {
   const reference = uuid();
-  const hcReasonCode: number = event.body.reasonCode;
+  const { hcReasonCode } = event.body;
   const wrappedDocument: WrappedDocument<PDTHealthCertV2> = event.body.data;
   const providerApiKey = event.requestContext.identity.apiKeyId;
   const errorWithRef = error.extend(`reference:${reference}`);
