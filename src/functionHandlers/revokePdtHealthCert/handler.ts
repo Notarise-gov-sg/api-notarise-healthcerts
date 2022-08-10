@@ -154,6 +154,22 @@ export const main: Handler = async (
       );
     }
 
+    // Check for invalid hcReasonCode if given
+    let hcReason;
+    if (hcReasonCode !== undefined) {
+      hcReason =
+        config.hcProviderReasonCodes[
+          hcReasonCode as keyof typeof config.hcProviderReasonCodes
+        ];
+
+      if (hcReason === undefined) {
+        throw new CodedError(
+          "INVALID_REVOCATION_REASON_CODE",
+          "Unable to revoke document - invalid reason code"
+        );
+      }
+    }
+
     let result: RevocationResult;
     try {
       result = await revokePdtHealthcert(reference, wrappedDocument);
@@ -167,20 +183,8 @@ export const main: Handler = async (
           );
     }
 
-    // Log healthcert reason and revocation of cert
-    if (hcReasonCode !== undefined) {
-      const hcReason =
-        config.hcProviderReasonCodes[
-          hcReasonCode as keyof typeof config.hcProviderReasonCodes
-        ];
-
-      if (hcReason === undefined) {
-        throw new CodedError(
-          "INVALID_REVOCATION_REASON_CODE",
-          "Unable to revoke document - invalid reason code"
-        );
-      }
-
+    // Log if hcReasonCode was provided and revocation is successful
+    if (hcReason !== undefined) {
       traceWithRef(
         `certificate ${wrappedDocument.signature.targetHash} revoked success ${hcReason}`
       );
