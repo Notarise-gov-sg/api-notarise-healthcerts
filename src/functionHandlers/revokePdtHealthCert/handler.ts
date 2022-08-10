@@ -186,7 +186,7 @@ export const main: Handler = async (
     // Log if hcReasonCode was provided and revocation is successful
     if (hcReason !== undefined) {
       traceWithRef(
-        `certificate ${wrappedDocument.signature.targetHash} revoked success ${hcReason}`
+        `certificate ${wrappedDocument.signature.targetHash} revoked successfully with reason - "${hcReason}"`
       );
     }
 
