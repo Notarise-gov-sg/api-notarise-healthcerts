@@ -14,7 +14,7 @@ HealthCert collaborators may refer to the documentation [here](https://github.co
 curl -i -X POST \
   -H 'content-type: application/json' \
   -H 'x-api-key: <api key>' \
-  -d '@wrapped_healthcert.oa' \
+  -d '@wrapped_signed_healthcert.oa' \
   'https://<domain>/production/v2/notarise/pdt'
 ```
 
