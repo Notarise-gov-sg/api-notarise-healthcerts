@@ -93,10 +93,10 @@ To revoke a HealthCert in local environment, run the command in a separate termi
 
    `hcReasonCode` is an <b>optional</b> parameter for healthcert providers to input the reason for revocation. Refer to the table below for the `hcReasonCode` values used when revoking healthcerts
 
-   | ReasonCode | Reason             |
-   | ---------- | ------------------ |
-   | 101        | 'Wrong data input' |
-   | 102        | 'Requested by MOP' |
+   | hcReasonCode | Reason             |
+   | ------------ | ------------------ |
+   | 101          | 'Wrong data input' |
+   | 102          | 'Requested by MOP' |
 
    ```sh
    curl -i -X POST \
