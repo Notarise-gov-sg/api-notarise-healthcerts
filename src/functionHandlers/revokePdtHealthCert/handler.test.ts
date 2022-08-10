@@ -233,7 +233,7 @@ describe("revokePdtHealthCert", () => {
 
     const result = await main(
       {
-        body: { reasonCode: 1, data: pdtPcrNotarizedWithOcspValid },
+        body: { hcReasonCode: 1, data: pdtPcrNotarizedWithOcspValid },
         headers: {},
         requestContext: { identity: { apiKeyId: "foobar1" } },
       },
@@ -266,7 +266,7 @@ describe("revokePdtHealthCert", () => {
 
     const result = await main(
       {
-        body: { reasonCode: 11, data: pdtPcrNotarizedWithOcspValid },
+        body: { hcReasonCode: 101, data: pdtPcrNotarizedWithOcspValid },
         headers: {},
         requestContext: { identity: { apiKeyId: "foobar1" } },
       },
