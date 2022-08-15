@@ -1,6 +1,5 @@
 service: api-notarise-healthcerts
 configValidationMode: error
-
 provider:
   name: aws
   runtime: nodejs14.x
@@ -79,6 +78,14 @@ provider:
           Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:api-spm-${self:provider.stage}-spm-healthcert-topic"
   deploymentBucket:
     name: notarise-serverless-deployment
+  logs:
+    restApi:
+      accessLogging: true
+      executionLogging: true
+      fullExecutionData: false
+      roleManagedExternally: true
+      level: INFO
+  deploymentMethod: direct
 functions:
   notarisePdtV2:
     provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
@@ -124,7 +131,6 @@ functions:
           path: /v2/notarise/pdt
           method: post
           private: true
-
 custom:
   serverless-offline:
     lambdaPort: 4002
@@ -277,11 +283,13 @@ custom:
           EvaluationPeriods: 10
           Statistic: Average
           ExtendedStatistic: null
-
+  serverlessTerminationProtection:
+    stages:
+      - production
+      - stg
 # breaking update to serverless>=2.26.0 to use .env files
 # https://www.serverless.com/framework/docs/environment-variables/
 useDotenv: true
-
 plugins:
   - serverless-slic-watch-plugin
   - serverless-webpack
@@ -293,3 +301,4 @@ plugins:
   - "@govtechsg/serverless-selective-functions"
   - serverless-vpc-discovery
   - serverless-offline
+  - serverless-stack-termination-protection
