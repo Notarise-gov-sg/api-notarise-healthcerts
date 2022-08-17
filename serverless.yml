@@ -132,6 +132,9 @@ functions:
           method: post
           private: true
 custom:
+  associateWaf:
+    name: ${env:WAF_NAME, ''}
+    version: V2
   serverless-offline:
     lambdaPort: 4002
     httpPort: 4000
@@ -302,3 +305,4 @@ plugins:
   - serverless-vpc-discovery
   - serverless-offline
   - serverless-stack-termination-protection
+  - serverless-associate-waf
