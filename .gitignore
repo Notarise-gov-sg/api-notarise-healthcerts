@@ -108,3 +108,4 @@ dist
 
 # macOS generated file 
 .DS_Store
+tsconfig.tmp.json
