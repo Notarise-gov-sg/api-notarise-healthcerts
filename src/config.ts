@@ -17,6 +17,11 @@ const getAuthorizedIssuersApiConfig = () => ({
   apiKey: getDefaultIfUndefined(process.env.AUTHORIZED_ISSUERS_API_KEY, ""),
 });
 
+const getOcspResponderApiConfig = () => ({
+  endpoint: getDefaultIfUndefined(process.env.REVOCATION_OCSP, ""),
+  apiKey: getDefaultIfUndefined(process.env.REVOCATION_OCSP_API_KEY, ""),
+});
+
 const getResidentApiConfig = () => ({
   endpoint: getDefaultIfUndefined(process.env.RESIDENT_API_URL, ""),
   apiKey: getDefaultIfUndefined(process.env.RESIDENT_API_KEY, ""),
@@ -72,7 +77,7 @@ const generateConfig = () => ({
   transientStorage: getTransientStorageConfig(),
   authorizedIssuers: getAuthorizedIssuersApiConfig(),
   apiResident: getResidentApiConfig(),
-  revocationOcsp: getDefaultIfUndefined(process.env.REVOCATION_OCSP, ""),
+  revocationOcsp: getOcspResponderApiConfig(),
   didSigner: getDidSigner(),
   euSigner: getEuSigner(),
   gpaySigner: getGPayCovidCardSigner(),
@@ -103,6 +108,10 @@ const generateConfig = () => ({
     OLD_PCR: "94531-1",
     SER: "94661-6",
     LAMP: "96986-5",
+  },
+  hcProviderReasonCodes: {
+    101: "Wrong data input",
+    102: "Requested by MOP",
   },
 });
 

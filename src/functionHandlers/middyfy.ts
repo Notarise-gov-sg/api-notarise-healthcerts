@@ -15,6 +15,9 @@ export const middyfy = (handler: Handler) =>
     httpErrorHandler(),
   ]);
 
+export const revokeMiddyfy = (handler: Handler) =>
+  middy(handler).use([withSsm, jsonBodyParser(), httpErrorHandler()]);
+
 export interface ValidatedAPIGatewayProxyEvent<T = string>
   extends Omit<APIGatewayProxyEvent, "body"> {
   body: T;

@@ -50,10 +50,10 @@ export const createUnwrappedDocument = (
     {
       name: didSigner.name,
       id: didSigner.id,
-      revocation: revocationOcsp
+      revocation: revocationOcsp.endpoint
         ? {
             type: v2.RevocationType.OcspResponder,
-            location: revocationOcsp,
+            location: revocationOcsp.endpoint,
           }
         : {
             type: v2.RevocationType.None,

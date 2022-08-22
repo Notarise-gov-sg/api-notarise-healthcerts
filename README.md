@@ -73,6 +73,42 @@ curl -i -X POST \
 npm run invoke-local:notarisePdt
 ```
 
+To revoke a HealthCert in local environment, run the command in a separate terminal:
+
+> To check if your HealthCert is revoked on the staging or production OCSP Responder, go to [dev.verify.gov.sg](dev.verify.gov.sg) (for staging OCSP) or [verify.gov.sg](verify.gov.sg) (for production OCSP) to verify. The verifier should fail and show that the document has not been issued.
+
+1. Without `hcReasonCode`
+
+   ```sh
+   curl -i -X POST \
+     -H 'content-type: application/json' \
+     -H 'x-api-key: <api key>' \
+     -d '{
+       data: <notarised document>
+       }' \
+     'http://localhost:4000/dev/v2/notarise/revoke'
+   ```
+
+2. With `hcReasonCode`
+
+   `hcReasonCode` is an <b>optional</b> parameter for healthcert providers to input the reason for revocation. Refer to the table below for the `hcReasonCode` values used when revoking healthcerts
+
+   | hcReasonCode | Reason             |
+   | ------------ | ------------------ |
+   | 101          | 'Wrong data input' |
+   | 102          | 'Requested by MOP' |
+
+   ```sh
+   curl -i -X POST \
+     -H 'content-type: application/json' \
+     -H 'x-api-key: d41d8cd98f00b204e9800998ecf8427e' \
+     -d '{
+       hcReasonCode: <reason code>,
+       data: <notarised document>
+       }' \
+     'http://localhost:4000/dev/v2/notarise/revoke'
+   ```
+
 To run tests:
 
 ```sh
