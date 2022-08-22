@@ -31,7 +31,7 @@
     "@govtechsg/oa-schemata": "^1.18.2",
     "@govtechsg/oa-verify": "^7.10.0",
     "@govtechsg/open-attestation": "^6.5.0",
-    "@middy/core": "^2.5.7",
+    "@middy/core": "^3.2.1",
     "@middy/http-error-handler": "^2.5.7",
     "@middy/http-json-body-parser": "^2.5.7",
     "@middy/ssm": "^2.5.7",
