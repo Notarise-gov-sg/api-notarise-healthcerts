@@ -103,7 +103,7 @@ export const main: Handler = async (
     if (encodedPreEndorsedHealthcert === undefined) {
       throw new CodedError(
         "INVALID_DOCUMENT",
-        `Unable to extract pre-endorsed HealthCert from given certificate`
+        `Unrecognised OA document submitted, please make sure that you only submit PDT documents`
       );
     }
 
