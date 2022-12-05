@@ -26,10 +26,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Riverr",
     domain: "riverr.ai",
   },
-  "healthcert-issuer.collinsonassistance.com": {
-    name: "Collinson Assistance Service Ltd",
-    domain: "healthcert-issuer.collinsonassistance.com",
-  },
   "3dcerts.com": {
     name: "3DCerts Staging Test",
     domain: "3dcerts.com",
@@ -171,17 +167,9 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
     name: "Riverr",
     domain: "platinum.riverr.ai",
   },
-  "oa.keys.trybe.id": {
-    name: "Trybe ID Inc",
-    domain: "oa.keys.trybe.id",
-  },
   "nippon.riverr.ai": {
     name: "Riverr",
     domain: "nippon.riverr.ai",
-  },
-  "healthcert-apac.collinsonassistance.com": {
-    name: "Collinson Assistance Service Ltd",
-    domain: "healthcert-apac.collinsonassistance.com",
   },
   "healthcerts.jebhealth.com": {
     name: "JEB Healthcare Technologies Pte Ltd (JEBHEALTH)",
@@ -315,10 +303,6 @@ const authorizedIssuersBothEnv: { [domain: string]: Issuer } = {
   "issuer-w3c.loyalty.com.hk": {
     name: "Loyalty Service Ltd",
     domain: "issuer-w3c.loyalty.com.hk",
-  },
-  "issuer.loyalty.com.hk": {
-    name: "Collinson Assistance Service Ltd",
-    domain: "issuer.loyalty.com.hk",
   },
   "c3familyclinic.riverr.ai": {
     name: "Riverr",
