@@ -32,10 +32,14 @@ provider:
       - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
       - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
       - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
+      - name: ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
+        enabled: false
       - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
       - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
       - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
       - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
+      - name: ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
+        enabled: false
       - ${opt:stage, "dev"}-notariseHealthcertKey-Edufied
       - ${opt:stage, "dev"}-notariseHealthcertKey-Jedtrade
       - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
