@@ -196,7 +196,7 @@ custom:
   envSource: ${self:custom.envSourceConfig.${self:provider.stage}, self:custom.envSourceConfig.other}
   KMS_ARN: ${env:KMS_ARN, "PLACEHOLDER_ARN"}
   ethereumConfig:
-    stg: "ropsten"
+    stg: "goerli"
     production: "homestead"
   ssm:
     INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY, ""}

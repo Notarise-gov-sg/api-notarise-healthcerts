@@ -82,7 +82,7 @@ const generateConfig = () => ({
   euSigner: getEuSigner(),
   gpaySigner: getGPayCovidCardSigner(),
   env: process.env.NODE_ENV,
-  network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "ropsten"),
+  network: getDefaultIfUndefined(process.env.ETHEREUM_NETWORK, "goerli"),
   isValidationEnabled: !(
     process.env.IS_OFFLINE || process.env.IDENTIFIER_VALIDATION === "false"
   ),
