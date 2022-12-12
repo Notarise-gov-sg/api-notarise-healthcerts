@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "npm": ">=9"
+  },
   "scripts": {
     "dev": "cross-env VPC_NAME=dummy  DEBUG=api-notarize-healthcerts:* IS_OFFLINE=true STAGE=dev sls offline",
     "invoke-local:notarisePdt": "cross-env ./scripts/invoke-notarisePdt.sh",
@@ -48,7 +51,7 @@
     "debug": "^4.3.4",
     "fhir": "^4.11.1",
     "file-loader": "^6.2.0",
-    "file-type": "16.5.3",
+    "file-type": "^16.5.3",
     "force-resolutions": "^1.0.10",
     "fs-extra": "^10.1.0",
     "he": "1.2.0",
