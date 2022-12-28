@@ -57,11 +57,6 @@ provider:
             - kms:Decrypt
           Resource: ${self:custom.KMS_ARN}
         - Effect: Allow
-          Action:
-            - xray:PutTraceSegments
-            - xray:PutTelemetryRecords
-          Resource: "*"
-        - Effect: Allow
           Action: ["kms:GenerateDataKey"]
           Resource: "arn:aws:kms:${self:provider.region}:${self:custom.accountId}:key/${env:SNS_KMS_KEY_ID, 'PLACEHOLDER'}"
         - Effect: "Allow"
