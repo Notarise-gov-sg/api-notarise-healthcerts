@@ -61,7 +61,7 @@
     "middy-middleware-json-error-handler": "^3.0.0",
     "moment-timezone": "^0.5.34",
     "runtypes": "^6.5.1",
-    "serialize-error": "^8.1.0",
+    "serialize-error": "^11.0.0",
     "serverless": "^3.18.2",
     "serverless-associate-waf": "^1.2.1",
     "serverless-http": "^2.7.0",
