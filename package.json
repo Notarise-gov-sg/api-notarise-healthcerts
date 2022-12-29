@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "npm": ">=9"
+    "npm": ">=8"
   },
   "scripts": {
     "dev": "cross-env VPC_NAME=dummy  DEBUG=api-notarize-healthcerts:* IS_OFFLINE=true STAGE=dev sls offline",
@@ -42,6 +42,7 @@
     "@notarise-gov-sg/gpay-covid-cards": "^1.0.5",
     "@notarise-gov-sg/sns-notify-recipients": "^1.5.3",
     "@notarise-gov-sg/transient-storage-lib": "^0.3.5",
+    "@pathcheck/dcc-sdk": "^0.0.27",
     "@slack/webhook": "^6.0.0",
     "@types/url-join": "^4.0.1",
     "aws-sdk": "^2.1144.0",
