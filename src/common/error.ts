@@ -13,6 +13,7 @@ export enum ErrorType {
   INVALID_PROVIDER = 400,
   INVALID_API_KEY = 400,
   INVALID_REVOCATION_REASON_CODE = 400,
+  VAULT_DATA_NOT_FOUND = 404,
 
   // 5xx internal server error
   NOTARISE_PDT_ERROR = 500,

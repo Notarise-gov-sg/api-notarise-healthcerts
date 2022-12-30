@@ -108,7 +108,7 @@ export const main: Handler = async (
           const clinicName =
             parsedFhirBundle.observations[0].organization.lhp.fullName;
           const vaultErr = new CodedError(
-            "VAULT_DATA_ERROR",
+            "VAULT_DATA_NOT_FOUND",
             "Date of birth and/or gender do not match existing records. Please try again with the correct values. If the problem persists, please submit supporting documents to support@notarise.gov.sg",
             `Clinic Name: ${clinicName}, Input dob: ${dob}, input gender: ${gender}`
           );
