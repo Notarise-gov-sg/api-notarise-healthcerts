@@ -91,8 +91,12 @@ export const main: Handler = async (
           const relaxedDate =
             parsedDob.length === 4 ? `${parsedDob}-01-01` : parsedDob;
 
+          const zeroesDate =
+            parsedDob.length === 4 ? `${parsedDob}-00-00` : "invalid-date";
+
+
           if (
-            (parsedDob === dob || relaxedDate === dob) &&
+            (parsedDob === dob || relaxedDate === dob || zeroesDate === dob) &&
             vault.gender === gender
           ) {
             isDobAndGenderInVault = true;
@@ -105,10 +109,13 @@ export const main: Handler = async (
 
           // check if parsed resulted in year only, if yes then append month and date, otherwise do not append
           const relaxedDate =
-            parsedDob.length === 4 ? `${parsedDob}-01-01` : parsedDob;
+            parsedDob.length === 4 ? `${parsedDob}-01-01` : "invalid-date";
+
+          const zeroesDate =
+            parsedDob.length === 4 ? `${parsedDob}-00-00` : "invalid-date";
 
           if (
-            (parsedDob === dob || relaxedDate === dob) &&
+            (parsedDob === dob || relaxedDate === dob || zeroesDate === dob) &&
             manual.gender === gender
           ) {
             isDobAndGenderInVault = true;
