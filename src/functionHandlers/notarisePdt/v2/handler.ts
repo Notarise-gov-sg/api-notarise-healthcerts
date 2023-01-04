@@ -85,8 +85,14 @@ export const main: Handler = async (
           personalData === null;
 
         personalData?.vaultData.forEach((vault) => {
+          const parsedDob = parseDateWithoutZeroes(vault.dateofbirth);
+
+          // check if parsed resulted in year only, if yes then append month and date, otherwise do not append
+          const relaxedDate =
+            parsedDob.length === 4 ? `${parsedDob}-01-01` : parsedDob;
+
           if (
-            parseDateWithoutZeroes(vault.dateofbirth) === dob &&
+            (parsedDob === dob || relaxedDate === dob) &&
             vault.gender === gender
           ) {
             isDobAndGenderInVault = true;
@@ -95,8 +101,14 @@ export const main: Handler = async (
         });
 
         personalData?.manualData.forEach((manual) => {
+          const parsedDob = parseDateWithoutZeroes(manual.dateofbirth);
+
+          // check if parsed resulted in year only, if yes then append month and date, otherwise do not append
+          const relaxedDate =
+            parsedDob.length === 4 ? `${parsedDob}-01-01` : parsedDob;
+
           if (
-            parseDateWithoutZeroes(manual.dateofbirth) === dob &&
+            (parsedDob === dob || relaxedDate === dob) &&
             manual.gender === gender
           ) {
             isDobAndGenderInVault = true;
