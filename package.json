@@ -35,7 +35,7 @@
     "@govtechsg/oa-verify": "^7.10.0",
     "@govtechsg/open-attestation": "^6.5.0",
     "@middy/core": "^2.5.7",
-    "@middy/http-error-handler": "^2.5.7",
+    "@middy/http-error-handler": "^4.1.0",
     "@middy/http-json-body-parser": "^2.5.7",
     "@middy/ssm": "^2.5.7",
     "@notarise-gov-sg/eu-dcc-generator": "^1.4.0",
