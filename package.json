@@ -52,7 +52,7 @@
     "debug": "^4.3.4",
     "fhir": "^4.11.1",
     "file-loader": "^6.2.0",
-    "file-type": "^16.5.3",
+    "file-type": "^18.2.0",
     "force-resolutions": "^1.0.10",
     "fs-extra": "^10.1.0",
     "he": "1.2.0",
