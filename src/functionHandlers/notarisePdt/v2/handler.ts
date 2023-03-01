@@ -95,6 +95,10 @@ export const main: Handler = async (
           const zeroesDate =
             parsedDob.length === 4 ? `${parsedDob}-00-00` : "invalid-date";
 
+          traceWithRef(
+            `original dob : ${dob}, parsed dob : ${parsedDob}, relaxed : ${relaxedDate}, zeroes : ${zeroesDate}`
+          );
+
           if (
             (parsedDob === dob || relaxedDate === dob || zeroesDate === dob) &&
             vault.gender === gender
