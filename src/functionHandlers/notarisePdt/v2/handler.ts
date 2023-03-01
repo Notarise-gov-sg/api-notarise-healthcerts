@@ -91,8 +91,7 @@ export const main: Handler = async (
           // so trying to match input PDT 00-00 or 01-01
           const matchRelaxedDate =
             parsedDob.length === 4 &&
-            `${parsedDob}-01-01` === dob &&
-            `${parsedDob}-00-00` === dob;
+            (`${parsedDob}-01-01` === dob || `${parsedDob}-00-00` === dob);
 
           traceWithRef(
             `request dob : ${dob}, vault-dob: ${vault.dateofbirth}, parsed dob : ${parsedDob}, relaxDateMatch : ${matchRelaxedDate}`
@@ -105,6 +104,7 @@ export const main: Handler = async (
             isDobAndGenderInVault = true;
             traceWithRef(`Dob and gender match with vault data`);
 
+            // this is so that the 00-00 and 01-01 doesn't reflect on the PDT
             if (matchRelaxedDate) {
               parsedFhirBundle.patient.birthDate = parsedDob;
             }
@@ -118,8 +118,7 @@ export const main: Handler = async (
           // so trying to match input PDT 00-00 or 01-01
           const matchRelaxedDate =
             parsedDob.length === 4 &&
-            `${parsedDob}-01-01` === dob &&
-            `${parsedDob}-00-00` === dob;
+            (`${parsedDob}-01-01` === dob || `${parsedDob}-00-00` === dob);
 
           traceWithRef(
             `MANUAL request dob : ${dob}, vault-dob: ${manual.dateofbirth}, parsed dob : ${parsedDob}, relaxDateMatch : ${matchRelaxedDate}`
@@ -132,6 +131,7 @@ export const main: Handler = async (
             isDobAndGenderInVault = true;
             traceWithRef(`Dob and gender match with notarise manual data`);
 
+            // this is so that the 00-00 and 01-01 doesn't reflect on the PDT
             if (matchRelaxedDate) {
               parsedFhirBundle.patient.birthDate = parsedDob;
             }
