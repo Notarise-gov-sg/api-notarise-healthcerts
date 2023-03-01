@@ -114,27 +114,9 @@ export const main: Handler = async (
         personalData?.manualData.forEach((manual) => {
           const parsedDob = parseDateWithoutZeroes(manual.dateofbirth);
 
-          // check if parsed resulted in year only, if yes then append month and date
-          // so trying to match input PDT 00-00 or 01-01
-          const matchRelaxedDate =
-            parsedDob.length === 4 &&
-            (`${parsedDob}-01-01` === dob || `${parsedDob}-00-00` === dob);
-
-          traceWithRef(
-            `MANUAL request dob : ${dob}, vault-dob: ${manual.dateofbirth}, parsed dob : ${parsedDob}, relaxDateMatch : ${matchRelaxedDate}`
-          );
-
-          if (
-            (parsedDob === dob || matchRelaxedDate) &&
-            manual.gender === gender
-          ) {
+          if (parsedDob === dob && manual.gender === gender) {
             isDobAndGenderInVault = true;
             traceWithRef(`Dob and gender match with notarise manual data`);
-
-            // this is so that the 00-00 and 01-01 doesn't reflect on the PDT
-            if (matchRelaxedDate) {
-              parsedFhirBundle.patient.birthDate = parsedDob;
-            }
           }
         });
 
