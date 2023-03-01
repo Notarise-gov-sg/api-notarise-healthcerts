@@ -96,7 +96,7 @@ export const main: Handler = async (
             parsedDob.length === 4 ? `${parsedDob}-00-00` : "invalid-date";
 
           traceWithRef(
-            `original dob : ${dob}, parsed dob : ${parsedDob}, relaxed : ${relaxedDate}, zeroes : ${zeroesDate}`
+            `request dob : ${dob}, vault-dob: ${vault.dateofbirth}, parsed dob : ${parsedDob}, relaxed : ${relaxedDate}, zeroes : ${zeroesDate}`
           );
 
           if (
@@ -117,6 +117,10 @@ export const main: Handler = async (
 
           const zeroesDate =
             parsedDob.length === 4 ? `${parsedDob}-00-00` : "invalid-date";
+
+          traceWithRef(
+            `MANUAL request dob : ${dob}, vault-dob: ${manual.dateofbirth}, parsed dob : ${parsedDob}, relaxed : ${relaxedDate}, zeroes : ${zeroesDate}`
+          );
 
           if (
             (parsedDob === dob || relaxedDate === dob || zeroesDate === dob) &&
