@@ -78,6 +78,7 @@ export const main: Handler = async (
           reference
         );
         const dob = parsedFhirBundle.patient.birthDate;
+        // parsedFhirBundle.patient.birthDate = "yyyy";
         const gender = parsedFhirBundle.patient.gender?.charAt(0).toUpperCase();
         let isDobAndGenderInVault =
           (personalData?.vaultData.length === 0 &&
@@ -93,7 +94,6 @@ export const main: Handler = async (
 
           const zeroesDate =
             parsedDob.length === 4 ? `${parsedDob}-00-00` : "invalid-date";
-
 
           if (
             (parsedDob === dob || relaxedDate === dob || zeroesDate === dob) &&
