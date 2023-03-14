@@ -87,11 +87,16 @@ export const main: Handler = async (
         personalData?.vaultData.forEach((vault) => {
           const parsedDob = parseDateWithoutZeroes(vault.dateofbirth);
 
-          // check if parsed resulted in year only, if yes then append month and date
-          // so trying to match input PDT 00-00 or 01-01
+          // check if vault resulted in year only / month only, append logic below
+          // input PDT yyyy-00-00 or yyyy-01-01 (for year only)
+          // input PDT yyyy-mm-00 or yyyy-mm-01 (for year and month)
+          // length 4 example 1990
+          // length 7 example 2001-11
           const matchRelaxedDate =
-            parsedDob.length === 4 &&
-            (`${parsedDob}-01-01` === dob || `${parsedDob}-00-00` === dob);
+            (parsedDob.length === 4 &&
+              (`${parsedDob}-01-01` === dob || `${parsedDob}-00-00` === dob)) ||
+            (parsedDob.length === 7 &&
+              (`${parsedDob}-01` === dob || `${parsedDob}-00` === dob));
 
           traceWithRef(
             `request dob : ${dob}, vault-dob: ${vault.dateofbirth}, parsed dob : ${parsedDob}, relaxDateMatch : ${matchRelaxedDate}`
