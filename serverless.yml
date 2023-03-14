@@ -2,7 +2,7 @@ service: api-notarise-healthcerts
 configValidationMode: error
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
   memorySize: 256
   timeout: 30 # optional, in seconds, default is 6
   stage: ${opt:stage, "dev"}
