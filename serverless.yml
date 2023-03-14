@@ -268,36 +268,10 @@ custom:
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
   webpack:
     includeModules: true
-  slicWatchEnable:
-    production: true
-    stg: false
-    other: false
   serverless-offline-ssm:
     stages:
       - offline
       - dev
-  slicWatch:
-    topicArn: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier"
-    enabled: ${self:custom.slicWatchEnable.${self:provider.stage}, self:custom.slicWatchEnable.other}
-    alarms:
-      enabled: true
-      Period: 60
-      EvaluationPeriods: 5
-      ComparisonOperator: GreaterThanThreshold
-      Lambda:
-        enabled: false
-      ApiGateway:
-        5XXError:
-          Statistic: Average
-          Threshold: 0.15
-        4XXError:
-          Statistic: Average
-          Threshold: 0.15
-        Latency:
-          Period: 60
-          EvaluationPeriods: 10
-          Statistic: Average
-          ExtendedStatistic: null
   serverlessTerminationProtection:
     stages:
       - production
@@ -306,7 +280,6 @@ custom:
 # https://www.serverless.com/framework/docs/environment-variables/
 useDotenv: true
 plugins:
-  - serverless-slic-watch-plugin
   - serverless-webpack
   - serverless-s3-local
   - serverless-offline-ssm
