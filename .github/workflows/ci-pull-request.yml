@@ -36,4 +36,15 @@ jobs:
         SIGNING_DID: ${{ secrets.SIGNING_DID }}
         SIGNING_DID_KEY: ${{ secrets.SIGNING_DID_KEY }}
         SIGNING_DID_PRIVATE_KEY: ${{ secrets.SIGNING_DID_PRIVATE_KEY }}
-    # - run: npm run sls-config-check
+  trigger-deploy:
+    needs: test
+    name: trigger deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          repository: ${{ secrets.DEPLOYER_REPO }}
+          event-type: ci-open
+          client-payload: '{"ref": "${{ github.ref }}","stage": "stg-pr-${{ github.event.number }}"}'
