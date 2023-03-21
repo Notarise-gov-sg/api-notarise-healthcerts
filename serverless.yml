@@ -172,7 +172,7 @@ custom:
   subnetEnvName:
     stg: "stg"
     production: "prd"
-    other: "placeholder"
+    other: "stg"
   envSourceConfig:
     stg: "ssm"
     production: "ssm"
@@ -266,8 +266,14 @@ custom:
     WHITELIST_NRICS: ${env:WHITELIST_NRICS, ""}
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
-  webpack:
-    includeModules: true
+  bundle:
+    externals:
+      - ethers
+    caching: false
+    esbuild: true
+    rawFileExtensions:
+      - txt
+      - html
   serverless-offline-ssm:
     stages:
       - offline
@@ -280,7 +286,7 @@ custom:
 # https://www.serverless.com/framework/docs/environment-variables/
 useDotenv: true
 plugins:
-  - serverless-webpack
+  - serverless-bundle
   - serverless-s3-local
   - serverless-offline-ssm
   - serverless-offline-ses
