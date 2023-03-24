@@ -30,6 +30,7 @@
   "license": "ISC",
   "dependencies": {
     "@ahryman40k/ts-fhir-types": "^4.0.39",
+    "@aws-sdk/client-ssm": "^3.298.0",
     "@govtechsg/oa-schemata": "^1.18.2",
     "@govtechsg/oa-verify": "^7.10.0",
     "@govtechsg/open-attestation": "^6.6.0",
