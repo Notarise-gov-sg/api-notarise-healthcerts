@@ -19,8 +19,7 @@ const ssmKeys = {
   GPAY_COVID_CARD_PRIVATE_KEY:
     "/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_PRIVATE_KEY",
   WHITELIST_NRICS: "/serverless/WHITELIST_NRICS",
-}
-
+};
 
 const ssmOptions: ISSMOptions = {
   fetchData: ssmKeys,
@@ -43,8 +42,14 @@ const ssmInstance = () => {
   return ssm(ssmOptions);
 };
 
-export const ssmToEnv = (): middy.MiddlewareObj<APIGatewayProxyEvent, APIGatewayProxyResult> => {
-  const before: middy.MiddlewareFn<APIGatewayProxyEvent, APIGatewayProxyResult> = async (request): Promise<void> => {
+export const ssmToEnv = (): middy.MiddlewareObj<
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult
+> => {
+  const before: middy.MiddlewareFn<
+    APIGatewayProxyEvent,
+    APIGatewayProxyResult
+  > = async (request): Promise<void> => {
     // have to cast to any because request context does not allow accessing values by [k]
     const ctx: any = request.context;
     Object.keys(ssmKeys).forEach((k) => {
@@ -53,7 +58,7 @@ export const ssmToEnv = (): middy.MiddlewareObj<APIGatewayProxyEvent, APIGateway
   };
 
   return {
-    before
+    before,
   };
 };
 
