@@ -1,4 +1,6 @@
 import ssm from "@middy/ssm";
+import middy from "@middy/core";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
 export declare type ISSMOptions = {
   fetchData?: { [key: string]: string };
