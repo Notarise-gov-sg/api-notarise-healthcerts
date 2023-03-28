@@ -11,7 +11,7 @@ import _ from "lodash";
 import axios from "axios";
 import { fromStream, fromBuffer } from "file-type";
 import { serializeError } from "serialize-error";
-import { getLogger } from "src/common/logger";
+import { getLogger } from "../../../common/logger";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { PDTHealthCertV2 } from "../../../types";
 import { config } from "../../../config";
