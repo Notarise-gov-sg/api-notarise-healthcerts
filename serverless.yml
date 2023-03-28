@@ -45,7 +45,8 @@ provider:
       - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
       - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
       - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
-      # - ${self:service}-${self:provider.stage}-nexus
+      - name: ${self:service}-${self:provider.stage}-nexus
+        enabled: false
       - ${opt:stage, "dev"}-notariseHealthcertKey-Myclnq
       - ${opt:stage, "dev"}-notariseHealthcertKey-DoNotVerify
   iam:
