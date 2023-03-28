@@ -11,10 +11,13 @@ import _ from "lodash";
 import axios from "axios";
 import { fromStream, fromBuffer } from "file-type";
 import { serializeError } from "serialize-error";
+import { getLogger } from "src/common/logger";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { PDTHealthCertV2 } from "../../../types";
 import { config } from "../../../config";
 import { CodedError } from "../../../common/error";
+
+const { trace } = getLogger("src/functionHandlers/notarisePdt/v2/handler");
 
 export const validateV2Document = async (
   wrappedDocument: WrappedDocument<PDTHealthCertV2>
@@ -26,6 +29,9 @@ export const validateV2Document = async (
         network: config.network,
       }) ?? defaultVerify;
 
+    trace(config.network);
+    trace(JSON.stringify(wrappedDocument));
+    trace(verify);
     const results = await verify(wrappedDocument);
     const documentIsValid = isValid(results);
     if (!documentIsValid) {
