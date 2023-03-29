@@ -11,6 +11,8 @@ provider:
   versionFunctions: false
   environment:
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+    STAGE: ${self:provider.stage}
+    DEBUG: "*,-follow-redirects"
   tracing:
     lambda: true
     apiGateway: true
@@ -89,40 +91,33 @@ functions:
   notarisePdtV2:
     provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
     environment:
-      STAGE: ${self:provider.stage}
-      DEBUG: "*,-follow-redirects"
-      INFURA_API_KEY: ${self:custom.ssm.INFURA_API_KEY}
-      SIGNING_DID_NAME: ${self:custom.ssm.SIGNING_DID_NAME}
-      SIGNING_DNS_DID_LOCATION: ${self:custom.ssm.SIGNING_DNS_DID_LOCATION}
-      SIGNING_DID: ${self:custom.ssm.SIGNING_DID}
-      SIGNING_DID_KEY: ${self:custom.ssm.SIGNING_DID_KEY}
-      SIGNING_DID_PRIVATE_KEY: ${self:custom.ssm.SIGNING_DID_PRIVATE_KEY}
-      REVOCATION_OCSP: ${self:custom.ssm.REVOCATION_OCSP}
-      TRANSIENT_STORAGE_URL: ${self:custom.ssm.TRANSIENT_STORAGE_URL}
-      TRANSIENT_STORAGE_API_KEY: ${self:custom.ssm.TRANSIENT_STORAGE_API_KEY}
-      NOTIFICATION_ENABLED: ${self:custom.ssm.NOTIFICATION_ENABLED}
-      NOTIFICATION_TOPIC_ARN: ${self:custom.ssm.NOTIFICATION_TOPIC_ARN}
-      NOTIFICATION_SENDER_NAME: ${self:custom.ssm.NOTIFICATION_SENDER_NAME}
-      NOTIFICATION_SENDER_LOGO: ${self:custom.ssm.NOTIFICATION_SENDER_LOGO}
-      NOTIFICATION_TEMPLATE_ID: ${self:custom.ssm.NOTIFICATION_TEMPLATE_ID}
+      AUTHORIZED_ISSUERS_API_KEY: ${self:custom.ssm.AUTHORIZED_ISSUERS_API_KEY}
+      AUTHORIZED_ISSUERS_API_URL: ${self:custom.ssm.AUTHORIZED_ISSUERS_API_URL}
       AUTHORIZED_ISSUERS_MAP: ${self:custom.ssm.AUTHORIZED_ISSUERS_MAP}
       ETHEREUM_NETWORK: ${self:custom.ethereumConfig.${self:provider.stage}, self:custom.ethereumConfig.stg}
-      USE_API_AUTHORISED_ISSUER: ${self:custom.ssm.USE_API_AUTHORISED_ISSUER}
-      AUTHORIZED_ISSUERS_API_URL: ${self:custom.ssm.AUTHORIZED_ISSUERS_API_URL}
-      AUTHORIZED_ISSUERS_API_KEY: ${self:custom.ssm.AUTHORIZED_ISSUERS_API_KEY}
-      RESIDENT_API_URL: ${self:custom.ssm.RESIDENT_API_URL}
-      RESIDENT_API_KEY: ${self:custom.ssm.RESIDENT_API_KEY}
-      SLACK_WEBHOOK_URL: ${self:custom.ssm.SLACK_WEBHOOK_URL}
-      OFFLINE_QR_ENABLED: ${self:custom.ssm.OFFLINE_QR_ENABLED}
       GPAY_COVID_CARD_ENABLED: ${self:custom.ssm.GPAY_COVID_CARD_ENABLED}
-      GPAY_COVID_CARD_ISSUER: ${self:custom.ssm.GPAY_COVID_CARD_ISSUER}
       GPAY_COVID_CARD_ISSUER_ID: ${self:custom.ssm.GPAY_COVID_CARD_ISSUER_ID}
+      GPAY_COVID_CARD_ISSUER: ${self:custom.ssm.GPAY_COVID_CARD_ISSUER}
       GPAY_COVID_CARD_PRIVATE_KEY: ${self:custom.ssm.GPAY_COVID_CARD_PRIVATE_KEY}
-      SIGNING_EU_QR_NAME: ${self:custom.ssm.SIGNING_EU_QR_NAME}
-      SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.ssm.SIGNING_EU_QR_PUBLIC_KEY}
-      SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.ssm.SIGNING_EU_QR_PRIVATE_KEY}
       HEALTH_CERT_NOTIFICATION_ENABLED: ${self:custom.ssm.HEALTH_CERT_NOTIFICATION_ENABLED}
       HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${self:custom.ssm.HEALTH_CERT_NOTIFICATION_TOPIC_ARN}
+      INFURA_API_KEY: ${self:custom.ssm.INFURA_API_KEY}
+      OFFLINE_QR_ENABLED: ${self:custom.ssm.OFFLINE_QR_ENABLED}
+      RESIDENT_API_KEY: ${self:custom.ssm.RESIDENT_API_KEY}
+      RESIDENT_API_URL: ${self:custom.ssm.RESIDENT_API_URL}
+      REVOCATION_OCSP: ${self:custom.ssm.REVOCATION_OCSP}
+      SIGNING_DID_KEY: ${self:custom.ssm.SIGNING_DID_KEY}
+      SIGNING_DID_NAME: ${self:custom.ssm.SIGNING_DID_NAME}
+      SIGNING_DID_PRIVATE_KEY: ${self:custom.ssm.SIGNING_DID_PRIVATE_KEY}
+      SIGNING_DID: ${self:custom.ssm.SIGNING_DID}
+      SIGNING_DNS_DID_LOCATION: ${self:custom.ssm.SIGNING_DNS_DID_LOCATION}
+      SIGNING_EU_QR_NAME: ${self:custom.ssm.SIGNING_EU_QR_NAME}
+      SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.ssm.SIGNING_EU_QR_PRIVATE_KEY}
+      SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.ssm.SIGNING_EU_QR_PUBLIC_KEY}
+      SLACK_WEBHOOK_URL: ${self:custom.ssm.SLACK_WEBHOOK_URL}
+      TRANSIENT_STORAGE_API_KEY: ${self:custom.ssm.TRANSIENT_STORAGE_API_KEY}
+      TRANSIENT_STORAGE_URL: ${self:custom.ssm.TRANSIENT_STORAGE_URL}
+      USE_API_AUTHORISED_ISSUER: ${self:custom.ssm.USE_API_AUTHORISED_ISSUER}
       WHITELIST_NRICS: ${self:custom.ssm.WHITELIST_NRICS}
     handler: src/functionHandlers/notarisePdt/v2/handler.handler
     events:
@@ -135,7 +130,6 @@ functions:
     environment:
       REVOCATION_OCSP: ${self:custom.ssm.REVOCATION_OCSP}
       REVOCATION_OCSP_API_KEY: ${self:custom.ssm.REVOCATION_OCSP_API_KEY}
-      DEBUG: "*,-follow-redirects"
     handler: src/functionHandlers/revokePdtHealthCert/handler.handler
     events:
       - http:
@@ -184,20 +178,19 @@ custom:
     stg: "goerli"
     production: "homestead"
   ssm:
+    # reason why some variable is empty because in sls3 it throw error if the variable does not exist
+    # but these vars is loaded from withSSm.ts file dynamically
+    # so just empty placeholder
     AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY, ""}
     AUTHORIZED_ISSUERS_API_URL: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_URL, ""}
     AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
     GPAY_COVID_CARD_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ENABLED, ""}
     GPAY_COVID_CARD_ISSUER_ID: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER_ID, ""}
     GPAY_COVID_CARD_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER, ""}
+    GPAY_COVID_CARD_PRIVATE_KEY: ""
     HEALTH_CERT_NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_ENABLED, ""}
     HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
     INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY, ""}
-    NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_ENABLED, ""}
-    NOTIFICATION_SENDER_LOGO: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_SENDER_LOGO, ""}
-    NOTIFICATION_SENDER_NAME: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_SENDER_NAME, ""}
-    NOTIFICATION_TEMPLATE_ID: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TEMPLATE_ID, ""}
-    NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TOPIC_ARN, ""}
     OFFLINE_QR_ENABLED: ${ssm:/serverless/OFFLINE_QR_ENABLED, ""}
     RESIDENT_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/RESIDENT_API_KEY, ""}
     RESIDENT_API_URL: ${ssm:/serverless/api-notarise-healthcerts/RESIDENT_API_URL, ""}
@@ -209,16 +202,12 @@ custom:
     SIGNING_DID: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID, ""}
     SIGNING_DNS_DID_LOCATION: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DNS_DID_LOCATION, ""}
     SIGNING_EU_QR_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_NAME, ""}
+    SIGNING_EU_QR_PRIVATE_KEY: ""
+    SIGNING_EU_QR_PUBLIC_KEY: ""
     SLACK_WEBHOOK_URL: ${ssm:/serverless/SLACK_WEBHOOK_URL, ""}
     TRANSIENT_STORAGE_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_API_KEY, ""}
     TRANSIENT_STORAGE_URL: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_URL, ""}
     USE_API_AUTHORISED_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/USE_API_AUTHORISED_ISSUER, ""}
-    # reason why its empty because in sls3 it throw error if the variable does not exist
-    # but these vars is loaded from withSSm.ts file dynamically
-    # so just empty placeholder
-    GPAY_COVID_CARD_PRIVATE_KEY: ""
-    SIGNING_EU_QR_PUBLIC_KEY: ""
-    SIGNING_EU_QR_PRIVATE_KEY: ""
     WHITELIST_NRICS: ""
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
