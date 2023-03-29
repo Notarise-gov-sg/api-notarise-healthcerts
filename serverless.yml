@@ -270,9 +270,7 @@ custom:
   bundle:
     externals:
       - ethers
-      - "@govtechsg/open-attestation"
       - "@govtechsg/oa-verify"
-      - "@govtechsg/oa-schemata"
     caching: false
     esbuild: true
     rawFileExtensions:
