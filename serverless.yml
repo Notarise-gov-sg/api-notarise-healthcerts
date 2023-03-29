@@ -177,7 +177,7 @@ custom:
   envSourceConfig:
     stg: "ssm"
     production: "ssm"
-    other: "placeholder"
+    other: "ssm"
   customDomainList:
     production: "api-notarise-healthcerts.aws.notarise.gov.sg"
     stg: "api-notarise-healthcerts.stg.notarise.io"
