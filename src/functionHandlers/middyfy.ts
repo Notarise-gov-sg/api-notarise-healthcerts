@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, Handler } from "aws-lambda";
 import middy from "@middy/core";
 import jsonBodyParser from "@middy/http-json-body-parser";
 import httpErrorHandler from "@middy/http-error-handler";
-// import { cloudWatchMiddleware } from "../middleware/cloudWatch";
+import { cloudWatchMiddleware } from "../middleware/cloudWatch";
 import { validateSchemaMiddleware } from "../middleware/validateSchema";
 import { ssmToEnv, withSsm } from "../middleware/withSsm";
 
@@ -12,7 +12,7 @@ export const middyfy = (handler: Handler) =>
     ssmToEnv(),
     jsonBodyParser(),
     validateSchemaMiddleware(),
-    // cloudWatchMiddleware(),
+    cloudWatchMiddleware(),
     httpErrorHandler(),
   ]);
 
