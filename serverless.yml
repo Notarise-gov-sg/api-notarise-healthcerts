@@ -173,11 +173,11 @@ custom:
   subnetEnvName:
     stg: "stg"
     production: "prd"
-    other: "stg"
+    other: "placeholder"
   envSourceConfig:
     stg: "ssm"
     production: "ssm"
-    other: "ssm"
+    other: "placeholder"
   customDomainList:
     production: "api-notarise-healthcerts.aws.notarise.gov.sg"
     stg: "api-notarise-healthcerts.stg.notarise.io"
