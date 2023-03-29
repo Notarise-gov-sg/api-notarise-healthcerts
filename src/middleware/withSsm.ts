@@ -27,7 +27,7 @@ const ssmOptions: ISSMOptions = {
   fetchData: ssmKeys,
   cacheExpiry: 15 * 60 * 1000, // set 15 mins cache
   cacheKey: "ssm-cache-secrets",
-  setToEnv: true,
+  setToContext: true,
 };
 
 const ssmInstance = () => {
