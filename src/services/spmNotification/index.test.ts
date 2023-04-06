@@ -85,7 +85,7 @@ describe("single type oa-doc notification", () => {
     // set test type code to SER
     certificateData.type = "SER" as any;
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledTimes(1);
     expect(notifyHealthCert).toHaveBeenCalledWith({
       expiry: resultMock.ttl,
       type: "SER",
@@ -104,7 +104,7 @@ describe("single type oa-doc notification", () => {
     };
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
 
-    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledTimes(1);
     expect(notifyHealthCert).toHaveBeenCalledWith({
       expiry: resultMock.ttl,
       type: "ART",
@@ -117,7 +117,7 @@ describe("single type oa-doc notification", () => {
   it("trigger notifyHealthCert for valid PCR test cert", async () => {
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
 
-    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledTimes(1);
     expect(notifyHealthCert).toHaveBeenCalledWith({
       expiry: resultMock.ttl,
       type: "PCR",
@@ -135,7 +135,7 @@ describe("single type oa-doc notification", () => {
       display: "LUCIRA Test",
     };
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledTimes(1);
     expect(notifyHealthCert).toHaveBeenCalledWith({
       expiry: resultMock.ttl,
       type: "LAMP",
@@ -250,7 +250,7 @@ describe("multi type oa-doc notification", () => {
 
   it("trigger notifyHealthCert for valid [PCR, SER] test cert", async () => {
     await sendNotification(resultMock, parsedFhirBundleMock, certificateData);
-    expect(notifyHealthCert).toBeCalledTimes(1);
+    expect(notifyHealthCert).toHaveBeenCalledTimes(1);
     expect(notifyHealthCert).toHaveBeenCalledWith({
       expiry: resultMock.ttl,
       type: "PCR_SER",

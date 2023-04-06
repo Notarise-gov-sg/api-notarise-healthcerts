@@ -11,10 +11,15 @@ import _ from "lodash";
 import axios from "axios";
 import { fromStream, fromBuffer } from "file-type";
 import { serializeError } from "serialize-error";
+// import { getLogger } from "../../../common/logger";
 import { isAuthorizedIssuer } from "../authorizedIssuers";
 import { PDTHealthCertV2 } from "../../../types";
 import { config } from "../../../config";
 import { CodedError } from "../../../common/error";
+
+// const { trace } = getLogger(
+//   "src/functionHandlers/notarisePdt/validateInputs/validateDocument"
+// );
 
 export const validateV2Document = async (
   wrappedDocument: WrappedDocument<PDTHealthCertV2>
@@ -25,7 +30,6 @@ export const validateV2Document = async (
       verificationBuilder(openAttestationVerifiers, {
         network: config.network,
       }) ?? defaultVerify;
-
     const results = await verify(wrappedDocument);
     const documentIsValid = isValid(results);
     if (!documentIsValid) {

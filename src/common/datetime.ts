@@ -61,8 +61,12 @@ export const parseDateTime = (dateString: string | undefined): string =>
  */
 export const parseDateWithoutZeroes = (dateString: string): string => {
   // To parse Vault dob which is always in YYYY-MM-DD format
-  const dayIsZero = dateString.split("-")[2] === ZEROES;
-  const monthIsZero = dateString.split("-")[1] === ZEROES;
+  const dayIsZero =
+    dateString.split("-")[2] === ZEROES ||
+    dateString.split("-")[2] === undefined;
+  const monthIsZero =
+    dateString.split("-")[1] === ZEROES ||
+    dateString.split("-")[1] === undefined;
   let result = dateString;
 
   if (dayIsZero && monthIsZero) {

@@ -2,7 +2,7 @@ service: api-notarise-healthcerts
 configValidationMode: error
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
   memorySize: 256
   timeout: 30 # optional, in seconds, default is 6
   stage: ${opt:stage, "dev"}
@@ -11,6 +11,8 @@ provider:
   versionFunctions: false
   environment:
     AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+    STAGE: ${self:provider.stage}
+    DEBUG: "*,-follow-redirects"
   tracing:
     lambda: true
     apiGateway: true
@@ -45,7 +47,8 @@ provider:
       - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
       - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
       - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
-      - ${self:service}-${self:provider.stage}-nexus
+      - name: ${self:service}-${self:provider.stage}-nexus
+        enabled: false
       - ${opt:stage, "dev"}-notariseHealthcertKey-Myclnq
       - ${opt:stage, "dev"}-notariseHealthcertKey-DoNotVerify
   iam:
@@ -73,7 +76,7 @@ provider:
           Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:healthcert"
         - Effect: Allow
           Action: ["sns:Publish"]
-          Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:api-spm-${self:provider.stage}-spm-healthcert-topic"
+          Resource: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:api-spm-*-spm-healthcert-topic"
   deploymentBucket:
     name: notarise-serverless-deployment
   logs:
@@ -88,41 +91,34 @@ functions:
   notarisePdtV2:
     provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
     environment:
-      STAGE: ${self:provider.stage}
-      DEBUG: "*,-follow-redirects"
-      INFURA_API_KEY: ${self:custom.${self:custom.envSource}.INFURA_API_KEY}
-      SIGNING_DID_NAME: ${self:custom.${self:custom.envSource}.SIGNING_DID_NAME}
-      SIGNING_DNS_DID_LOCATION: ${self:custom.${self:custom.envSource}.SIGNING_DNS_DID_LOCATION}
-      SIGNING_DID: ${self:custom.${self:custom.envSource}.SIGNING_DID}
-      SIGNING_DID_KEY: ${self:custom.${self:custom.envSource}.SIGNING_DID_KEY}
-      SIGNING_DID_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_DID_PRIVATE_KEY}
-      REVOCATION_OCSP: ${self:custom.${self:custom.envSource}.REVOCATION_OCSP}
-      TRANSIENT_STORAGE_URL: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_URL}
-      TRANSIENT_STORAGE_API_KEY: ${self:custom.${self:custom.envSource}.TRANSIENT_STORAGE_API_KEY}
-      NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.NOTIFICATION_ENABLED}
-      NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.NOTIFICATION_TOPIC_ARN}
-      NOTIFICATION_SENDER_NAME: ${self:custom.${self:custom.envSource}.NOTIFICATION_SENDER_NAME}
-      NOTIFICATION_SENDER_LOGO: ${self:custom.${self:custom.envSource}.NOTIFICATION_SENDER_LOGO}
-      NOTIFICATION_TEMPLATE_ID: ${self:custom.${self:custom.envSource}.NOTIFICATION_TEMPLATE_ID}
-      AUTHORIZED_ISSUERS_MAP: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_MAP}
+      AUTHORIZED_ISSUERS_API_KEY: ${self:custom.ssm.AUTHORIZED_ISSUERS_API_KEY}
+      AUTHORIZED_ISSUERS_API_URL: ${self:custom.ssm.AUTHORIZED_ISSUERS_API_URL}
+      AUTHORIZED_ISSUERS_MAP: ${self:custom.ssm.AUTHORIZED_ISSUERS_MAP}
       ETHEREUM_NETWORK: ${self:custom.ethereumConfig.${self:provider.stage}, self:custom.ethereumConfig.stg}
-      USE_API_AUTHORISED_ISSUER: ${self:custom.${self:custom.envSource}.USE_API_AUTHORISED_ISSUER}
-      AUTHORIZED_ISSUERS_API_URL: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_URL}
-      AUTHORIZED_ISSUERS_API_KEY: ${self:custom.${self:custom.envSource}.AUTHORIZED_ISSUERS_API_KEY}
-      RESIDENT_API_URL: ${self:custom.${self:custom.envSource}.RESIDENT_API_URL}
-      RESIDENT_API_KEY: ${self:custom.${self:custom.envSource}.RESIDENT_API_KEY}
-      SLACK_WEBHOOK_URL: ${self:custom.${self:custom.envSource}.SLACK_WEBHOOK_URL}
-      OFFLINE_QR_ENABLED: ${self:custom.${self:custom.envSource}.OFFLINE_QR_ENABLED}
-      GPAY_COVID_CARD_ENABLED: ${self:custom.${self:custom.envSource}.GPAY_COVID_CARD_ENABLED}
-      GPAY_COVID_CARD_ISSUER: ${self:custom.${self:custom.envSource}.GPAY_COVID_CARD_ISSUER}
-      GPAY_COVID_CARD_ISSUER_ID: ${self:custom.${self:custom.envSource}.GPAY_COVID_CARD_ISSUER_ID}
-      GPAY_COVID_CARD_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.GPAY_COVID_CARD_PRIVATE_KEY}
-      SIGNING_EU_QR_NAME: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_NAME}
-      SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PUBLIC_KEY}
-      SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.${self:custom.envSource}.SIGNING_EU_QR_PRIVATE_KEY}
-      HEALTH_CERT_NOTIFICATION_ENABLED: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_ENABLED}
-      HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${self:custom.${self:custom.envSource}.HEALTH_CERT_NOTIFICATION_TOPIC_ARN}
-      WHITELIST_NRICS: ${self:custom.${self:custom.envSource}.WHITELIST_NRICS}
+      GPAY_COVID_CARD_ENABLED: ${self:custom.ssm.GPAY_COVID_CARD_ENABLED}
+      GPAY_COVID_CARD_ISSUER_ID: ${self:custom.ssm.GPAY_COVID_CARD_ISSUER_ID}
+      GPAY_COVID_CARD_ISSUER: ${self:custom.ssm.GPAY_COVID_CARD_ISSUER}
+      GPAY_COVID_CARD_PRIVATE_KEY: ${self:custom.ssm.GPAY_COVID_CARD_PRIVATE_KEY}
+      HEALTH_CERT_NOTIFICATION_ENABLED: ${self:custom.ssm.HEALTH_CERT_NOTIFICATION_ENABLED}
+      HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${self:custom.ssm.HEALTH_CERT_NOTIFICATION_TOPIC_ARN}
+      INFURA_API_KEY: ${self:custom.ssm.INFURA_API_KEY}
+      OFFLINE_QR_ENABLED: ${self:custom.ssm.OFFLINE_QR_ENABLED}
+      RESIDENT_API_KEY: ${self:custom.ssm.RESIDENT_API_KEY}
+      RESIDENT_API_URL: ${self:custom.ssm.RESIDENT_API_URL}
+      REVOCATION_OCSP: ${self:custom.ssm.REVOCATION_OCSP}
+      SIGNING_DID_KEY: ${self:custom.ssm.SIGNING_DID_KEY}
+      SIGNING_DID_NAME: ${self:custom.ssm.SIGNING_DID_NAME}
+      SIGNING_DID_PRIVATE_KEY: ${self:custom.ssm.SIGNING_DID_PRIVATE_KEY}
+      SIGNING_DID: ${self:custom.ssm.SIGNING_DID}
+      SIGNING_DNS_DID_LOCATION: ${self:custom.ssm.SIGNING_DNS_DID_LOCATION}
+      SIGNING_EU_QR_NAME: ${self:custom.ssm.SIGNING_EU_QR_NAME}
+      SIGNING_EU_QR_PRIVATE_KEY: ${self:custom.ssm.SIGNING_EU_QR_PRIVATE_KEY}
+      SIGNING_EU_QR_PUBLIC_KEY: ${self:custom.ssm.SIGNING_EU_QR_PUBLIC_KEY}
+      SLACK_WEBHOOK_URL: ${self:custom.ssm.SLACK_WEBHOOK_URL}
+      TRANSIENT_STORAGE_API_KEY: ${self:custom.ssm.TRANSIENT_STORAGE_API_KEY}
+      TRANSIENT_STORAGE_URL: ${self:custom.ssm.TRANSIENT_STORAGE_URL}
+      USE_API_AUTHORISED_ISSUER: ${self:custom.ssm.USE_API_AUTHORISED_ISSUER}
+      WHITELIST_NRICS: ${self:custom.ssm.WHITELIST_NRICS}
     handler: src/functionHandlers/notarisePdt/v2/handler.handler
     events:
       - http:
@@ -132,9 +128,8 @@ functions:
   revokePdtHealthCert:
     provisionedConcurrency: ${self:custom.concurrency.${self:provider.stage}, self:custom.concurrency.other}
     environment:
-      REVOCATION_OCSP: ${self:custom.${self:custom.envSource}.REVOCATION_OCSP}
-      REVOCATION_OCSP_API_KEY: ${self:custom.${self:custom.envSource}.REVOCATION_OCSP_API_KEY}
-      DEBUG: "*,-follow-redirects"
+      REVOCATION_OCSP: ${self:custom.ssm.REVOCATION_OCSP}
+      REVOCATION_OCSP_API_KEY: ${self:custom.ssm.REVOCATION_OCSP_API_KEY}
     handler: src/functionHandlers/revokePdtHealthCert/handler.handler
     events:
       - http:
@@ -155,28 +150,18 @@ custom:
     production: 1
     stg: 1
     other: 0
-  # Stupid hack to get conditionals on the env
-  # Please duplicate environment variables in the `ssm` and `dotenv` section
-  # default value for ${ssm:xxx, "default"} and ${env:xxx, "default"} does not work
-  # ideally you can just nest one inside. But no!
-  # ssm failure returns "undefined" while env failure returns ""
   vpcDiscovery:
     vpcName: "${env:VPC_NAME}"
     subnets:
       - tagKey: Name
         tagValues:
-          - "notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.other}-application-private-*"
+          - "notarize-${self:custom.subnetEnvName.${self:provider.stage}, self:custom.subnetEnvName.stg}-application-private-*"
     securityGroups:
       - names:
           - "default-application-vpc-*"
   subnetEnvName:
     stg: "stg"
     production: "prd"
-    other: "placeholder"
-  envSourceConfig:
-    stg: "ssm"
-    production: "ssm"
-    other: "dotenv"
   customDomainList:
     production: "api-notarise-healthcerts.aws.notarise.gov.sg"
     stg: "api-notarise-healthcerts.stg.notarise.io"
@@ -188,116 +173,57 @@ custom:
     createRoute53Record: true
     endpointType: regional
     autoDomain: true
-  envSource: ${self:custom.envSourceConfig.${self:provider.stage}, self:custom.envSourceConfig.other}
   KMS_ARN: ${env:KMS_ARN, "PLACEHOLDER_ARN"}
   ethereumConfig:
     stg: "goerli"
     production: "homestead"
   ssm:
-    INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY, ""}
-    SIGNING_DID_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_NAME, ""}
-    SIGNING_DNS_DID_LOCATION: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DNS_DID_LOCATION, ""}
-    SIGNING_DID: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID, ""}
-    SIGNING_DID_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_KEY, ""}
-    SIGNING_DID_PRIVATE_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_PRIVATE_KEY, ""}
-    REVOCATION_OCSP: ${ssm:/serverless/api-notarise-healthcerts/REVOCATION_OCSP, ""}
-    REVOCATION_OCSP_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/REVOCATION_OCSP_API_KEY, ""}
-    TRANSIENT_STORAGE_URL: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_URL, ""}
-    TRANSIENT_STORAGE_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_API_KEY, ""}
-    NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_ENABLED, ""}
-    NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TOPIC_ARN, ""}
-    NOTIFICATION_SENDER_NAME: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_SENDER_NAME, ""}
-    NOTIFICATION_SENDER_LOGO: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_SENDER_LOGO, ""}
-    NOTIFICATION_TEMPLATE_ID: ${ssm:/serverless/api-notarise-healthcerts/NOTIFICATION_TEMPLATE_ID, ""}
-    AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
-    USE_API_AUTHORISED_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/USE_API_AUTHORISED_ISSUER, ""}
-    AUTHORIZED_ISSUERS_API_URL: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_URL, ""}
-    AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY, ""}
-    RESIDENT_API_URL: ${ssm:/serverless/api-notarise-healthcerts/RESIDENT_API_URL, ""}
-    RESIDENT_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/RESIDENT_API_KEY, ""}
-    SLACK_WEBHOOK_URL: ${ssm:/serverless/SLACK_WEBHOOK_URL, ""}
-    OFFLINE_QR_ENABLED: ${ssm:/serverless/OFFLINE_QR_ENABLED, ""}
-    GPAY_COVID_CARD_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ENABLED, ""}
-    GPAY_COVID_CARD_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER, ""}
-    GPAY_COVID_CARD_ISSUER_ID: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER_ID, ""}
-    SIGNING_EU_QR_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_NAME, ""}
-    HEALTH_CERT_NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_ENABLED, ""}
-    HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
-    # reason why its empty because in sls3 it throw error if the variable does not exist
+    # reason why some variable is empty because in sls3 it throw error if the variable does not exist
     # but these vars is loaded from withSSm.ts file dynamically
     # so just empty placeholder
+    AUTHORIZED_ISSUERS_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_KEY, ""}
+    AUTHORIZED_ISSUERS_API_URL: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_API_URL, ""}
+    AUTHORIZED_ISSUERS_MAP: ${ssm:/serverless/api-notarise-healthcerts/AUTHORIZED_ISSUERS_MAP, "development"}
+    GPAY_COVID_CARD_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ENABLED, ""}
+    GPAY_COVID_CARD_ISSUER_ID: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER_ID, ""}
+    GPAY_COVID_CARD_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/GPAY_COVID_CARD_ISSUER, ""}
     GPAY_COVID_CARD_PRIVATE_KEY: ""
-    SIGNING_EU_QR_PUBLIC_KEY: ""
+    HEALTH_CERT_NOTIFICATION_ENABLED: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_ENABLED, ""}
+    HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${ssm:/serverless/api-notarise-healthcerts/HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
+    INFURA_API_KEY: ${ssm:/serverless/INFURA_API_KEY, ""}
+    OFFLINE_QR_ENABLED: ${ssm:/serverless/OFFLINE_QR_ENABLED, ""}
+    RESIDENT_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/RESIDENT_API_KEY, ""}
+    RESIDENT_API_URL: ${ssm:/serverless/api-notarise-healthcerts/RESIDENT_API_URL, ""}
+    REVOCATION_OCSP_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/REVOCATION_OCSP_API_KEY, ""}
+    REVOCATION_OCSP: ${ssm:/serverless/api-notarise-healthcerts/REVOCATION_OCSP, ""}
+    SIGNING_DID_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_KEY, ""}
+    SIGNING_DID_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_NAME, ""}
+    SIGNING_DID_PRIVATE_KEY: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID_PRIVATE_KEY, ""}
+    SIGNING_DID: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DID, ""}
+    SIGNING_DNS_DID_LOCATION: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_DNS_DID_LOCATION, ""}
+    SIGNING_EU_QR_NAME: ${ssm:/serverless/api-notarise-healthcerts/SIGNING_EU_QR_NAME, ""}
     SIGNING_EU_QR_PRIVATE_KEY: ""
+    SIGNING_EU_QR_PUBLIC_KEY: ""
+    SLACK_WEBHOOK_URL: ${ssm:/serverless/SLACK_WEBHOOK_URL, ""}
+    TRANSIENT_STORAGE_API_KEY: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_API_KEY, ""}
+    TRANSIENT_STORAGE_URL: ${ssm:/serverless/api-notarise-healthcerts/TRANSIENT_STORAGE_URL, ""}
+    USE_API_AUTHORISED_ISSUER: ${ssm:/serverless/api-notarise-healthcerts/USE_API_AUTHORISED_ISSUER, ""}
     WHITELIST_NRICS: ""
-  dotenv:
-    INFURA_API_KEY: ${env:INFURA_API_KEY, ""}
-    SIGNING_DID_NAME: ${env:SIGNING_DID_NAME, ""}
-    SIGNING_DNS_DID_LOCATION: ${env:SIGNING_DNS_DID_LOCATION, ""}
-    SIGNING_DID: ${env:SIGNING_DID, ""}
-    SIGNING_DID_KEY: ${env:SIGNING_DID_KEY, ""}
-    SIGNING_DID_PRIVATE_KEY: ${env:SIGNING_DID_PRIVATE_KEY, ""}
-    REVOCATION_OCSP: ${env:REVOCATION_OCSP, ""}
-    REVOCATION_OCSP_API_KEY: ${env:REVOCATION_OCSP_API_KEY, ""}
-    TRANSIENT_STORAGE_URL: ${env:TRANSIENT_STORAGE_URL, ""}
-    TRANSIENT_STORAGE_API_KEY: ${env:TRANSIENT_STORAGE_API_KEY, ""}
-    NOTIFICATION_ENABLED: ${env:NOTIFICATION_ENABLED, ""}
-    NOTIFICATION_TOPIC_ARN: ${env:NOTIFICATION_TOPIC_ARN, ""}
-    NOTIFICATION_SENDER_NAME: ${env:NOTIFICATION_SENDER_NAME, ""}
-    NOTIFICATION_SENDER_LOGO: ${env:NOTIFICATION_SENDER_LOGO, ""}
-    NOTIFICATION_TEMPLATE_ID: ${env:NOTIFICATION_TEMPLATE_ID, ""}
-    AUTHORIZED_ISSUERS_MAP: ${env:TRANSIENT_STORAGE_API_KEY, ""}
-    USE_API_AUTHORISED_ISSUER: ${env:USE_API_AUTHORISED_ISSUER, ""}
-    AUTHORIZED_ISSUERS_API_URL: ${env:AUTHORIZED_ISSUERS_API_URL, ""}
-    AUTHORIZED_ISSUERS_API_KEY: ${env:AUTHORIZED_ISSUERS_API_KEY, ""}
-    RESIDENT_API_URL: ${env:RESIDENT_API_URL, ""}
-    RESIDENT_API_KEY: ${env:RESIDENT_API_KEY, ""}
-    SLACK_WEBHOOK_URL: ${env:SLACK_WEBHOOK_URL, ""}
-    OFFLINE_QR_ENABLED: ${env:OFFLINE_QR_ENABLED, ""}
-    GPAY_COVID_CARD_ENABLED: ${env:GPAY_COVID_CARD_ENABLED, ""}
-    GPAY_COVID_CARD_ISSUER: ${env:GPAY_COVID_CARD_ISSUER, ""}
-    GPAY_COVID_CARD_ISSUER_ID: ${env:GPAY_COVID_CARD_ISSUER_ID, ""}
-    GPAY_COVID_CARD_PRIVATE_KEY: ${env:GPAY_COVID_CARD_PRIVATE_KEY, ""}
-    SIGNING_EU_QR_NAME: ${env:SIGNING_EU_QR_NAME, ""}
-    SIGNING_EU_QR_PUBLIC_KEY: ${env:SIGNING_EU_QR_PUBLIC_KEY, ""}
-    SIGNING_EU_QR_PRIVATE_KEY: ${env:SIGNING_EU_QR_PRIVATE_KEY, ""}
-    HEALTH_CERT_NOTIFICATION_ENABLED: ${env:HEALTH_CERT_NOTIFICATION_ENABLED, ""}
-    HEALTH_CERT_NOTIFICATION_TOPIC_ARN: ${env:HEALTH_CERT_NOTIFICATION_TOPIC_ARN, ""}
-    WHITELIST_NRICS: ${env:WHITELIST_NRICS, ""}
   # End of hack on env
   accountId: ${file(./src/serverlessConfig.js):getAccountId}
-  webpack:
-    includeModules: true
-  slicWatchEnable:
-    production: true
-    stg: false
-    other: false
+  bundle:
+    externals:
+      - ethers
+      - "@govtechsg/oa-verify"
+    caching: false
+    esbuild: true
+    rawFileExtensions:
+      - txt
+      - html
   serverless-offline-ssm:
     stages:
       - offline
       - dev
-  slicWatch:
-    topicArn: "arn:aws:sns:${self:provider.region}:${self:custom.accountId}:sns-slack-notifier"
-    enabled: ${self:custom.slicWatchEnable.${self:provider.stage}, self:custom.slicWatchEnable.other}
-    alarms:
-      enabled: true
-      Period: 60
-      EvaluationPeriods: 5
-      ComparisonOperator: GreaterThanThreshold
-      Lambda:
-        enabled: false
-      ApiGateway:
-        5XXError:
-          Statistic: Average
-          Threshold: 0.15
-        4XXError:
-          Statistic: Average
-          Threshold: 0.15
-        Latency:
-          Period: 60
-          EvaluationPeriods: 10
-          Statistic: Average
-          ExtendedStatistic: null
   serverlessTerminationProtection:
     stages:
       - production
@@ -306,8 +232,7 @@ custom:
 # https://www.serverless.com/framework/docs/environment-variables/
 useDotenv: true
 plugins:
-  - serverless-slic-watch-plugin
-  - serverless-webpack
+  - serverless-bundle
   - serverless-s3-local
   - serverless-offline-ssm
   - serverless-offline-ses
