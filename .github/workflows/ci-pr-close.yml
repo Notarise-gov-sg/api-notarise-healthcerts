@@ -1,0 +1,24 @@
+name: ci-pr-close
+concurrency: 
+  group: ci-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [closed]
+env:
+  SLS_DEBUG: "*"
+  AWSJS_DEBUG: "*"
+
+jobs:
+  trigger-deploy:
+    name: trigger deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          repository: ${{ secrets.DEPLOYER_REPO }}
+          event-type: ci-close
+          client-payload: '{"ref": "${{ github.ref }}","stage": "stg-pr-${{ github.event.number }}"}'

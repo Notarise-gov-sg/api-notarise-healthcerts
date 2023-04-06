@@ -4,11 +4,12 @@ import jsonBodyParser from "@middy/http-json-body-parser";
 import httpErrorHandler from "@middy/http-error-handler";
 import { cloudWatchMiddleware } from "../middleware/cloudWatch";
 import { validateSchemaMiddleware } from "../middleware/validateSchema";
-import { withSsm } from "../middleware/withSsm";
+import { ssmToEnv, withSsm } from "../middleware/withSsm";
 
 export const middyfy = (handler: Handler) =>
   middy(handler).use([
     withSsm,
+    ssmToEnv(),
     jsonBodyParser(),
     validateSchemaMiddleware(),
     cloudWatchMiddleware(),

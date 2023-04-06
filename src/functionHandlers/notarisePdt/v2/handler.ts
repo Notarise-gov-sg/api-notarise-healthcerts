@@ -170,7 +170,7 @@ export const main: Handler = async (
     }
 
     /* Send to SPM notification/wallet (Only if enabled) */
-    if (config.notification.enabled) {
+    if (config.healthCertNotification.enabled) {
       try {
         await sendNotification(result, parsedFhirBundle, data);
       } catch (e) {
