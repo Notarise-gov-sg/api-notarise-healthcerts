@@ -147,8 +147,8 @@ custom:
   s3:
     port: 4701
   concurrency:
-    production: 1
-    stg: 1
+    production: 0
+    stg: 0
     other: 0
   vpcDiscovery:
     vpcName: "${env:VPC_NAME}"
