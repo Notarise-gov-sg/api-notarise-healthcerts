@@ -43,7 +43,7 @@
     "@notarise-gov-sg/sns-notify-recipients": "^1.6.0",
     "@notarise-gov-sg/transient-storage-lib": "^0.3.6",
     "@pathcheck/dcc-sdk": "^0.0.27",
-    "@slack/webhook": "^6.1.0",
+    "@slack/webhook": "^7.0.1",
     "@tsconfig/node18": "^1.0.1",
     "@types/url-join": "^4.0.1",
     "aws-sdk": "^2.1345.0",
@@ -95,5 +95,8 @@
     "serverless-offline-ssm": "^6.2.0",
     "serverless-stack-termination-protection": "^2.0.2",
     "serverless-vpc-discovery": "^4.1.0"
+  },
+  "overrides": {
+    "axios":"^1.6.2"
   }
 }
