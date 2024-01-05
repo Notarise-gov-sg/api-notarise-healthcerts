@@ -48,7 +48,7 @@
     "@types/url-join": "^4.0.1",
     "aws-sdk": "^2.1345.0",
     "aws-xray-sdk-core": "^3.4.1",
-    "axios": "^1.6.2",
+    "axios": "^1.6.4",
     "dayjs": "^1.11.7",
     "debug": "^4.3.4",
     "eslint": "^8.37.0",
