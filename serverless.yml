@@ -208,7 +208,6 @@ custom:
 useDotenv: true
 plugins:
   - serverless-bundle
-  - serverless-s3-local
   - serverless-offline-ssm
   - serverless-offline-ses
   - serverless-domain-manager
