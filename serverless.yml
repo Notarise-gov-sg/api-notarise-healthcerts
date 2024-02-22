@@ -209,7 +209,6 @@ useDotenv: true
 plugins:
   - serverless-bundle
   - serverless-offline-ssm
-  - serverless-offline-ses
   - serverless-domain-manager
   - serverless-attach-permission-boundary
   - "@govtechsg/serverless-selective-functions"
