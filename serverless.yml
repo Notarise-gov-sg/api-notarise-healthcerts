@@ -26,31 +26,6 @@ provider:
       throttle:
         burstLimit: 200
         rateLimit: 100
-    apiKeys:
-      - ${opt:stage, "dev"}-notariseHealthcertKey-notarise
-      # generate API keys for other healthcert providers
-      # https://www.healthcerts.gov.sg/list-of-providers/
-      - ${opt:stage, "dev"}-notariseHealthcertKey-1Pass
-      - ${opt:stage, "dev"}-notariseHealthcertKey-3DCerts
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Accredify
-      - ${opt:stage, "dev"}-notariseHealthcertKey-AOKpass
-      - name: ${opt:stage, "dev"}-notariseHealthcertKey-CollinsonAssistance
-        enabled: false
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Jebhealth
-      - ${opt:stage, "dev"}-notariseHealthcertKey-KnowledgeCatalyst
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Nextid
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Riverr
-      - name: ${opt:stage, "dev"}-notariseHealthcertKey-Trybe
-        enabled: false
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Edufied
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Jedtrade
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Kiyo
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Filpass
-      - ${opt:stage, "dev"}-notariseHealthcertKey-UnoTechnologies
-      - name: ${self:service}-${self:provider.stage}-nexus
-        enabled: false
-      - ${opt:stage, "dev"}-notariseHealthcertKey-Myclnq
-      - ${opt:stage, "dev"}-notariseHealthcertKey-DoNotVerify
   iam:
     role:
       permissionsBoundary: "arn:aws:iam::${self:custom.accountId}:policy/GCCIAccountBoundary"
